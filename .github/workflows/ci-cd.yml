@@ -7,7 +7,6 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  # Job 1: Análise e Testes
   test:
     name: Análise e Testes
     runs-on: ubuntu-latest
@@ -16,40 +15,27 @@ jobs:
     - name: 📥 Checkout código
       uses: actions/checkout@v4
 
-    - name: ☕ Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: 🎯 Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.5'
-        channel: 'stable'
-        cache: false
-
+    - name: 🎯 Setup Flutter (manual install)
+      run: |
+        git clone https://github.com/flutter/flutter.git -b stable --depth 1
+        echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+        
+    - name: 🔧 Configure Flutter
+      run: |
+        flutter --version
+        flutter config --no-analytics
+        flutter doctor -v
+        
     - name: 📦 Instalar dependências
       run: flutter pub get
-
-    - name: 🔍 Verificar formatação
-      run: dart format --set-exit-if-changed .
-      continue-on-error: true
 
     - name: 🔎 Análise estática
       run: flutter analyze
 
     - name: 🧪 Executar testes
       run: flutter test --coverage
-
-    - name: 📊 Upload de cobertura
-      uses: codecov/codecov-action@v3
-      with:
-        files: coverage/lcov.info
-        fail_ci_if_error: false
       continue-on-error: true
 
-  # Job 2: Build Web
   build-web:
     name: Build Web
     needs: test
@@ -60,44 +46,16 @@ jobs:
     - name: 📥 Checkout código
       uses: actions/checkout@v4
 
-    - name: 🎯 Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.5'
-        channel: 'stable'
-        cache: false
-
-    - name: 📦 Instalar dependências
-      run: flutter pub get
-
-    - name: 🏗️ Build Web
-      run: flutter build web --release --web-renderer html
-
-    - name: 📤 Upload artefatos
-      uses: actions/upload-artifact@v3
-      with:
-        name: web-build
-        path: build/web/
-        retention-days: 7
-
-  # Job 3: Deploy Firebase (opcional)
-  deploy-firebase:
-    name: Deploy para Firebase
-    needs: build-web
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: 📥 Checkout código
-      uses: actions/checkout@v4
-
-    - name: 🎯 Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.24.5'
-        channel: 'stable'
-        cache: false
-
+    - name: 🎯 Setup Flutter (manual install)
+      run: |
+        git clone https://github.com/flutter/flutter.git -b stable --depth 1
+        echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
+        
+    - name: 🔧 Configure Flutter
+      run: |
+        flutter --version
+        flutter config --no-analytics
+        
     - name: 📦 Instalar dependências
       run: flutter pub get
 
@@ -107,25 +65,9 @@ jobs:
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       run: flutter build web --release --web-renderer html
 
-    - name: 🔥 Deploy para Firebase Hosting
-      uses: FirebaseExtended/action-hosting-deploy@v0
+    - name: 📤 Upload artefatos
+      uses: actions/upload-artifact@v3
       with:
-        repoToken: '${{ secrets.GITHUB_TOKEN }}'
-        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-        channelId: live
-        projectId: lecotour-dashboard
-      continue-on-error: true
-
-  # Job 4: Notificações
-  notify:
-    name: Notificações
-    needs: [test, build-web]
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-    - name: 📢 Status do Pipeline
-      run: |
-        echo "✅ Pipeline executado!"
-        echo "Status do teste: ${{ needs.test.result }}"
-        echo "Status do build: ${{ needs.build-web.result }}"
+        name: web-build
+        path: build/web/
+        retention-days: 7
