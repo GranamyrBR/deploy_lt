@@ -154,7 +154,7 @@ docker-compose down
 ### Configuração Inicial no Coolify
 
 1. **Acesse o Coolify Dashboard**
-   - URL: https://waha.axioscode.com/
+   - URL: https://axioscode.com/
 
 2. **Criar Nova Aplicação**
    - Projects → New Application
@@ -192,7 +192,7 @@ docker-compose down
 
 7. **Copiar Webhook URL**
    - Vá em Settings → Deploy Webhook
-   - Copie a URL (formato: `https://waha.axioscode.com/api/v1/deploy?uuid=...`)
+   - Copie a URL (formato: `https://axioscode.com/api/v1/deploy?uuid=...`)
 
 ### Configurar GitHub Webhook
 

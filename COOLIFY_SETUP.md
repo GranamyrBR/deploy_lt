@@ -4,7 +4,7 @@
 
 - **VPS**: Hostinger (KVM)
 - **Gerenciador**: Coolify
-- **Coolify URL**: https://waha.axioscode.com/
+- **Coolify URL**: https://axioscode.com/
 - **Proxy**: Caddy
 - **Domínio Produção**: https://axioscode.com/
 - **Repositório**: https://github.com/GranamyrBR/deploy_lt ✅ (Correto)
@@ -31,7 +31,7 @@ Push para main → GitHub Actions →
 
 ⚠️ **IMPORTANTE**: Se você está vindo do repositório `lecodeploy` (contaminado), veja: [COOLIFY_RECONFIGURE.md](COOLIFY_RECONFIGURE.md)
 
-1. Acesse: https://waha.axioscode.com/
+1. Acesse: https://axioscode.com/ (Coolify Dashboard)
 2. Vá em **Projects** ou **Applications**
 3. Selecione a aplicação **Lecotour Dashboard** (ou crie uma nova)
 4. Na aba **Source** ou **Git**:
@@ -51,7 +51,7 @@ No Coolify, na mesma tela:
 
 **Formato esperado:**
 ```
-https://waha.axioscode.com/api/v1/deploy?uuid=<APPLICATION_UUID>&force=true
+https://axioscode.com/api/v1/deploy?uuid=<APPLICATION_UUID>&force=true
 ```
 
 **Para encontrar o UUID:**
@@ -96,7 +96,7 @@ O workflow será disparado automaticamente!
 - Mostra se o webhook foi chamado com sucesso
 
 ### Coolify:
-- URL: https://waha.axioscode.com/
+- URL: https://axioscode.com/
 - Mostra o progresso real do deploy
 - Logs de build
 - Status da aplicação

@@ -2,7 +2,7 @@
 
 ## 📋 Pré-requisitos
 
-- ✅ Coolify instalado: https://waha.axioscode.com/
+- ✅ Coolify instalado: https://axioscode.com/ (Dashboard)
 - ✅ Repositório correto: `GranamyrBR/deploy_lt`
 - ✅ VPS com Caddy configurado
 

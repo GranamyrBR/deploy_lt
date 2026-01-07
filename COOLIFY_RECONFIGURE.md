@@ -11,7 +11,7 @@
 
 ### Passo 1: Remover Aplicação Antiga
 
-1. Acesse: https://waha.axioscode.com/
+1. Acesse: https://axioscode.com/ (Coolify Dashboard)
 2. Vá em **Applications** ou **Projects**
 3. Encontre a aplicação antiga (usando `lecodeploy`)
 4. Clique em **Settings** > **Danger Zone**
@@ -105,7 +105,7 @@ Se quiser usar GitHub Actions também:
 
 1. Vá em: https://github.com/GranamyrBR/deploy_lt/settings/hooks
 2. Verifique se o Coolify criou o webhook automaticamente
-3. Deve aparecer: `https://waha.axioscode.com/api/v1/...`
+3. Deve aparecer: `https://axioscode.com/api/v1/...`
 
 **Nota:** Com **Auto Deploy** habilitado, o webhook é criado automaticamente!
 
@@ -214,7 +214,7 @@ curl https://axioscode.com/version.txt
 - **Coolify Docs**: https://coolify.io/docs
 - **GitHub Repo**: https://github.com/GranamyrBR/deploy_lt
 - **App Produção**: https://axioscode.com/
-- **Coolify Dashboard**: https://waha.axioscode.com/
+- **Coolify Dashboard**: https://axioscode.com/
 
 ---
 
