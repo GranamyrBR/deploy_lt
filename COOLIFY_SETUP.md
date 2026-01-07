@@ -7,7 +7,8 @@
 - **Coolify URL**: https://waha.axioscode.com/
 - **Proxy**: Caddy
 - **Domínio Produção**: https://axioscode.com/
-- **Repositório**: https://github.com/GranamyrBR/deploy_lt
+- **Repositório**: https://github.com/GranamyrBR/deploy_lt ✅ (Correto)
+- **⚠️ Repositório Antigo (NÃO USAR)**: https://github.com/GranamyrBR/lecodeploy (Contaminado)
 
 ---
 
@@ -28,16 +29,19 @@ Push para main → GitHub Actions →
 
 ### Passo 1: Configurar Repositório no Coolify
 
+⚠️ **IMPORTANTE**: Se você está vindo do repositório `lecodeploy` (contaminado), veja: [COOLIFY_RECONFIGURE.md](COOLIFY_RECONFIGURE.md)
+
 1. Acesse: https://waha.axioscode.com/
 2. Vá em **Projects** ou **Applications**
-3. Selecione a aplicação **Lecotour Dashboard**
+3. Selecione a aplicação **Lecotour Dashboard** (ou crie uma nova)
 4. Na aba **Source** ou **Git**:
-   - **Repository**: `https://github.com/GranamyrBR/deploy_lt`
+   - **Repository**: `GranamyrBR/deploy_lt` ✅ (Repositório correto)
    - **Branch**: `main`
-   - **Auto Deploy**: ✅ Enabled
+   - **Auto Deploy from Git**: ✅ **ENABLED** (webhook automático!)
 5. **Build Pack**: Dockerfile
-6. **Port**: 80 (ou conforme configurado no Coolify)
-7. **Static Assets**: Caddy serve automaticamente de `/web`
+6. **Dockerfile Location**: `./Dockerfile` (raiz do projeto)
+7. **Port**: 80 (Caddy serve na porta 80)
+8. **Publish Directory**: `/web` (Caddy serve automaticamente)
 
 ### Passo 2: Obter Webhook URL
 
