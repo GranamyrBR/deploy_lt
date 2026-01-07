@@ -16,16 +16,12 @@ RUN flutter pub get
 COPY . .
 
 # Build Flutter Web with optimizations
-# - html renderer for better compatibility and smaller bundle
-# - dart2js for production optimization
-# - source-maps for debugging if needed
-# - tree-shake-icons to reduce bundle size
+# - release mode for production
+# - pwa-strategy for offline support and service worker
+# - base-href for proper routing
 RUN flutter build web \
     --release \
-    --web-renderer html \
-    --dart-define=FLUTTER_WEB_USE_SKIA=false \
-    --no-source-maps \
-    --pwa-strategy offline-first \
+    --pwa-strategy=offline-first \
     --base-href="/"
 
 # ============================================
