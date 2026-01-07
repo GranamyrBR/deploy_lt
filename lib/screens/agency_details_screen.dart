@@ -29,7 +29,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
           tooltip: 'Atualizar página',
           onPressed: () {
             // Refresh all providers
-            ref.refresh(accountEmployeesProvider(agency.id));
+            ref.invalidate(accountEmployeesProvider(agency.id));
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Atualizando dados...'))
             );
@@ -119,7 +119,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
                       icon: const Icon(Icons.refresh),
                       tooltip: 'Atualizar lista',
                       onPressed: () {
-                        ref.refresh(accountEmployeesProvider(agency.id));
+                        ref.invalidate(accountEmployeesProvider(agency.id));
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Atualizando lista de funcionários...'))
                         );
@@ -134,7 +134,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
                           builder: (context) => _EmployeeFormDialog(accountId: agency.id),
                         ).then((_) {
                           // Refresh the list after dialog is closed
-                          ref.refresh(accountEmployeesProvider(agency.id));
+                          ref.invalidate(accountEmployeesProvider(agency.id));
                         });
                       },
                     ),
@@ -223,7 +223,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
                                         context: context,
                                         builder: (context) => _EmployeeFormDialog(accountId: agency.id, employee: emp),
                                       );
-                                      ref.refresh(accountEmployeesProvider(agency.id));
+                                      ref.invalidate(accountEmployeesProvider(agency.id));
                                     },
                                   ),
                                   IconButton(
@@ -251,7 +251,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
                                       if (confirm == true) {
                                         try {
                                           await ref.read(deleteAccountEmployeeProvider(emp.id).future);
-                                          ref.refresh(accountEmployeesProvider(agency.id));
+                                          ref.invalidate(accountEmployeesProvider(agency.id));
                                           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Funcionário excluído com sucesso!')));
                                         } catch (e) {
                                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro ao excluir funcionário: $e')));

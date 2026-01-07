@@ -6,7 +6,7 @@ import '../providers/sales_provider.dart';
 
 import '../widgets/base_screen_layout.dart';
 import '../utils/smart_search_mixin.dart';
-import 'create_sale_screen_v2.dart' hide SalePaymentData;
+import 'create_sale_screen_v2.dart';
 import 'create_operation_from_sale_screen.dart';
 
 import '../widgets/add_payment_modal.dart';

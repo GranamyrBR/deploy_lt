@@ -52,7 +52,6 @@ class SalePaymentData {
     } else {
       return '$amountFormatted (${brlFormat.format(amountInBrl)})';
     }
-    return amountFormatted;
   }
   
   // Nota: Este helper pode ser usado no futuro para formatação de moedas

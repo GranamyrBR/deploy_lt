@@ -24,7 +24,7 @@ class ProvisionalInvoicesScreen extends ConsumerWidget {
           );
           if (created == true) {
             // Atualiza lista
-            ref.refresh(filteredInvoicesProvider);
+            ref.invalidate(filteredInvoicesProvider);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Fatura provisória criada')),
             );

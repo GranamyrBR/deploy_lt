@@ -516,7 +516,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
                 // Cards da coluna com DragTarget
                 Expanded(
                   child: DragTarget<MondayEntry>(
-                    onWillAcceptWithDetails: (data) => data != null,
+                    onWillAcceptWithDetails: (data) => true,
                     onAcceptWithDetails: (details) {
                       _moveCardToCategory(details.data, status);
                     },
