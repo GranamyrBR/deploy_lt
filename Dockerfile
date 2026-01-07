@@ -1,11 +1,20 @@
 # ============================================
 # Dockerfile para Deploy com Build Local
-# Apenas copia arquivos já compilados
+# Usa nginx para servir arquivos estáticos
 # ============================================
-FROM busybox:latest
+FROM nginx:alpine
+
+# Remove configuração padrão do nginx
+RUN rm -rf /usr/share/nginx/html/*
 
 # Copia os arquivos web já buildados localmente
-COPY build/web /web
+COPY build/web /usr/share/nginx/html
 
-# Keep container running for Caddy to serve files
-CMD ["sh", "-c", "echo 'Pre-built files ready! Caddy will serve /web directory' && tail -f /dev/null"]
+# Copia configuração customizada do nginx (se existir)
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expõe porta 80
+EXPOSE 80
+
+# Inicia nginx
+CMD ["nginx", "-g", "daemon off;"]
