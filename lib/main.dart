@@ -15,7 +15,6 @@ import 'services/localization_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/global_search_screen.dart';
-import 'test_categories.dart';
 import 'design/app_theme.dart';
 import 'utils/timezone_utils.dart';
 import 'screens/seller_dashboard_screen.dart';
@@ -127,7 +126,6 @@ class LecotourApp extends ConsumerWidget {
       home: authState.isAuthenticated ? const DashboardScreen() : const LoginScreen(),
       routes: {
         '/global-search': (context) => const GlobalSearchScreen(),
-        '/test-categories': (context) => const TestCategoriesScreen(),
         '/seller-dashboard': (context) => const SellerDashboardScreen(),
         '/seller-kanban': (context) => const SellerKanbanScreen(),
         '/quotations': (context) => const QuotationsScreenPremium(),

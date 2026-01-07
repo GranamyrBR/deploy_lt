@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:lecotour_dashboard/models/lead_tintim.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/lead_tintim_provider.dart';
-import '../test_leadstintim_connection.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
 import '../utils/smart_search_mixin.dart';
@@ -284,18 +283,6 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
     return BaseScreenLayout(
       title: 'Leads do WhatsApp',
       actions: [
-        IconButton(
-          icon: const Icon(Icons.bug_report),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const TestLeadstintimConnection(),
-              ),
-            );
-          },
-          tooltip: 'Testar conexão',
-        ),
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: () {
