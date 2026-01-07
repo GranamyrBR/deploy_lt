@@ -102,6 +102,9 @@ jobs:
       run: flutter pub get
 
     - name: 🏗️ Build Web
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
       run: flutter build web --release --web-renderer html
 
     - name: 🔥 Deploy para Firebase Hosting
