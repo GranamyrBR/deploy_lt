@@ -39,7 +39,10 @@ Thumbs.db
 .packages
 .pub-cache/
 .pub/
+# Build outputs - Allow only build/web in deploy branches
 /build/
+!/build/web/
+!/build/web/**
 .fvm/
 
 # Web related

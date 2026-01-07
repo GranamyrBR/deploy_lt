@@ -1,0 +1,4 @@
+# Para build pre-compilado, ignorar quase tudo exceto build/web
+*
+!build/web/
+!build/web/**
