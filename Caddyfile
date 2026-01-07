@@ -1,0 +1,73 @@
+# ============================================
+# Caddyfile para Lecotour Dashboard
+# Referência para configuração no Coolify
+# ============================================
+
+# Domínio principal
+axioscode.com {
+    # Serve arquivos estáticos do Flutter Web
+    root * /web
+    
+    # Habilitar compressão
+    encode gzip zstd
+    
+    # Try files - SPA routing
+    try_files {path} /index.html
+    
+    # Serve arquivos estáticos
+    file_server
+    
+    # Headers de segurança
+    header {
+        # Security headers
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "no-referrer-when-downgrade"
+        
+        # CORS (ajustar conforme necessário)
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    }
+    
+    # Cache para assets estáticos
+    @static {
+        path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot *.json *.wasm
+    }
+    header @static {
+        Cache-Control "public, max-age=31536000, immutable"
+    }
+    
+    # Cache service worker (menor tempo)
+    @sw {
+        path /flutter_service_worker.js
+    }
+    header @sw {
+        Cache-Control "public, max-age=3600, must-revalidate"
+    }
+    
+    # Sem cache para HTML
+    @html {
+        path *.html /
+    }
+    header @html {
+        Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
+    }
+    
+    # Health check endpoint
+    respond /health 200 {
+        body "healthy"
+    }
+    
+    # Logs
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}
+
+# Redirecionar www para não-www
+www.axioscode.com {
+    redir https://axioscode.com{uri} permanent
+}

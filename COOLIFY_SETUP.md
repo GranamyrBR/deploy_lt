@@ -35,6 +35,9 @@ Push para main → GitHub Actions →
    - **Repository**: `https://github.com/GranamyrBR/deploy_lt`
    - **Branch**: `main`
    - **Auto Deploy**: ✅ Enabled
+5. **Build Pack**: Dockerfile
+6. **Port**: 80 (ou conforme configurado no Coolify)
+7. **Static Assets**: Caddy serve automaticamente de `/web`
 
 ### Passo 2: Obter Webhook URL
 
@@ -129,15 +132,25 @@ O workflow será disparado automaticamente!
 
 ## 🔐 Variáveis de Ambiente no Coolify
 
-Se o app precisa de variáveis de ambiente (secrets), configure no Coolify:
+**IMPORTANTE**: Flutter Web usa variáveis de ambiente de forma especial:
 
-1. Vá na aplicação
-2. Tab **"Environment Variables"**
-3. Adicione:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-   - `GOOGLE_MAPS_API_KEY`
+1. **Build time**: `.env` é necessário para compilar (já incluído no repo com placeholders)
+2. **Runtime**: Variáveis são injetadas via `window.ENV` no HTML
+
+### Como configurar no Coolify:
+
+1. Vá na aplicação → Tab **"Environment Variables"**
+2. Adicione as variáveis (Coolify injeta automaticamente via Caddy):
+   - `SUPABASE_URL=https://sup.axioscode.com`
+   - `SUPABASE_ANON_KEY=sua-chave-real`
+   - `GOOGLE_MAPS_API_KEY=sua-chave`
+   - `OPENAI_API_KEY=sua-chave`
    - etc...
+
+3. Coolify/Caddy irá:
+   - Injetar essas variáveis no `index.html`
+   - Disponibilizar via `window.ENV`
+   - Flutter Web lê de `Environment.get('KEY')`
 
 ---
 

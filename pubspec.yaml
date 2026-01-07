@@ -144,7 +144,7 @@ flutter:
     - assets/commission_data.json
     - assets/icons/
     - web/icons/
-    # - .env  # Removed: use environment variables instead
+    - .env
     - assets/medias/
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -12,10 +12,10 @@
 *~
 .DS_Store
 
-# Environment files (use docker env vars instead)
-.env
-.env.*
-*.local
+# Environment files (keep .env for build, ignore others)
+# .env is needed for build (flutter_dotenv and envied)
+.env.local
+.env.*.local
 
 # Build outputs (will be rebuilt in container)
 build/
