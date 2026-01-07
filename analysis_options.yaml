@@ -11,6 +11,6 @@ linter:
   rules:
     avoid_print: true
     prefer_const_constructors: true
-    unnecessary_cast: true
-    unnecessary_import: true
+    # unnecessary_cast: true  # Removido - não reconhecido
+    # unnecessary_import: true  # Removido - não reconhecido
     avoid_unused_constructor_parameters: true

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class QuotationItem {
   final String id;
@@ -133,48 +134,49 @@ class Quotation {
     );
   }
 
-  factory Quotation.fromKanbanData({
-    required String id,
-    required String clientName,
-    required String clientEmail,
-    String? clientPhone,
-    required BoardItem kanbanItem,
-    List<QuotationItem>? additionalItems,
-    double taxRate = 0.0,
-  }) {
-    final items = <QuotationItem>[
-      QuotationItem(
-        id: '1',
-        description: kanbanItem.title,
-        date: DateTime.now(),
-        value: kanbanItem.value,
-        category: 'service',
-        notes: kanbanItem.subtitle,
-      ),
-      if (additionalItems != null) ...additionalItems,
-    ];
-
-    final subtotal = items.fold(0.0, (sum, item) => sum + item.value);
-    final total = subtotal + (subtotal * (taxRate / 100));
-
-    return Quotation(
-      id: id,
-      clientName: clientName,
-      clientEmail: clientEmail,
-      clientPhone: clientPhone,
-      quotationDate: DateTime.now(),
-      expirationDate: DateTime.now().add(const Duration(days: 7)),
-      baseDescription: 'Serviços de transporte turístico',
-      hotel: 'A ser definido',
-      vehicle: 'Van executiva',
-      passengerCount: 1,
-      items: items,
-      subtotal: subtotal,
-      taxRate: taxRate,
-      total: total,
-      status: 'draft',
-    );
-  }
+  // Comentado temporariamente - BoardItem não está definido
+  // factory Quotation.fromKanbanData({
+  //   required String id,
+  //   required String clientName,
+  //   required String clientEmail,
+  //   String? clientPhone,
+  //   required dynamic kanbanItem, // BoardItem
+  //   List<QuotationItem>? additionalItems,
+  //   double taxRate = 0.0,
+  // }) {
+  //   final items = <QuotationItem>[
+  //     QuotationItem(
+  //       id: '1',
+  //       description: kanbanItem.title,
+  //       date: DateTime.now(),
+  //       value: kanbanItem.value,
+  //       category: 'service',
+  //       notes: kanbanItem.subtitle,
+  //     ),
+  //     if (additionalItems != null) ...additionalItems,
+  //   ];
+  //
+  //   final subtotal = items.fold(0.0, (sum, item) => sum + item.value);
+  //   final total = subtotal + (subtotal * (taxRate / 100));
+  //
+  //   return Quotation(
+  //     id: id,
+  //     clientName: clientName,
+  //     clientEmail: clientEmail,
+  //     clientPhone: clientPhone,
+  //     quotationDate: DateTime.now(),
+  //     expirationDate: DateTime.now().add(const Duration(days: 7)),
+  //     baseDescription: 'Serviços de transporte turístico',
+  //     hotel: 'A ser definido',
+  //     vehicle: 'Van executiva',
+  //     passengerCount: 1,
+  //     items: items,
+  //     subtotal: subtotal,
+  //     taxRate: taxRate,
+  //     total: total,
+  //     status: 'draft',
+  //   );
+  // }
 }
 
 class ChartData {
