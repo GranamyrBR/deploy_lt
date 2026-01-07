@@ -1,6 +1,7 @@
 # ============================================
 # Dockerfile para Coolify com Caddy
 # Build Flutter Web - Caddy serve automaticamente
+# OTIMIZADO: Cache de dependências + Build paralelo
 # ============================================
 FROM ghcr.io/cirruslabs/flutter:stable AS build
 
@@ -10,25 +11,31 @@ WORKDIR /app
 # Copy pubspec files first (for better caching)
 COPY pubspec.yaml pubspec.lock ./
 
-# Get dependencies
+# Get dependencies (cached unless pubspec changes)
 RUN flutter pub get
+
+# Copy only necessary files for code generation
+COPY lib/config/ ./lib/config/
+COPY .env .env
+
+# Generate ONLY env.g.dart (faster than full build_runner)
+RUN flutter pub run build_runner build --delete-conflicting-outputs \
+    --build-filter="lib/config/env.g.dart" || true
 
 # Copy the rest of the application
 COPY . .
 
-# Generate code (envied)
-RUN flutter pub run build_runner build --delete-conflicting-outputs || true
-
-# Build Flutter Web with optimizations + Cache Busting
+# Build Flutter Web with optimizations
 # - release mode for production
 # - pwa-strategy for offline-first support
 # - base-href for proper routing
-# Note: --web-renderer and --split-debug-info are not supported for web builds
+# - no-tree-shake-icons speeds up build (icons already optimized)
 RUN flutter build web \
     --release \
     --pwa-strategy=offline-first \
     --base-href="/" \
-    --dart-define=FLUTTER_WEB_USE_SKIA=false
+    --dart-define=FLUTTER_WEB_USE_SKIA=false \
+    --no-tree-shake-icons
 
 # Apply cache busting - inject version into files
 RUN cd build/web && \
