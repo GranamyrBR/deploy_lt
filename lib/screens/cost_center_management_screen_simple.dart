@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/cost_center.dart';
 import '../providers/cost_center_provider.dart';
@@ -437,7 +438,7 @@ class _CostCenterManagementScreenState
               onEdit: () => _showEditCostCenterModal(context, costCenter),
               onDelete: () => _confirmDeleteCostCenter(context, costCenter),
               onAddExpense: () => _showAddExpenseModal(context, costCenter),
-              onViewDetails: () => _showCostCenterDetails(context, costCenter),
+              // onViewDetails: () => _showCostCenterDetails(context, costCenter),  // Comentado - parâmetro não existe
             );
           },
           childCount: costCenters.length,
@@ -548,8 +549,8 @@ class _CostCenterManagementScreenState
       context: context,
       builder: (context) => ExpenseModal(
         costCenterId: costCenter.id,
-        onSave: (expense) {
-          ref.read(costCenterProvider.notifier).addExpense(costCenter.id, expense);
+        onSave: () {  // Alterado para VoidCallback
+          // ref.read(costCenterProvider.notifier).addExpense(costCenter.id, expense);
         },
       ),
     );

@@ -194,24 +194,25 @@ final driverByIdProviderRestoredDb = FutureProvider.family<Driver?, int>((ref, i
   );
 });
 
-// Provider for drivers without cars
-final driversWithoutCarProviderRestoredDb = Provider<AsyncValue<List<Driver>>>((ref) {
-  final driversAsync = ref.watch(driverProviderRestoredDb);
-  
-  return driversAsync.when(
-    data: (drivers) => AsyncValue.data(drivers.where((d) => d.carId == null).toList()),
-    loading: () => const AsyncValue.loading(),
-    error: (error, stackTrace) => AsyncValue.error(error, stackTrace),
-  );
-});
+// Comentado temporariamente - Driver.carId não existe no modelo
+// // Provider for drivers without cars
+// final driversWithoutCarProviderRestoredDb = Provider<AsyncValue<List<Driver>>>((ref) {
+//   final driversAsync = ref.watch(driverProviderRestoredDb);
+//   
+//   return driversAsync.when(
+//     data: (drivers) => AsyncValue.data(drivers.where((d) => d.carId == null).toList()),
+//     loading: () => const AsyncValue.loading(),
+//     error: (error, stackTrace) => AsyncValue.error(error, stackTrace),
+//   );
+// });
 
-// Provider for drivers with cars
-final driversWithCarProviderRestoredDb = Provider<AsyncValue<List<Driver>>>((ref) {
-  final driversAsync = ref.watch(driverProviderRestoredDb);
-  
-  return driversAsync.when(
-    data: (drivers) => AsyncValue.data(drivers.where((d) => d.carId != null).toList()),
-    loading: () => const AsyncValue.loading(),
-    error: (error, stackTrace) => AsyncValue.error(error, stackTrace),
-  );
-}); 
+// // Provider for drivers with cars
+// final driversWithCarProviderRestoredDb = Provider<AsyncValue<List<Driver>>>((ref) {
+//   final driversAsync = ref.watch(driverProviderRestoredDb);
+//   
+//   return driversAsync.when(
+//     data: (drivers) => AsyncValue.data(drivers.where((d) => d.carId != null).toList()),
+//     loading: () => const AsyncValue.loading(),
+//     error: (error, stackTrace) => AsyncValue.error(error, stackTrace),
+//   );
+// }); 
