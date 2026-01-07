@@ -1,21 +1,19 @@
 # ============================================
 # Caddyfile para Lecotour Dashboard
-# Referência para configuração no Coolify
+# Configuração para Container (Coolify gerencia o domínio)
 # ============================================
 
-# Domínio principal
-axioscode.com {
-    # Serve arquivos estáticos do Flutter Web
-    root * /web
-    
-    # Habilitar compressão
-    encode gzip zstd
-    
-    # Try files - SPA routing
-    try_files {path} /index.html
-    
-    # Serve arquivos estáticos
+:8080 {
+    root * /usr/share/caddy
+    encode zstd gzip
+
+    @notFile {
+        not file
+    }
+    rewrite @notFile /index.html
+
     file_server
+}
     
     # Headers de segurança
     header {

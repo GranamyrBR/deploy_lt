@@ -1,34 +1,26 @@
 # ============================================
 # Dockerfile para Deploy com Build Local
-# Nginx serve os arquivos para o Caddy do Coolify
+# Usa Caddy como no app antigo (lecodeploy)
 # ============================================
-FROM nginx:alpine
+FROM caddy:2-alpine
 
-# Remove arquivos padrão do nginx
-RUN rm -rf /usr/share/nginx/html/*
+RUN addgroup -g 1001 -S caddy && \
+    adduser -S -D -H -u 1001 -s /sbin/nologin -G caddy caddy || true
+RUN apk add --no-cache curl
 
-# Copia os arquivos web já buildados localmente
-COPY build/web /usr/share/nginx/html
+# Copia o build estático do Flutter Web
+COPY build/web /usr/share/caddy
 
-# Configuração mínima do nginx para SPA
-RUN echo 'server { \
-    listen 80; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-    # Cache headers \
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf)$ { \
-        expires 1y; \
-        add_header Cache-Control "public, immutable"; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Configuração do Caddy (SPA)
+COPY Caddyfile /etc/caddy/Caddyfile
 
-EXPOSE 80
+RUN mkdir -p /var/log/caddy && \
+    chown -R caddy:caddy /var/log/caddy /etc/caddy /usr/share/caddy
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:80/ || exit 1
+USER caddy
+EXPOSE 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -fs http://localhost:8080/ || exit 1
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
