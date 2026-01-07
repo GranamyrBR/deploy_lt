@@ -185,7 +185,8 @@ class _ContactsGridTableState extends State<ContactsGridTable> {
                       sortColumnIndex: _sortColumnIndex,
                       sortAscending: _sortAscending,
                       headingRowHeight: 44,
-                      dataRowHeight: 56,
+                      dataRowMinHeight: 56,
+                      dataRowMaxHeight: 56,
                       columns: [
                         DataColumn(
                           label: const Text('Nome'),

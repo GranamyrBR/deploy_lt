@@ -131,7 +131,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             ? const Color(0xFFF97316) // Laranja mais escuro para convertido
             : const Color(0xFFFED7AA); // Laranja claro para não convertido
       case UserType.normal:
-      default:
         return isConverted
             ? Theme.of(context)
                 .colorScheme
@@ -156,7 +155,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             ? const Color(0xFFEA580C) // Laranja mais escuro para borda
             : const Color(0xFFF97316); // Laranja médio para borda
       case UserType.normal:
-      default:
         return Theme.of(context).colorScheme.primary;
     }
   }
@@ -174,7 +172,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       case UserType.agency:
         return const Color(0xFF2196F3); // Azul
       case UserType.normal:
-      default:
         return Colors.grey;
     }
   }
@@ -188,7 +185,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       case UserType.agency:
         return 'Agência';
       case UserType.normal:
-      default:
         return 'Normal';
     }
   }

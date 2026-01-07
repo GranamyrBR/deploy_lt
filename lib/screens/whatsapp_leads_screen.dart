@@ -179,7 +179,6 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
       case LeadStatus.converted:
         return 'Comprou';
       case LeadStatus.unknown:
-      default:
         return 'Desconhecido';
     }
   }

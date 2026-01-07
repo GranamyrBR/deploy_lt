@@ -6,9 +6,9 @@ double _luminance(Color c) {
     final n = v / 255.0;
     return n <= 0.03928 ? n / 12.92 : dm.pow((n + 0.055) / 1.055, 2.4).toDouble();
   }
-  final r = channel(c.red);
-  final g = channel(c.green);
-  final b = channel(c.blue);
+  final r = channel((c.r * 255.0).round().clamp(0, 255));
+  final g = channel((c.g * 255.0).round().clamp(0, 255));
+  final b = channel((c.b * 255.0).round().clamp(0, 255));
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 

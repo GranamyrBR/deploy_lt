@@ -86,12 +86,13 @@ class LanguageSelectorCard extends ConsumerWidget {
               return RadioListTile<String>(
                 title: Text(language['name']!),
                 value: language['code']!,
-                groupValue: currentLanguage,
+                toggleable: false,
                 onChanged: (String? value) {
                   if (value != null) {
                     ref.read(currentLanguageProvider.notifier).setLanguage(context, value);
                   }
                 },
+                selected: language['code'] == currentLanguage,
                 activeColor: Theme.of(context).primaryColor,
                 contentPadding: EdgeInsets.zero,
               );
@@ -126,7 +127,7 @@ class LanguageSelectorDialog extends ConsumerWidget {
           return ListTile(
             leading: Radio<String>(
               value: language['code']!,
-              groupValue: currentLanguage,
+              toggleable: false,
               onChanged: (String? value) {
                 if (value != null) {
                   ref.read(currentLanguageProvider.notifier).setLanguage(context, value);

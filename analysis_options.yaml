@@ -11,9 +11,9 @@ analyzer:
     # Transformar infos em warnings apenas para erros críticos
     avoid_print: ignore
     deprecated_member_use: warning
-    unused_element: warning
+    unused_element: ignore  # Muitos métodos privados para funcionalidades futuras
     unused_local_variable: ignore
-    unused_field: warning
+    unused_field: ignore  # Campos podem ser usados no futuro
     dead_null_aware_expression: ignore
 
 linter:

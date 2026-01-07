@@ -54,6 +54,8 @@ class SalePaymentData {
     }
     return amountFormatted;
   }
+  
+  // Nota: Este helper pode ser usado no futuro para formatação de moedas
 }
 
 class AddPaymentModal extends ConsumerStatefulWidget {

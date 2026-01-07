@@ -244,7 +244,6 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
             ? const Color(0xFF1976D2) // Azul escuro
             : const Color(0xFF2196F3);
       case UserType.normal:
-      default:
         return Theme.of(context).colorScheme.primary;
     }
   }
@@ -268,7 +267,6 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
             ? const Color(0xFF0D47A1)
             : const Color(0xFF1976D2);
       case UserType.normal:
-      default:
         return Theme.of(context).colorScheme.primary.withValues(alpha: 0.7);
     }
   }

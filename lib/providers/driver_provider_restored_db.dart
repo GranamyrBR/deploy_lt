@@ -145,7 +145,6 @@ class DriverNotifierRestoredDb extends StateNotifier<AsyncValue<List<Driver>>> {
       return (response as List)
           .map((data) => Car.fromJson(data['car']))
           .toList();
-          return [];
     } catch (error) {
       print('Error getting driver cars: $error');
       return [];

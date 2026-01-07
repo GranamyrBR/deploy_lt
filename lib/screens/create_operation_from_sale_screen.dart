@@ -1138,7 +1138,12 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
           Text(
             text,
             style: TextStyle(
-              color: Color.fromRGBO(color.red, color.green, color.blue, 0.7),
+              color: Color.fromRGBO(
+                (color.r * 255.0).round().clamp(0, 255),
+                (color.g * 255.0).round().clamp(0, 255),
+                (color.b * 255.0).round().clamp(0, 255),
+                0.7,
+              ),
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
@@ -2763,14 +2768,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
       return;
       
       // Código removido - agora usa rotas operacionais catalogadas
-      if (false) {
-        setState(() {
-          _airlineController.text = '';
-          _gateController.text = '';
-          _terminalController.text = '';
-          _arrivalTimeController.text = '';
-        });
-      }
+      // Os campos de airline, gate, terminal e arrivalTime foram migrados para rotas catalogadas
     } catch (e) {
       // Tratar erro silenciosamente ou mostrar snackbar
       if (mounted) {
