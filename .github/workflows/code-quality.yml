@@ -20,7 +20,7 @@ jobs:
       with:
         flutter-version: '3.24.5'
         channel: 'stable'
-        cache: true
+        cache: false
 
     - name: 📦 Instalar dependências
       run: flutter pub get
