@@ -7,5 +7,5 @@ FROM busybox:latest
 # Copia os arquivos web já buildados localmente
 COPY build/web /web
 
-# Coolify/Caddy will serve files from /web automatically
-CMD ["echo", "Pre-built files ready! Caddy will serve /web directory"]
+# Keep container running for Caddy to serve files
+CMD ["sh", "-c", "echo 'Pre-built files ready! Caddy will serve /web directory' && tail -f /dev/null"]
