@@ -31,25 +31,43 @@ axioscode.com {
         Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     }
     
-    # Cache para assets estáticos
-    @static {
-        path *.js *.css *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot *.json *.wasm
+    # Cache Busting Strategy - Baseado em Lukas Nevosad
+    
+    # 1. Assets versionados (via query string ?v=) - Cache longo
+    @versioned_assets {
+        path_regexp versioned \\.(js|css|woff2?)\\?v=
     }
-    header @static {
+    header @versioned_assets {
         Cache-Control "public, max-age=31536000, immutable"
     }
     
-    # Cache service worker (menor tempo)
+    # 2. Assets estáticos (imagens, fontes) - Cache médio
+    @static {
+        path *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot *.wasm
+    }
+    header @static {
+        Cache-Control "public, max-age=2592000"
+    }
+    
+    # 3. Service Worker - Sempre revalidar
     @sw {
         path /flutter_service_worker.js
     }
     header @sw {
-        Cache-Control "public, max-age=3600, must-revalidate"
+        Cache-Control "no-cache, must-revalidate"
     }
     
-    # Sem cache para HTML
+    # 4. Version file - Nunca fazer cache
+    @version {
+        path /version.txt
+    }
+    header @version {
+        Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    }
+    
+    # 5. HTML e outros - Sem cache (para pegar sempre a versão mais nova)
     @html {
-        path *.html /
+        path *.html / /cache-bust-loader.js
     }
     header @html {
         Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"

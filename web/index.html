@@ -21,6 +21,9 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <!-- Cache Busting - App Version (injected during build) -->
+  <meta name="app-version" content="{{APP_VERSION}}">
+  
   <!-- Environment Variables for Flutter Web -->
   <!-- ⚠️ ATENÇÃO: Em produção, estas variáveis devem vir do servidor via injeção -->
   <!-- Este arquivo deve ser gerado dinamicamente ou as chaves movidas para backend -->
@@ -137,5 +140,8 @@
       loadMainDartJs();
     }
   </script>
+  
+  <!-- Cache Busting Loader - Auto-update detection -->
+  <script src="cache-bust-loader.js"></script>
 </body>
 </html>

@@ -23,6 +23,7 @@ import 'screens/customer_profile_screen.dart';
 import 'screens/contacts_multi_view_screen.dart';
 import 'screens/contacts_grid_table_screen.dart';
 import 'screens/quotations_screen_premium.dart';
+import 'config/deferred_imports.dart';
 
 bool _hydratedAuth = false;
 Future<void> main() async {
@@ -82,6 +83,13 @@ Future<void> main() async {
   }
 
   await EasyLocalization.ensureInitialized();
+  
+  // Inicializar deferred loading em background (Web only)
+  if (kIsWeb) {
+    initDeferredLoading().catchError((error) {
+      print('⚠️ Erro ao inicializar deferred loading: $error');
+    });
+  }
 
   runApp(
     EasyLocalization(
