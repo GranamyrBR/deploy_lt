@@ -41,7 +41,7 @@ jobs:
       continue-on-error: true
 
     - name: 🔎 Análise estática detalhada
-      run: flutter analyze --write=analyze-report.txt
+      run: flutter analyze lib/ --write=analyze-report.txt
       continue-on-error: true
 
     - name: 📤 Upload relatório

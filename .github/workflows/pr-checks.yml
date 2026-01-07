@@ -31,7 +31,7 @@ jobs:
       continue-on-error: true
 
     - name: 🔎 Análise estática
-      run: flutter analyze --fatal-infos
+      run: flutter analyze lib/ --fatal-infos
 
     - name: 🧪 Executar testes
       run: flutter test

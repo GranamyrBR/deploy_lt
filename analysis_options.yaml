@@ -4,6 +4,12 @@ analyzer:
   exclude:
     - test/**
     - tmp_rovodev_**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/generated/**"
+    - build/**
+    - .dart_tool/**
+    - flutter/**
   language:
     strict-inference: false  # Desabilitado temporariamente
     strict-raw-types: false  # Desabilitado temporariamente

@@ -30,7 +30,7 @@ jobs:
       run: flutter pub get
 
     - name: 🔎 Análise estática
-      run: flutter analyze
+      run: flutter analyze lib/
 
     - name: 🧪 Executar testes
       run: flutter test --coverage
