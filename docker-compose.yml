@@ -1,0 +1,80 @@
+# ============================================
+# Docker Compose for Lecotour Dashboard
+# For local testing and Coolify reference
+# ============================================
+
+version: '3.8'
+
+services:
+  # Main Flutter Web Application
+  lecotour-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lecotour-dashboard
+    ports:
+      - "8080:80"
+    environment:
+      # Supabase Configuration
+      - SUPABASE_URL=${SUPABASE_URL:-https://your-project.supabase.co}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-your-anon-key}
+      
+      # API Keys
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY:-your-google-maps-key}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-your-openai-key}
+      
+      # Application Configuration
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - API_BASE_URL=${API_BASE_URL:-https://api.axioscode.com}
+      - ENABLE_ANALYTICS=${ENABLE_ANALYTICS:-false}
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    labels:
+      # Coolify labels (if using Coolify auto-discovery)
+      - "coolify.managed=true"
+      - "coolify.name=lecotour-dashboard"
+      - "coolify.project=lecotour"
+      
+      # Traefik labels (if using Traefik)
+      - "traefik.enable=true"
+      - "traefik.http.routers.lecotour.rule=Host(`axioscode.com`)"
+      - "traefik.http.routers.lecotour.entrypoints=websecure"
+      - "traefik.http.routers.lecotour.tls.certresolver=letsencrypt"
+      - "traefik.http.services.lecotour.loadbalancer.server.port=80"
+    
+    networks:
+      - lecotour-network
+
+networks:
+  lecotour-network:
+    driver: bridge
+
+# ============================================
+# Usage:
+# ============================================
+#
+# Local Development:
+#   docker-compose up --build
+#   Access: http://localhost:8080
+#
+# Production (with .env file):
+#   docker-compose --env-file .env.production up -d
+#
+# View logs:
+#   docker-compose logs -f lecotour-dashboard
+#
+# Stop:
+#   docker-compose down
+#
+# Rebuild:
+#   docker-compose up --build --force-recreate
+#
+# ============================================
