@@ -1,5 +1,11 @@
 # 🗽 Lecotour Dashboard
 
+[![CI/CD Pipeline](https://github.com/GranamyrBR/deploy_lt/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/GranamyrBR/deploy_lt/actions)
+[![PR Checks](https://github.com/GranamyrBR/deploy_lt/workflows/PR%20Checks/badge.svg)](https://github.com/GranamyrBR/deploy_lt/actions)
+[![Code Quality](https://github.com/GranamyrBR/deploy_lt/workflows/Code%20Quality/badge.svg)](https://github.com/GranamyrBR/deploy_lt/actions)
+[![Flutter Version](https://img.shields.io/badge/Flutter-3.1.0+-02569B?logo=flutter)](https://flutter.dev)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
+
 Dashboard de gerenciamento para Lecotour - Receptivos em Nova York
 
 ## 📋 Sobre o Projeto

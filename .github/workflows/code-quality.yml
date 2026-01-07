@@ -1,0 +1,79 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  code-metrics:
+    name: Métricas de Código
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+
+    - name: 🎯 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+        channel: 'stable'
+        cache: true
+
+    - name: 📦 Instalar dependências
+      run: flutter pub get
+
+    - name: 📊 Análise de complexidade
+      run: |
+        echo "## 📊 Métricas de Código" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Estatísticas:" >> $GITHUB_STEP_SUMMARY
+        echo "- Total de arquivos Dart: $(find lib -name '*.dart' | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- Linhas de código: $(find lib -name '*.dart' -exec cat {} \; | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- Total de testes: $(find test -name '*_test.dart' | wc -l)" >> $GITHUB_STEP_SUMMARY
+
+    - name: 🔍 Verificar TODOs
+      run: |
+        echo "### 📝 TODOs encontrados:" >> $GITHUB_STEP_SUMMARY
+        grep -r "TODO" lib/ || echo "Nenhum TODO encontrado!" >> $GITHUB_STEP_SUMMARY
+      continue-on-error: true
+
+    - name: 🔎 Análise estática detalhada
+      run: flutter analyze --write=analyze-report.txt
+      continue-on-error: true
+
+    - name: 📤 Upload relatório
+      uses: actions/upload-artifact@v3
+      with:
+        name: analysis-report
+        path: analyze-report.txt
+      continue-on-error: true
+
+  security-scan:
+    name: Scan de Segurança
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+
+    - name: 🔒 Verificar secrets expostos
+      run: |
+        echo "Verificando secrets expostos..."
+        # Verificar se há chaves ou tokens hardcoded
+        if grep -r "sk_live_" lib/ 2>/dev/null; then
+          echo "⚠️ Possível secret encontrado!"
+          exit 1
+        fi
+        echo "✅ Nenhum secret exposto encontrado"
+      continue-on-error: true
+
+    - name: 🔐 Verificar .env na raiz
+      run: |
+        if [ -f ".env" ]; then
+          echo "⚠️ Arquivo .env encontrado na raiz (não deveria estar no Git)"
+          exit 1
+        fi
+        echo "✅ Nenhum .env no repositório"

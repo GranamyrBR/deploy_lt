@@ -1,0 +1,40 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Executar toda segunda-feira às 9h
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Permitir execução manual
+
+jobs:
+  check-dependencies:
+    name: Verificar Dependências
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+
+    - name: 🎯 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+        channel: 'stable'
+
+    - name: 📦 Verificar dependências desatualizadas
+      run: |
+        flutter pub get
+        flutter pub outdated --json > outdated.json || true
+
+    - name: 📊 Gerar relatório
+      run: |
+        echo "## 📦 Relatório de Dependências" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        flutter pub outdated >> $GITHUB_STEP_SUMMARY || true
+
+    - name: 📤 Upload relatório
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-report
+        path: outdated.json
+      continue-on-error: true

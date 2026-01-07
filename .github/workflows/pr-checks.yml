@@ -1,0 +1,45 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Verificações básicas para PRs
+  pr-validation:
+    name: Validação de PR
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🎯 Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.16.0'
+        channel: 'stable'
+        cache: true
+
+    - name: 📦 Instalar dependências
+      run: flutter pub get
+
+    - name: 🔍 Verificar formatação
+      run: dart format --set-exit-if-changed .
+      continue-on-error: true
+
+    - name: 🔎 Análise estática
+      run: flutter analyze --fatal-infos
+
+    - name: 🧪 Executar testes
+      run: flutter test
+
+    - name: 📝 Verificar mensagem do commit
+      run: |
+        git log --format=%B -n 1 ${{ github.event.pull_request.head.sha }} | grep -qE "^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+"
+      continue-on-error: true
+
+    - name: ✅ PR Validado
+      run: echo "✅ Pull Request validado com sucesso!"
