@@ -1,20 +1,12 @@
 # ============================================
 # Dockerfile para Deploy com Build Local
-# Usa nginx para servir arquivos estáticos
+# Coolify/Caddy serve arquivos de /web automaticamente
 # ============================================
-FROM nginx:alpine
+FROM busybox:latest
 
-# Remove configuração padrão do nginx
-RUN rm -rf /usr/share/nginx/html/*
+# Copia os arquivos web já buildados localmente para /web
+# Coolify/Caddy irá servir automaticamente deste diretório
+COPY build/web /web
 
-# Copia os arquivos web já buildados localmente
-COPY build/web /usr/share/nginx/html
-
-# Copia configuração customizada do nginx (se existir)
-# COPY nginx.conf /etc/nginx/nginx.conf
-
-# Expõe porta 80
-EXPOSE 80
-
-# Inicia nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Keep container alive for Caddy to serve files
+CMD ["sh", "-c", "echo '✅ Files ready at /web for Caddy' && tail -f /dev/null"]
