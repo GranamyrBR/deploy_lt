@@ -17,8 +17,8 @@
 .env.local
 .env.*.local
 
-# Build outputs (will be rebuilt in container)
-build/
+# Build outputs (keep build/web for pre-built branch)
+# build/ - commented to allow build/web
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
