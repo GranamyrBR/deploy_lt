@@ -1,0 +1,41 @@
+import 'package:flutter/material.dart';
+
+class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final Color? backgroundColor;
+  final List<Widget>? actions;
+  final bool showBackButton;
+  final PreferredSizeWidget? bottom;
+  final double height;
+
+  const BaseAppBar({
+    Key? key,
+    required this.title,
+    this.backgroundColor,
+    this.actions,
+    this.showBackButton = true,
+    this.bottom,
+    this.height = kToolbarHeight,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      elevation: 2,
+      leading: showBackButton ? IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.of(context).pop(),
+      ) : null,
+      actions: actions,
+      bottom: bottom,
+    );
+  }
+
+  @override
+  Size get preferredSize => bottom == null 
+    ? Size.fromHeight(height)
+    : Size.fromHeight(height + 48.0); // 48.0 is the default height of a TabBar
+}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+  
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="lecotour_dashboard">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>lecotour_dashboard</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="high_contrast.css">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Environment Variables for Flutter Web -->
+  <!-- ⚠️ ATENÇÃO: Em produção, estas variáveis devem vir do servidor via injeção -->
+  <!-- Este arquivo deve ser gerado dinamicamente ou as chaves movidas para backend -->
+  <script>
+    // DEVELOPMENT ONLY - NÃO commitar chaves reais aqui!
+    // Em produção, usar backend proxy para proteger chaves sensíveis
+    window.ENV = {
+      // Estas chaves são MOCKADAS para desenvolvimento local
+      // Em produção, o backend deve fazer as chamadas à OpenAI
+      OPENAI_API_KEY: "{{ OPENAI_API_KEY }}", // Será substituído pelo build/servidor
+      OPENAI_ORGANIZATION: "{{ OPENAI_ORGANIZATION }}"
+    };
+  </script>
+  
+  <!-- SOLUÇÃO SIMPLES: Apenas silenciar o warning -->
+  <script>
+    // Silencia APENAS o warning específico de Noto fonts
+    (function() {
+      const originalWarn = console.warn;
+      console.warn = function(...args) {
+        const msg = args.join(' ');
+        if (msg.includes('Could not find a set of Noto fonts')) {
+          return; // Silencia apenas este warning específico
+        }
+        return originalWarn.apply(this, arguments);
+      };
+    })();
+  </script>
+  <script>
+    (function() {
+      try {
+        var enabled = localStorage.getItem('high_contrast_enabled');
+        if (enabled === 'true') {
+          document.body.classList.add('high-contrast');
+        }
+        window.addEventListener('storage', function(e) {
+          if (e.key === 'high_contrast_enabled') {
+            if (e.newValue === 'true') {
+              document.body.classList.add('high-contrast');
+            } else {
+              document.body.classList.remove('high-contrast');
+            }
+          }
+        });
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <!-- This script installs service_worker.js to provide PWA functionality to
+       application. For more information, see:
+       https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script>
+    
+    var scriptLoaded = false;
+    function loadMainDartJs() {
+      if (scriptLoaded) {
+        return;
+      }
+      scriptLoaded = true;
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'main.dart.js';
+      scriptTag.type = 'application/javascript';
+      document.body.append(scriptTag);
+    }
+
+    if ('serviceWorker' in navigator) {
+      // Service workers are supported. Use them.
+      window.addEventListener('load', function () {
+        // Wait for registration to finish before dropping the <script> tag.
+        // Otherwise, the browser will load the script multiple times,
+        // potentially different versions.
+        var serviceWorkerUrl = 'flutter_service_worker.js?v={{flutter_service_worker_version}}';
+        navigator.serviceWorker.register(serviceWorkerUrl)
+          .then((reg) => {
+            function waitForActivation(serviceWorker) {
+              serviceWorker.addEventListener('statechange', () => {
+                if (serviceWorker.state == 'activated') {
+                  console.log('Installed new service worker.');
+                  loadMainDartJs();
+                }
+              });
+            }
+            if (!reg.active && (reg.installing || reg.waiting)) {
+              // No active web worker and we have installed or are installing
+              // one for the first time. Simply wait for it to activate.
+              waitForActivation(reg.installing || reg.waiting);
+            } else if (!reg.active.scriptURL.endsWith('{{flutter_service_worker_version}}')) {
+              // When the app updates the serviceWorkerVersion changes, so we
+              // need to ask the service worker to update.
+              console.log('New service worker available.');
+              reg.update();
+              waitForActivation(reg.installing);
+            } else {
+              // Existing service worker is still good.
+              console.log('Loading app from service worker.');
+              loadMainDartJs();
+            }
+          });
+
+        // If service worker doesn't succeed in a reasonable amount of time,
+        // fallback to plaint <script> tag.
+        setTimeout(() => {
+          if (!scriptLoaded) {
+            console.warn(
+              'Failed to load app from service worker. Falling back to plain <script> tag.',
+            );
+            loadMainDartJs();
+          }
+        }, 4000);
+      });
+    } else {
+      // Service workers not supported. Just drop the <script> tag.
+      loadMainDartJs();
+    }
+  </script>
+</body>
+</html>

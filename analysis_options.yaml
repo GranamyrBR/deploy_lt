@@ -1,0 +1,16 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - test/**
+  language:
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    avoid_print: true
+    prefer_const_constructors: true
+    unnecessary_cast: true
+    unnecessary_import: true
+    avoid_unused_constructor_parameters: true

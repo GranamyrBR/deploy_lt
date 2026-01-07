@@ -1,0 +1,153 @@
+name: lecotour_dashboard
+description: "Dashboard de gerenciamento para Lecotour - Receptivos em Nova York"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Localization
+  flutter_localizations:
+    sdk: flutter
+  easy_localization: ^3.0.5
+  
+  # State Management
+  riverpod_annotation: ^2.3.5
+  provider: ^6.1.2
+  state_notifier: ^1.0.0
+  
+  # Supabase
+  supabase_flutter: ^2.9.1
+  
+  # UI Components
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.2.0
+  
+  # Charts
+  fl_chart: ^1.1.1
+  syncfusion_flutter_charts: ^31.2.18
+  syncfusion_flutter_gauges: ^31.2.18
+  
+  # Utils
+  intl: ^0.20.2
+  go_router: ^17.0.1
+  shared_preferences: ^2.5.3
+  timezone: ^0.10.1
+  
+  # HTTP
+  http: ^1.4.0
+
+  # OpenAI Integration
+  dart_openai: ^6.1.1
+  
+  # UUID Generation
+  uuid: ^4.0.0
+
+  # Google Maps
+  google_maps_flutter: ^2.8.0
+
+  # Enviroment Variables
+  flutter_dotenv: ^6.0.0
+  envied: ^1.3.2
+
+  # Multi Formatter
+  flutter_multi_formatter: ^2.13.7
+
+  # URL Launcher
+  url_launcher: ^6.3.1
+
+  # PDF Generation
+  pdf: ^3.11.3
+  printing: ^5.13.2
+  path_provider: ^2.1.4
+  open_file: ^3.5.8
+
+  # Email Sender
+  flutter_email_sender: ^8.0.0
+
+  # Share
+  share_plus: ^12.0.1
+
+  # Required by json_serializable for annotations
+  json_annotation: ^4.9.0
+
+  # Currency conversion using ExchangeRateService
+  flutter_typeahead: ^5.2.0
+  
+  # Table View
+  brasil_fields: ^1.14.0
+  flag: ^7.0.0
+  flutter_riverpod: ^2.5.1
+  
+  # Color Picker
+  flutter_colorpicker: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  
+  # Code Generation
+  riverpod_generator: ^2.4.3
+  build_runner: ^2.5.2
+  envied_generator: ^1.1.1
+  json_serializable: ^6.9.5
+
+flutter:
+  uses-material-design: true
+
+  fonts:
+    # Fonte principal para texto geral
+    - family: NotoSans
+      fonts:
+        - asset: fonts/NotoSans-Regular.ttf
+        - asset: fonts/NotoSans-Bold.ttf
+          weight: 700
+        - asset: fonts/NotoSans-Italic.ttf
+          style: italic
+        - asset: fonts/NotoSans-BoldItalic.ttf
+          weight: 700
+          style: italic
+
+    # Fonte serif para títulos e texto formal
+    - family: NotoSerif
+      fonts:
+        - asset: fonts/NotoSerif-Regular.ttf
+        - asset: fonts/NotoSerif-Bold.ttf
+          weight: 700
+        - asset: fonts/NotoSerif-Italic.ttf
+          style: italic
+        - asset: fonts/NotoSerif-BoldItalic.ttf
+          weight: 700
+          style: italic
+
+    # Fonte para emojis e símbolos
+    - family: NotoEmoji
+      fonts:
+        - asset: fonts/NotoEmoji-Regular.ttf
+
+    # Fonte de fallback
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Regular.ttf
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/translations/
+    - assets/favicons/
+    - assets/commission_data.json
+    - assets/icons/
+    - web/icons/
+    - .env
+    - assets/medias/
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+
+  # Environment variables - funciona em web!

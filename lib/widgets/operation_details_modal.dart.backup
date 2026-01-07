@@ -1,0 +1,1239 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../providers/operations_provider.dart';
+import '../providers/drivers_provider.dart';
+import '../providers/cars_provider.dart';
+import '../providers/auth_provider.dart';
+import '../utils/timezone_utils.dart';
+import 'operation_timeline_widget.dart';
+
+class OperationDetailsModal extends ConsumerStatefulWidget {
+  final Operation operation;
+
+  const OperationDetailsModal({
+    Key? key,
+    required this.operation,
+  }) : super(key: key);
+
+  @override
+  ConsumerState<OperationDetailsModal> createState() => _OperationDetailsModalState();
+
+  static void show(BuildContext context, Operation operation) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: OperationDetailsModal(operation: operation),
+      ),
+    );
+  }
+}
+
+class _OperationDetailsModalState extends ConsumerState<OperationDetailsModal>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
+  bool _isEditing = false;
+  bool _isSaving = false;
+  
+  // Controladores para edição
+  late TextEditingController _pickupLocationController;
+  late TextEditingController _dropoffLocationController;
+  late TextEditingController _numberOfPassengersController;
+  late TextEditingController _luggageCountController;
+  late TextEditingController _flightNumberController;
+  late TextEditingController _priorityController;
+  String _selectedPriority = 'normal';
+  DateTime? _selectedScheduledDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    
+    // Inicializar controladores com valores atuais
+    _pickupLocationController = TextEditingController(text: widget.operation.pickupLocation ?? '');
+    _dropoffLocationController = TextEditingController(text: widget.operation.dropoffLocation ?? '');
+    _numberOfPassengersController = TextEditingController(text: widget.operation.numberOfPassengers.toString());
+    _luggageCountController = TextEditingController(text: widget.operation.luggageCount.toString());
+    _flightNumberController = TextEditingController(text: widget.operation.flightNumber ?? '');
+    _priorityController = TextEditingController(text: widget.operation.priority);
+    _selectedPriority = widget.operation.priority;
+    _selectedScheduledDate = widget.operation.scheduledDate;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _pickupLocationController.dispose();
+    _dropoffLocationController.dispose();
+    _numberOfPassengersController.dispose();
+    _luggageCountController.dispose();
+    _flightNumberController.dispose();
+    _priorityController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+    final canEdit = authState.user?.hasPermission('manage_operations') ?? false;
+    
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Header com drag handle
+            _buildHeader(canEdit),
+            
+            // Tabs
+            _buildTabBar(),
+            
+            // Conteúdo das tabs
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildOverviewTab(),
+                  _buildDetailsTab(),
+                  _buildTimelineTab(),
+                  _buildActionsTab(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(bool canEdit) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _getStatusColor(widget.operation.status).withOpacity(0.1),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Operação #${widget.operation.id}',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(
+                      _getStatusIcon(widget.operation.status),
+                      size: 16,
+                      color: _getStatusColor(widget.operation.status),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _getStatusText(widget.operation.status),
+                      style: TextStyle(
+                        color: _getStatusColor(widget.operation.status),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getPriorityColor(widget.operation.priority),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _getPriorityText(widget.operation.priority),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              if (_isEditing && canEdit)
+                IconButton(
+                  onPressed: _isSaving ? null : _saveChanges,
+                  icon: _isSaving 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save),
+                  tooltip: 'Salvar',
+                ),
+              if (canEdit)
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isEditing = !_isEditing;
+                    });
+                  },
+                  icon: Icon(_isEditing ? Icons.close : Icons.edit),
+                  tooltip: _isEditing ? 'Cancelar' : 'Editar',
+                ),
+              if (!canEdit && !_isEditing)
+                Tooltip(
+                  message: 'Você não tem permissão para editar operações',
+                  child: IconButton(
+                    onPressed: null,
+                    icon: Icon(Icons.edit, color: Colors.grey[400]),
+                  ),
+                ),
+              IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close),
+                tooltip: 'Fechar',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabBar() {
+    return Container(
+      color: Colors.grey[50],
+      child: TabBar(
+        controller: _tabController,
+        indicatorColor: Theme.of(context).colorScheme.primary,
+        labelColor: Theme.of(context).colorScheme.primary,
+        unselectedLabelColor: Colors.grey[600],
+        tabs: const [
+          Tab(icon: Icon(Icons.dashboard), text: 'Visão Geral'),
+          Tab(icon: Icon(Icons.info), text: 'Detalhes'),
+          Tab(icon: Icon(Icons.timeline), text: 'Timeline'),
+          Tab(icon: Icon(Icons.settings), text: 'Ações'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOverviewTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Card do cliente
+          _buildInfoCard(
+            'Informações do Cliente',
+            Icons.person,
+            [
+              _buildInfoRow('Nome', widget.operation.customerName ?? 'Cliente não especificado'),
+              _buildInfoRow('Telefone', widget.operation.customerPhone ?? 'N/A'),
+              _buildInfoRow('Email', widget.operation.customerEmail ?? 'N/A'),
+            ],
+          ),
+          
+          // Card do serviço
+          _buildInfoCard(
+            'Detalhes do Serviço',
+            Icons.room_service,
+            [
+              _buildInfoRow('Serviço', widget.operation.serviceName ?? widget.operation.productName ?? 'Não especificado'),
+              _buildInfoRow(
+                'Data/Hora', 
+                _formatDateTime(widget.operation.scheduledDate),
+                isEditable: true,
+                customEditWidget: _buildDateTimePicker(),
+              ),
+              _buildInfoRow(
+                'Passageiros', 
+                widget.operation.numberOfPassengers.toString(),
+                controller: _numberOfPassengersController,
+                isEditable: true,
+              ),
+              _buildInfoRow(
+                'Bagagens', 
+                widget.operation.luggageCount.toString(),
+                controller: _luggageCountController,
+                isEditable: true,
+              ),
+              _buildInfoRow(
+                'Prioridade', 
+                _getPriorityText(widget.operation.priority),
+                isEditable: true,
+                customEditWidget: _buildPriorityDropdown(),
+              ),
+              _buildInfoRow('Valor', '\$${(widget.operation.serviceValueUsd ?? widget.operation.productValueUsd ?? 0.0).toStringAsFixed(2)}'),
+            ],
+          ),
+          
+          // Card de localização
+          _buildInfoCard(
+            'Localização',
+            Icons.location_on,
+            [
+              _buildInfoRow(
+                'Coleta', 
+                widget.operation.pickupLocation ?? 'Não definido',
+                controller: _pickupLocationController,
+                isEditable: true,
+              ),
+              _buildInfoRow(
+                'Entrega', 
+                widget.operation.dropoffLocation ?? 'Não definido',
+                controller: _dropoffLocationController,
+                isEditable: true,
+              ),
+            ],
+          ),
+          
+          // Card de recursos
+          _buildInfoCard(
+            'Recursos Designados',
+            Icons.assignment_ind,
+            [
+              _buildInfoRow('Motorista', widget.operation.driverName ?? 'Não designado'),
+              _buildInfoRow('Veículo', widget.operation.carName ?? 'Não designado'),
+              _buildInfoRow('Placa', widget.operation.licensePlate ?? 'N/A'),
+              _buildInfoRow('Comissão', '\$${widget.operation.driverCommissionUsd.toStringAsFixed(2)}'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Informações de voo (se aplicável)
+          if (widget.operation.flightNumber != null) ...[
+            _buildInfoCard(
+              'Voo',
+              Icons.flight,
+              [
+                _buildInfoRow(
+                  'Número', 
+                  widget.operation.flightNumber ?? 'N/A',
+                  controller: _flightNumberController,
+                  isEditable: true,
+                ),
+                _buildInfoRow('Status', widget.operation.flightStatus ?? 'N/A'),
+                if (widget.operation.scheduledDepartureTime != null)
+                  _buildInfoRow('Partida', _formatDateTime(widget.operation.scheduledDepartureTime!)),
+                if (widget.operation.scheduledArrivalTime != null)
+                  _buildInfoRow('Chegada', _formatDateTime(widget.operation.scheduledArrivalTime!)),
+                _buildInfoRow('Origem', widget.operation.departureAirportCode ?? 'N/A'),
+                _buildInfoRow('Destino', widget.operation.arrivalAirportCode ?? 'N/A'),
+              ],
+            ),
+          ],
+          
+          // Informações de localização
+          _buildInfoCard(
+            'Localização',
+            Icons.location_on,
+            [
+              _buildInfoRow('Coleta', widget.operation.pickupLocation ?? 'N/A'),
+              _buildInfoRow('Entrega', widget.operation.dropoffLocation ?? 'N/A'),
+            ],
+          ),
+          
+          // Informações de usuários
+          _buildInfoCard(
+            'Usuários',
+            Icons.people,
+            [
+              _buildInfoRow('Vendedor', widget.operation.saleUserName ?? 'Não identificado'),
+              if (widget.operation.saleUserEmail != null)
+                _buildInfoRow('Email Vendedor', widget.operation.saleUserEmail!),
+              _buildInfoRow('Criado por', widget.operation.createdByUserName ?? 'Não identificado'),
+              if (widget.operation.createdByUserEmail != null)
+                _buildInfoRow('Email Criador', widget.operation.createdByUserEmail!),
+              if (widget.operation.assignedByUserName != null)
+                _buildInfoRow('Designado por', widget.operation.assignedByUserName!),
+            ],
+          ),
+          
+          // Informações financeiras
+          _buildInfoCard(
+            'Financeiro',
+            Icons.attach_money,
+            [
+              if (widget.operation.serviceValueUsd != null && widget.operation.serviceValueUsd! > 0)
+                _buildInfoRow('Valor Serviço', '\$${widget.operation.serviceValueUsd!.toStringAsFixed(2)}'),
+              if (widget.operation.productValueUsd != null && widget.operation.productValueUsd! > 0)
+                _buildInfoRow('Valor Produto', '\$${widget.operation.productValueUsd!.toStringAsFixed(2)}'),
+              if ((widget.operation.serviceValueUsd == null || widget.operation.serviceValueUsd! <= 0) && 
+                  (widget.operation.productValueUsd == null || widget.operation.productValueUsd! <= 0))
+                _buildInfoRow('Valores', 'Não definidos'),
+              _buildInfoRow('Comissão Driver', '\$${widget.operation.driverCommissionUsd.toStringAsFixed(2)}'),
+              _buildInfoRow('Status Pagto', widget.operation.commissionPaymentStatus ?? 'Pendente'),
+              if (widget.operation.totalCommissionUsd != null)
+                _buildInfoRow('Total Comissão', '\$${widget.operation.totalCommissionUsd!.toStringAsFixed(2)}'),
+              if (widget.operation.totalCommissionUsd == null)
+                _buildInfoRow('Total Comissão', 'Não calculado'),
+            ],
+          ),
+          
+          // Comunicação e Histórico em um card combinado
+          _buildInfoCard(
+            'Status & Histórico',
+            Icons.info_outline,
+            [
+              _buildInfoRow('WhatsApp', widget.operation.whatsappMessageSent ? 'Enviado' : 'Não enviado'),
+              _buildInfoRow('Google Calendar', widget.operation.googleCalendarEventCreated ? 'Criado' : 'Não criado'),
+              _buildInfoRow('Criado em', _formatDateTime(widget.operation.createdAt)),
+              _buildInfoRow('Atualizado em', _formatDateTime(widget.operation.updatedAt)),
+              if (widget.operation.actualStartTime != null)
+                _buildInfoRow('Iniciado em', _formatDateTime(widget.operation.actualStartTime!)),
+              if (widget.operation.actualEndTime != null)
+                _buildInfoRow('Finalizado em', _formatDateTime(widget.operation.actualEndTime!)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineTab() {
+    return OperationTimelineWidget(
+      operationId: widget.operation.id,
+      showHeader: false,
+    );
+  }
+
+  Widget _buildActionsTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Ações Disponíveis',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Ações de status
+          _buildActionSection(
+            'Gerenciar Status',
+            [
+              if (widget.operation.status == 'pending' || widget.operation.status == 'assigned')
+                _buildActionButton(
+                  'Iniciar Operação',
+                  Icons.play_arrow,
+                  Colors.green,
+                  () => _updateStatus('in_progress'),
+                ),
+              
+              if (widget.operation.status == 'in_progress')
+                _buildActionButton(
+                  'Finalizar Operação',
+                  Icons.check_circle,
+                  Colors.blue,
+                  () => _updateStatus('completed'),
+                ),
+              
+              if (widget.operation.status != 'cancelled' && widget.operation.status != 'completed')
+                _buildActionButton(
+                  'Cancelar Operação',
+                  Icons.cancel,
+                  Colors.red,
+                  () => _showCancelDialog(),
+                ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Ações de designação
+          _buildActionSection(
+            'Gerenciar Recursos',
+            [
+              _buildActionButton(
+                'Designar Motorista',
+                Icons.person_add,
+                Colors.orange,
+                () => _showDriverAssignmentDialog(),
+              ),
+              
+              _buildActionButton(
+                'Designar Veículo',
+                Icons.directions_car,
+                Colors.purple,
+                () => _showCarAssignmentDialog(),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Ações de comunicação
+          _buildActionSection(
+            'Comunicação',
+            [
+              _buildActionButton(
+                'Enviar WhatsApp',
+                Icons.message,
+                Colors.green,
+                () => _sendWhatsAppMessage(),
+              ),
+              
+              _buildActionButton(
+                'Criar Evento Calendar',
+                Icons.calendar_today,
+                Colors.blue,
+                () => _createCalendarEvent(),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Ações perigosas
+          _buildActionSection(
+            'Ações Perigosas',
+            [
+              _buildActionButton(
+                'Excluir Operação',
+                Icons.delete_forever,
+                Colors.red[800]!,
+                () => _showDeleteDialog(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(String title, IconData icon, List<Widget> children) {
+    return Card(
+      elevation: 0.5,
+      margin: const EdgeInsets.only(bottom: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Theme.of(context).colorScheme.primary, size: 14),
+                const SizedBox(width: 4),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, {TextEditingController? controller, bool isEditable = false, Widget? customEditWidget}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+                fontSize: 11,
+              ),
+            ),
+          ),
+          Expanded(
+            child: _isEditing && isEditable
+              ? (customEditWidget ?? (controller != null
+                  ? TextFormField(
+                      controller: controller,
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      value,
+                      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+                    )))
+              : Text(
+                  value,
+                  style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _selectedPriority,
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
+      items: const [
+        DropdownMenuItem(value: 'low', child: Text('Baixa')),
+        DropdownMenuItem(value: 'normal', child: Text('Normal')),
+        DropdownMenuItem(value: 'high', child: Text('Alta')),
+        DropdownMenuItem(value: 'urgent', child: Text('Urgente')),
+      ],
+      onChanged: (value) {
+        if (value != null) {
+          setState(() {
+            _selectedPriority = value;
+          });
+        }
+      },
+    );
+  }
+
+  Widget _buildDateTimePicker() {
+    return InkWell(
+      onTap: () async {
+        final date = await showDatePicker(
+          context: context,
+          initialDate: _selectedScheduledDate ?? DateTime.now(),
+          firstDate: DateTime.now().subtract(const Duration(days: 365)),
+          lastDate: DateTime.now().add(const Duration(days: 365)),
+        );
+        
+        if (date != null) {
+          final time = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.fromDateTime(_selectedScheduledDate ?? DateTime.now()),
+          );
+          
+          if (time != null) {
+            setState(() {
+              _selectedScheduledDate = DateTime(
+                date.year,
+                date.month,
+                date.day,
+                time.hour,
+                time.minute,
+              );
+            });
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                _selectedScheduledDate != null
+                    ? _formatDateTime(_selectedScheduledDate!)
+                    : 'Selecionar data e hora',
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ),
+            const Icon(Icons.calendar_today, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimelineItem(String title, String subtitle, IconData icon, Color color, {required bool isCompleted}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isCompleted ? color : color.withValues(alpha: 0.3),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isCompleted ? Colors.black : Colors.grey,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: isCompleted ? Colors.grey[600] : Colors.grey[400],
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionSection(String title, List<Widget> actions) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...actions,
+      ],
+    );
+  }
+
+  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onPressed) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon),
+        label: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+        ),
+      ),
+    );
+  }
+
+  // Métodos auxiliares
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'pending':
+        return Icons.schedule;
+      case 'assigned':
+        return Icons.person_add;
+      case 'in_progress':
+        return Icons.play_arrow;
+      case 'completed':
+        return Icons.check_circle;
+      case 'cancelled':
+        return Icons.cancel;
+      default:
+        return Icons.help;
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'pending':
+        return Colors.orange;
+      case 'assigned':
+        return Colors.blue;
+      case 'in_progress':
+        return Colors.green;
+      case 'completed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getStatusText(String status) {
+    switch (status) {
+      case 'pending':
+        return 'Pendente';
+      case 'assigned':
+        return 'Designada';
+      case 'in_progress':
+        return 'Em Andamento';
+      case 'completed':
+        return 'Concluída';
+      case 'cancelled':
+        return 'Cancelada';
+      default:
+        return 'Desconhecido';
+    }
+  }
+
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'low':
+        return Colors.grey;
+      case 'normal':
+        return Colors.blue;
+      case 'high':
+        return Colors.orange;
+      case 'urgent':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _getPriorityText(String priority) {
+    switch (priority) {
+      case 'low':
+        return 'Baixa';
+      case 'normal':
+        return 'Normal';
+      case 'high':
+        return 'Alta';
+      case 'urgent':
+        return 'Urgente';
+      default:
+        return 'Normal';
+    }
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    // Horário da operação em NYC (horário oficial)
+    final nycTime = TimezoneUtils.convertToNewYork(dateTime);
+    final brazilTime = TimezoneUtils.convertToSaoPaulo(dateTime);
+    
+    final nycFormatted = DateFormat('dd/MM/yyyy HH:mm').format(nycTime);
+    final brazilFormatted = DateFormat('HH:mm').format(brazilTime);
+    
+    return '$nycFormatted (NYC) | $brazilFormatted (BR)';
+  }
+
+  // Métodos de ação
+  void _updateStatus(String newStatus) {
+    ref.read(operationsProvider.notifier).updateOperationStatus(
+      widget.operation.id,
+      newStatus,
+    );
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Status atualizado para: ${_getStatusText(newStatus)}'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showCancelDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cancelar Operação'),
+        content: const Text('Tem certeza que deseja cancelar esta operação?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Não'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _updateStatus('cancelled');
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Sim, Cancelar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDriverAssignmentDialog() {
+    final driversAsync = ref.read(driversProvider);
+    
+    driversAsync.when(
+      data: (drivers) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Designar Motorista'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: drivers.length,
+                itemBuilder: (context, index) {
+                  final driver = drivers[index];
+                  return ListTile(
+                    leading: const Icon(Icons.person),
+                    title: Text(driver.name),
+                    subtitle: Text(driver.phone ?? 'N/A'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      // TODO: Implementar designação de motorista
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Motorista ${driver.name} designado'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancelar'),
+              ),
+            ],
+          ),
+        );
+      },
+      loading: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Carregando motoristas...')),
+        );
+      },
+      error: (error, stack) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar motoristas: $error')),
+        );
+      },
+    );
+  }
+
+  void _showCarAssignmentDialog() {
+    final carsAsync = ref.read(carsProvider);
+    
+    carsAsync.when(
+      data: (cars) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Designar Veículo'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: cars.length,
+                itemBuilder: (context, index) {
+                  final car = cars[index];
+                  return ListTile(
+                    leading: const Icon(Icons.directions_car),
+                    title: Text('${car.make} ${car.model ?? ''}'),
+                    subtitle: Text('Placa: ${car.licensePlate}'),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      // TODO: Implementar designação de veículo
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Veículo ${car.make} ${car.model ?? ''} designado'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancelar'),
+              ),
+            ],
+          ),
+        );
+      },
+      loading: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Carregando veículos...')),
+        );
+      },
+      error: (error, stack) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar veículos: $error')),
+        );
+      },
+    );
+  }
+
+  void _sendWhatsAppMessage() {
+    // TODO: Implementar envio de WhatsApp
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Funcionalidade de WhatsApp será implementada'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  void _createCalendarEvent() {
+    // TODO: Implementar criação de evento no Google Calendar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Funcionalidade de Google Calendar será implementada'),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  void _showDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.warning, color: Colors.red[800]),
+            const SizedBox(width: 8),
+            const Text('Excluir Operação'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Esta ação é irreversível!',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.red[800],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tem certeza que deseja excluir permanentemente a operação #${widget.operation.id}?',
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Detalhes da operação:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text('Cliente: ${widget.operation.customerName}'),
+                  Text('Data: ${_formatDateTime(widget.operation.scheduledDate)}'),
+                  Text('Status: ${_getStatusText(widget.operation.status)}'),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _deleteOperation();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red[800],
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Sim, Excluir'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _saveChanges() async {
+    if (_isSaving) return;
+    
+    setState(() {
+      _isSaving = true;
+    });
+    
+    try {
+      final operationsNotifier = ref.read(operationsProvider.notifier);
+      
+      // Atualizar operação com os novos valores
+      await operationsNotifier.updateOperation(
+        widget.operation.id,
+        scheduledDate: _selectedScheduledDate ?? widget.operation.scheduledDate,
+        pickupLocation: _pickupLocationController.text.trim(),
+        dropoffLocation: _dropoffLocationController.text.trim(),
+        numberOfPassengers: int.tryParse(_numberOfPassengersController.text) ?? widget.operation.numberOfPassengers,
+        luggageCount: int.tryParse(_luggageCountController.text) ?? widget.operation.luggageCount,
+        flightNumber: _flightNumberController.text.trim().isEmpty ? null : _flightNumberController.text.trim(),
+        priority: _selectedPriority,
+      );
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Operação atualizada com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        
+        setState(() {
+          _isEditing = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao atualizar operação: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
+
+   void _deleteOperation() async {
+     try {
+      // Mostrar loading
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              SizedBox(width: 12),
+              Text('Excluindo operação...'),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 30),
+        ),
+      );
+
+      // Chamar o método de exclusão do provider
+      final success = await ref.read(operationsProvider.notifier).deleteOperation(widget.operation.id);
+      
+      // Remover o snackbar de loading
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
+      if (success) {
+        // Fechar o modal
+        Navigator.of(context).pop();
+        
+        // Mostrar sucesso
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Operação #${widget.operation.id} excluída com sucesso'),
+            backgroundColor: Colors.green,
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      } else {
+        // Mostrar erro
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao excluir operação #${widget.operation.id}'),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: 'Tentar Novamente',
+              textColor: Colors.white,
+              onPressed: () => _deleteOperation(),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      // Remover o snackbar de loading
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      
+      // Mostrar erro
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro inesperado: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+}

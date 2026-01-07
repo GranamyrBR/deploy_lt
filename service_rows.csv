@@ -1,0 +1,58 @@
+id,name,description,price,is_active,created_at,updated_at,servicetype_id
+1,JFK IN,"Transfer IN aeroporto JFK ",140.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:59:19.457245+00,1
+2,JFK OUT,Transfer OUT aeroporto JFK,140.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:00:27.823045+00,1
+8,Transfer OUT NYC,Transfer fora da região de NYC,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:40:13.195837+00,1
+9,Penn Station IN,Transfer para Penn Station,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:38:44.290882+00,14
+10,City Tour Arquitetura,Tour de arquitetura,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:31:29.97437+00,13
+11,MIA IN,Transfer IN aeroporto Miami,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:01:08.383738+00,1
+18,LA IN,Transfer IN Los Angeles,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:59:52.329218+00,1
+19,LA OUT,Transfer OUT Los Angeles,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:00:00.568605+00,1
+20,MIA OUT,Transfer OUT aeroporto Miami,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:01:21.572137+00,1
+21,"CHI IN ",Transfer de chegada em Chicago,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:25:28.551346+00,1
+22,City Tour Boston,City tour em Boston,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:27:21.444525+00,8
+23,Walking Tour Boston,Walking tour em Boston,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:28.534472+00,8
+24,Phila IN,Transfer IN aeroporto Philadelphia,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:03:07.077211+00,1
+25,LGA IN,Transfer IN aeroporto LGA,140.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:00:22.400187+00,1
+26,LGA OUT,Transfer OUT aeroporto LGA,140.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:00:43.991958+00,1
+31,EWR IN,Transfer IN aeroporto EWR,150.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:58:09.068513+00,1
+32,EWR OUT,Transfer OUT aeroporto EWR,150.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:58:25.884244+00,1
+37,TEB IN,"Transfer IN aeroporto TEB ",160.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:01:35.917529+00,1
+38,TEB OUT,Transfer OUT aeroporto TEB,160.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:01:50.062908+00,1
+43,Woodbury Outlet,Compras Woodbury Outlet,400.00,true,2025-06-27 16:09:55.177617+00,2025-08-13 15:28:17.666+00,7
+44,Jersey Gardens,Tour para Jersey Gardens,350.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:17:02.232185+00,7
+45,City Tour - Outside,City Tour OUT NYC,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:04:22.481968+00,8
+46,Washington-DC,City tour em Washington-DC,1100.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:35.850645+00,8
+47,Boston-MA,City tour em Boston-MA,1100.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:24:48.890664+00,8
+48,City Tour Philadelphia,City tour em Philadelphia-PA,900.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:38:17.213348+00,8
+49,Atlantic City-NJ,City tour em Atlantic City-NJ,800.00,true,2025-06-27 16:09:55.177617+00,2025-08-13 15:59:23.04+00,8
+50,Fazenda de Frank Delano Roosevelt,City Tour Fazenda de FDR,800.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:58:57.531911+00,8
+51,Vinícolas dos Hamptons,Tour pelas vinícolas dos Hamptons,900.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:15.822272+00,8
+52,City Tour Vermont,Tour em Vermont,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:02.214751+00,8
+53,Concord - NH,Tour em Concord - NH,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:38:28.002782+00,8
+54,Washington - Diferenciado,City tour diferenciado em Washington,1800.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:33:39.913517+00,8
+56,CamelBack Mountain,Tour para CamelBack Mountain,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:26:56.619593+00,12
+57,"City Tour - Tradicional ","City tour tradicional ",350.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:02:23.602056+00,2
+59,City Tour - Personalizado,City tour personalizado,350.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:38:09.654044+00,13
+60,"By Night ","City tour noturno ",350.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:03:59.887164+00,2
+61,Pessoa adicional,Valor para pessoa adicional,50.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:28:53.095654+00,6
+62,Walking Tour,Walking tour,350.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:21.829527+00,13
+63,Walk Tour Hora,Walking tour por hora,280.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:32.529328+00,13
+64,City Tour Diferenciado,City tour diferenciado,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:27:28.132256+00,2
+65,City Tour Brooklyn,City tour em Brooklyn,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:27:24.800432+00,2
+66,City Tour Sex and the City,City tour Sex and the City,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:31:42.581604+00,13
+67,City Tour Gossip Girls,Tour Gossip Girls,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:37:51.261738+00,13
+68,Dyker Heights,Tour para Dyker Heights,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:31:53.616113+00,13
+69,City Tour grafite,Tour de grafite,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:37:55.767138+00,13
+70,Washington-DC (VA),City tour em Washington-DC (VA),2200.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:41:40.715518+00,8
+71,Por Hora,Serviço por 1 hora,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:39:06.126549+00,3
+83,Greeter,Serviço de Greeter,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:28:44.693249+00,6
+84,City Tour Scarsdele,Transfer para Scarsdele,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:42:18.696151+00,8
+85,BOS OUT,Transfer de saída em Boston,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:26:37.734492+00,1
+86,BOS IN,Transfer de chegada em Boston,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:25:38.561025+00,1
+87,NY - Boston - Outlet Boston,Transfer de NY Outlet Boston,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:02:40.604045+00,7
+88,Roteiro Personalizado,Roteiro personalizado,100.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:39:34.950366+00,13
+90,CHI OUT,Transfer de saída em Chicago,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:25:31.658565+00,1
+91,Pier Brooklyn IN,Transfer IN Pier Brooklyn,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:03:26.373834+00,9
+92,Pier Manhattan IN,Transfer IN Pier Manhattan,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 23:03:41.448034+00,9
+93,TRF HELI,Transfer de helicóptero,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:40:39.396868+00,1
+94,Trecho,Serviço por trecho,0.00,true,2025-06-27 16:09:55.177617+00,2025-06-28 22:40:26.693113+00,6
