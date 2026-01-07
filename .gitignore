@@ -179,3 +179,4 @@ lecotour-dashboard-*.json
 
 # Keep specific images
 !lecotour.png
+SECRETS_TO_CONFIGURE.md
