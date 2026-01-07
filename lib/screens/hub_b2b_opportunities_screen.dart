@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/base_screen_layout.dart';
 
 class HubB2BOpportunitiesScreen extends ConsumerWidget {
-  const HubB2BOpportunitiesScreen({Key? key}) : super(key: key);
+  const HubB2BOpportunitiesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

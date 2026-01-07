@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
 import '../models/enhanced_quotation_model.dart';
-import '../models/sale.dart';
-import '../models/sale_item.dart';
 import '../models/contact.dart';
 
 /// Serviço para converter Cotações em Vendas

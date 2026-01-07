@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart';
 import '../models/flight_info.dart';
-import '../models/firebase_account.dart';
 import 'firebase_account_service.dart';
 
 class FirebaseFlightService {
@@ -158,7 +156,7 @@ class FirebaseFlightService {
   // Testar conexão
   Future<bool> testConnection() async {
     try {
-      final uri = Uri.parse('$_testConnectionUrl');
+      final uri = Uri.parse(_testConnectionUrl);
       
       final response = await http.get(uri);
 

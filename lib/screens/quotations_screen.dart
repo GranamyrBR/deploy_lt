@@ -7,7 +7,7 @@ import '../widgets/quotation_management_dialog.dart';
 import '../widgets/enhanced_quotation_dialog.dart';
 
 class QuotationsScreen extends ConsumerStatefulWidget {
-  const QuotationsScreen({Key? key}) : super(key: key);
+  const QuotationsScreen({super.key});
 
   @override
   ConsumerState<QuotationsScreen> createState() => _QuotationsScreenState();
@@ -30,7 +30,7 @@ class _QuotationsScreenState extends ConsumerState<QuotationsScreen> {
     
     try {
       final data = await _quotationService.getQuotations(
-        filter: QuotationFilter(limit: 100),
+        filter: const QuotationFilter(limit: 100),
       );
       
       if (mounted) {

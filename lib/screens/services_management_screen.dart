@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/service.dart';
-import '../models/service_category.dart';
 import '../providers/services_provider.dart';
 import '../providers/service_types_provider.dart';
 import '../widgets/base_screen_layout.dart';
@@ -142,7 +141,7 @@ class _ServicesManagementScreenState extends ConsumerState<ServicesManagementScr
                       final serviceTypesAsync = ref.watch(serviceTypeDropdownProvider);
                       return serviceTypesAsync.when(
                         data: (serviceTypes) => DropdownButtonFormField<int>(
-                          value: _selectedCategoryId,
+                          initialValue: _selectedCategoryId,
                           decoration: const InputDecoration(
                             labelText: 'Categoria',
                             border: OutlineInputBorder(),

@@ -2,20 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../models/sale.dart';
-import '../models/contact_service.dart';
-import '../models/provisional_invoice.dart';
 import '../providers/sales_provider.dart';
-import '../providers/dashboard_provider.dart';
 
 import '../widgets/base_screen_layout.dart';
-import '../widgets/standard_search_bar.dart';
 import '../utils/smart_search_mixin.dart';
 import 'create_sale_screen_v2.dart' hide SalePaymentData;
-import 'pending_sales_screen.dart';
 import 'create_operation_from_sale_screen.dart';
 
 import '../widgets/add_payment_modal.dart';
-import '../widgets/exchange_rate_display.dart';
 import '../widgets/agency_details_modal.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -31,7 +25,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> with SmartSearchMixin
   
   // Campo de busca
   final TextEditingController _searchController = TextEditingController();
-  String _searchTerm = '';
+  final String _searchTerm = '';
 
   @override
   void initState() {
@@ -499,7 +493,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> with SmartSearchMixin
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
@@ -509,7 +503,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> with SmartSearchMixin
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.6),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.15),
@@ -662,15 +656,15 @@ class _SalesScreenState extends ConsumerState<SalesScreen> with SmartSearchMixin
                                          fontWeight: FontWeight.w500,
                                        ),
                                      ),
-                                    if (payment.paymentDate != null) ...[
-                                      Text(
-                                        ' • ${DateFormat('dd/MM/yy').format(payment.paymentDate!)}',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                                        ),
+                                    ...[
+                                    Text(
+                                      ' • ${DateFormat('dd/MM/yy').format(payment.paymentDate)}',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                       ),
-                                    ],
+                                    ),
+                                  ],
                                   ],
                                 ),
                               ),
@@ -701,7 +695,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> with SmartSearchMixin
                           ),
                         ],
                       ),
-                    )).toList(),
+                    )),
                   ],
                 ),
               ),

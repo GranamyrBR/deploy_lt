@@ -9,14 +9,14 @@ class ContactsGridTable extends StatefulWidget {
   final void Function(Map<String, dynamic>) onCreateSale;
 
   const ContactsGridTable({
-    Key? key,
+    super.key,
     required this.contacts,
     this.loader,
     required this.onOpenProfileModal,
     required this.onOpenProfilePage,
     required this.onOpenWhatsApp,
     required this.onCreateSale,
-  }) : super(key: key);
+  });
 
   @override
   State<ContactsGridTable> createState() => _ContactsGridTableState();
@@ -177,7 +177,7 @@ class _ContactsGridTableState extends State<ContactsGridTable> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: 1200),
+              constraints: const BoxConstraints(minWidth: 1200),
               child: SingleChildScrollView(
                 child: _isLoading && widget.loader != null
                     ? const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()))
@@ -265,9 +265,9 @@ class _ContactsGridTableState extends State<ContactsGridTable> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(text, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
     );

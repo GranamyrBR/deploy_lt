@@ -26,7 +26,7 @@ class ErrorHandlingProvider<T> extends AutoDisposeAsyncNotifier<T> {
       }
       
       // Para outros tipos, re-throw o erro
-      throw error;
+      rethrow;
     }
   }
   

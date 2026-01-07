@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:lecotour_dashboard/models/lead_tintim.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -163,7 +162,7 @@ class LeadTintimNotifier extends StateNotifier<GroupedLeadsState> {
         clearErrorMessage: true,
       );
       
-      print('✅ LeadTintimNotifier: Estado atualizado com ${totalGroups} grupos de leads (HISTÓRICO COMPLETO)');
+      print('✅ LeadTintimNotifier: Estado atualizado com $totalGroups grupos de leads (HISTÓRICO COMPLETO)');
       print('✅ LeadTintimNotifier: Total de registros carregados: ${leadsData.length}');
       print('✅ LeadTintimNotifier: Estado atualizado com sucesso');
     } catch (e, stackTrace) {

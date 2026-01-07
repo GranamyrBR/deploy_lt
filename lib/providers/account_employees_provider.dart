@@ -37,7 +37,7 @@ final addAccountEmployeeProvider = FutureProvider.family<void, AccountEmployee>(
     print('DEBUG: Employee inserted successfully');
   } catch (e) {
     print('DEBUG: Error inserting employee: $e');
-    throw e;
+    rethrow;
   }
 });
 

@@ -12,8 +12,6 @@ class AirlineRoutesService {
           .select('*')
           .order('airline_name, flight_number');
 
-      if (response == null) return [];
-
       return (response as List)
           .map((json) => AirlineRoute.fromJson(json))
           .toList();
@@ -31,8 +29,6 @@ class AirlineRoutesService {
           .select('*')
           .eq('direction', direction)
           .order('airline_name, flight_number');
-
-      if (response == null) return [];
 
       return (response as List)
           .map((json) => AirlineRoute.fromJson(json))
@@ -52,8 +48,6 @@ class AirlineRoutesService {
           .eq('airline_iata', airlineIata)
           .order('flight_number');
 
-      if (response == null) return [];
-
       return (response as List)
           .map((json) => AirlineRoute.fromJson(json))
           .toList();
@@ -72,8 +66,6 @@ class AirlineRoutesService {
           .eq('origin_airport_iata', airportIata)
           .order('airline_name, flight_number');
 
-      if (response == null) return [];
-
       return (response as List)
           .map((json) => AirlineRoute.fromJson(json))
           .toList();
@@ -91,8 +83,6 @@ class AirlineRoutesService {
           .select('*')
           .eq('destination_airport_iata', airportIata)
           .order('airline_name, flight_number');
-
-      if (response == null) return [];
 
       return (response as List)
           .map((json) => AirlineRoute.fromJson(json))
@@ -122,8 +112,6 @@ class AirlineRoutesService {
           .select('*')
           .eq('frequency_per_week', 7)
           .order('airline_name, flight_number');
-
-      if (response == null) return [];
 
       return (response as List)
           .map((json) => AirlineRoute.fromJson(json))

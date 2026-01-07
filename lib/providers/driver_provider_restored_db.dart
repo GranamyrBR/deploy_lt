@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/driver.dart';
@@ -28,15 +27,11 @@ class DriverNotifierRestoredDb extends StateNotifier<AsyncValue<List<Driver>>> {
           ''')
           .order('name');
 
-      if (response != null) {
-        final drivers = (response as List)
-            .map((data) => Driver.fromJson(data))
-            .toList();
-        state = AsyncValue.data(drivers);
-      } else {
-        state = const AsyncValue.data([]);
-      }
-    } catch (error, stackTrace) {
+      final drivers = (response as List)
+          .map((data) => Driver.fromJson(data))
+          .toList();
+      state = AsyncValue.data(drivers);
+        } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
     }
   }
@@ -147,12 +142,10 @@ class DriverNotifierRestoredDb extends StateNotifier<AsyncValue<List<Driver>>> {
           .eq('driver_id', driverId)
           .eq('is_active', true);
 
-      if (response != null) {
-        return (response as List)
-            .map((data) => Car.fromJson(data['car']))
-            .toList();
-      }
-      return [];
+      return (response as List)
+          .map((data) => Car.fromJson(data['car']))
+          .toList();
+          return [];
     } catch (error) {
       print('Error getting driver cars: $error');
       return [];
@@ -167,7 +160,7 @@ class DriverNotifierRestoredDb extends StateNotifier<AsyncValue<List<Driver>>> {
           .eq('id', driverId)
           .single();
 
-      if (response != null && response['car'] != null) {
+      if (response['car'] != null) {
         return Car.fromJson(response['car']);
       }
       return null;

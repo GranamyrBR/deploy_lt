@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/base_screen_layout.dart';
 
 class B2BDocumentsScreen extends StatelessWidget {
-  const B2BDocumentsScreen({Key? key}) : super(key: key);
+  const B2BDocumentsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

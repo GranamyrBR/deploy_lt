@@ -7,7 +7,6 @@ import 'base_components.dart';
 import 'metric_card.dart';
 import 'sales_chart.dart';
 import 'activities_chart.dart';
-import 'resource_distribution_table.dart';
 import 'weekly_distribution_chart.dart';
 import '../providers/dashboard_metrics_provider.dart';
 import '../providers/driver_commission_provider.dart';
@@ -219,9 +218,9 @@ class DashboardContent extends ConsumerWidget {
       return Center(
         child: Column(
           children: [
-            Icon(Icons.error, color: Colors.red, size: 48),
+            const Icon(Icons.error, color: Colors.red, size: 48),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Erro ao carregar métricas',
               style: DesignTokens.titleMedium,
             ),
@@ -524,11 +523,11 @@ class DashboardContent extends ConsumerWidget {
                   }
                   
                   if (commissionData.errorMessage != null) {
-                    return Center(
+                    return const Center(
                       child: Column(
                         children: [
                           Icon(Icons.error, color: Colors.red, size: 32),
-                          const SizedBox(height: 8),
+                          SizedBox(height: 8),
                           Text(
                             'Erro ao carregar comissões',
                             style: DesignTokens.bodySmall,
@@ -600,11 +599,11 @@ class DashboardContent extends ConsumerWidget {
                       SizedBox(
                         height: 180,
                         child: SfCartesianChart(
-                          primaryXAxis: CategoryAxis(
+                          primaryXAxis: const CategoryAxis(
                             isVisible: true,
                             labelRotation: 15,
                           ),
-                          primaryYAxis: NumericAxis(isVisible: false),
+                          primaryYAxis: const NumericAxis(isVisible: false),
                           tooltipBehavior: TooltipBehavior(enable: true),
                           series: <ColumnSeries<dynamic, String>>[
                             ColumnSeries<dynamic, String>(

@@ -8,13 +8,11 @@ import '../models/product.dart' as dbp;
 import '../widgets/client_selection_dialog.dart';
 import '../widgets/agency_selection_dialog.dart';
 import '../widgets/service_product_selection_dialog.dart';
-import '../widgets/quotation_management_dialog.dart';
 import '../widgets/nominatim_address_field.dart';
 import '../services/notification_service.dart';
 import '../services/quotation_service.dart';
 import '../providers/accessibility_provider.dart';
 import '../widgets/quotation_tag_selector.dart';
-import '../providers/quotation_tag_provider.dart';
 import '../screens/quotation_tags_management_screen.dart';
 
 class EnhancedQuotationDialog extends ConsumerStatefulWidget {
@@ -22,10 +20,10 @@ class EnhancedQuotationDialog extends ConsumerStatefulWidget {
   final String? leadTitle;
 
   const EnhancedQuotationDialog({
-    Key? key,
+    super.key,
     this.leadId,
     this.leadTitle,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<EnhancedQuotationDialog> createState() =>
@@ -362,7 +360,7 @@ class _EnhancedQuotationDialogState
           children: [
             Expanded(
               child: DropdownButtonFormField<QuotationType>(
-                value: _quotationType,
+                initialValue: _quotationType,
                 decoration: const InputDecoration(
                   labelText: 'Tipo de Cotação',
                 ),
@@ -513,13 +511,13 @@ class _EnhancedQuotationDialogState
   Widget _buildServiceProductCard(dynamic item) {
     final isService = item is db.Service;
     final name = isService
-        ? (item as db.Service).name ?? 'Serviço'
+        ? (item).name ?? 'Serviço'
         : (item as dbp.Product).name;
     final description = isService
-        ? (item as db.Service).description ?? ''
+        ? (item).description ?? ''
         : (item as dbp.Product).description ?? '';
     final price = isService
-        ? ((item as db.Service).price ?? 0.0)
+        ? ((item).price ?? 0.0)
         : (item as dbp.Product).pricePerUnit;
 
     return Card(
@@ -555,7 +553,7 @@ class _EnhancedQuotationDialogState
               onPressed: () {
                 setState(() {
                   if (isService) {
-                    _selectedServices.remove(item as db.Service);
+                    _selectedServices.remove(item);
                   } else {
                     _selectedProducts.remove(item as dbp.Product);
                   }
@@ -695,7 +693,7 @@ class _EnhancedQuotationDialogState
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Taxa (${_taxRate}%):',
+                Text('Taxa ($_taxRate%):',
                     style: TextStyle(
                         color:
                             Theme.of(context).colorScheme.onPrimaryContainer)),

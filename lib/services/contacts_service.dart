@@ -73,7 +73,7 @@ class ContactsService {
         }
         final page =
             await sel.order('country').range(offset, offset + pageSize - 1);
-        if (page is! List || page.isEmpty) break;
+        if (page.isEmpty) break;
         for (final row in page) {
           final updatedAtStr = row['updated_at'] as String?;
           if (start != null || end != null) {
@@ -193,7 +193,7 @@ class ContactsService {
             .select('*')
             .like('phone', '%$last8%')
             .order('id', ascending: false).limit(1);
-        if (list is List && list.isNotEmpty) {
+        if (list.isNotEmpty) {
           print('✅ DEBUG: Contato encontrado por correspondência parcial');
           return Contact.fromJson(list.first);
         }
@@ -233,7 +233,7 @@ class ContactsService {
           .select('id')
           .eq('phone', normalizedPhone)
           .order('id', ascending: false).limit(1);
-      if (exists is List && exists.isNotEmpty) {
+      if (exists.isNotEmpty) {
         throw Exception('Telefone já cadastrado');
       }
       final response = await _client
@@ -366,7 +366,7 @@ class ContactsService {
     try {
       final exists =
           await _client.from('driver').select('id').eq('phone', clean).order('id', ascending: false).limit(1);
-      if (exists is List && exists.isNotEmpty) return;
+      if (exists.isNotEmpty) return;
       await _client.from('driver').insert({
         'name': name ?? 'Motorista',
         'phone': clean,

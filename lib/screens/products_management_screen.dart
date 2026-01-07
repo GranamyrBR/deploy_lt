@@ -23,7 +23,7 @@ class _ProductsManagementScreenState extends ConsumerState<ProductsManagementScr
   // Categoria selecionada
   int? _selectedCategoryId;
   
-  List<Product> _filteredProducts = [];
+  final List<Product> _filteredProducts = [];
   Product? _selectedProduct;
   bool _isEditing = false;
 
@@ -117,7 +117,7 @@ class _ProductsManagementScreenState extends ConsumerState<ProductsManagementScr
                   final productCategoriesAsync = ref.watch(productCategoriesProvider);
                   return productCategoriesAsync.when(
                     data: (categories) => DropdownButtonFormField<int>(
-                      value: _selectedCategoryId,
+                      initialValue: _selectedCategoryId,
                       decoration: const InputDecoration(
                         labelText: 'Categoria',
                         border: OutlineInputBorder(),

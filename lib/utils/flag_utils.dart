@@ -222,7 +222,7 @@ class FlagUtils {
   /// Obtém a URL da bandeira do flagcdn.com
   static String getFlagUrl(String? isoCode, {int width = 24, int height = 18}) {
     if (isoCode == null) return '';
-    return 'https://flagcdn.com/${width}x${height}/$isoCode.png';
+    return 'https://flagcdn.com/${width}x$height/$isoCode.png';
   }
 
   /// Obtém a URL da bandeira SVG do flagcdn.com

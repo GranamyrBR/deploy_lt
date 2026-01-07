@@ -10,10 +10,9 @@ import '../widgets/cost_center_advanced_charts.dart';
 import '../widgets/cost_center_comprehensive_charts.dart';
 import '../widgets/cost_center_enhanced_charts.dart';
 import '../widgets/expense_modal.dart';
-import '../widgets/financial_metric_modal.dart';
 
 class CostCenterManagementScreen extends ConsumerStatefulWidget {
-  const CostCenterManagementScreen({Key? key}) : super(key: key);
+  const CostCenterManagementScreen({super.key});
 
   @override
   ConsumerState<CostCenterManagementScreen> createState() =>
@@ -260,7 +259,7 @@ class _CostCenterManagementScreenState
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: DropdownButtonFormField<String>(
-                                        value: _selectedFilter,
+                                        initialValue: _selectedFilter,
                                         decoration: const InputDecoration(
                                           labelText: 'Filtro',
                                           border: OutlineInputBorder(),
@@ -662,7 +661,6 @@ class _CostCenterForm extends StatefulWidget {
   final Function(String, String, String, double, String, String) onSave;
 
   const _CostCenterForm({
-    Key? key,
     this.initialName,
     this.initialDescription,
     this.initialCode,
@@ -670,7 +668,7 @@ class _CostCenterForm extends StatefulWidget {
     this.initialResponsible,
     this.initialDepartment,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   State<_CostCenterForm> createState() => _CostCenterFormState();

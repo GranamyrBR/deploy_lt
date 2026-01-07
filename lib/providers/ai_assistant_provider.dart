@@ -1,10 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../models/ai_request_model.dart';
-import '../models/ai_response_model.dart';
 import '../services/ai_assistant_service.dart';
 
 // Provider para o serviço de IA

@@ -27,7 +27,7 @@ class _GlobalSearchScreenState extends ConsumerState<GlobalSearchScreen> with Sm
   Widget build(BuildContext context) {
     return BaseScreenLayout(
       title: 'Busca Global',
-      actions: [
+      actions: const [
         // The original AppBar actions are removed as per the edit hint.
       ],
       searchBar: StandardSearchBar(

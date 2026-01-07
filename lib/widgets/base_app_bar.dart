@@ -11,7 +11,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
 
   const BaseAppBar({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.icon,
@@ -20,7 +20,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = false,
     this.bottom,
     this.height = 64.0, // Altura compacta padrão (antes era kToolbarHeight = 56)
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -55,7 +55,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(headerIcon, color: Colors.white, size: 22),

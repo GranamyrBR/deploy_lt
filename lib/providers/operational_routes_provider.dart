@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/operational_route.dart';
-import '../models/flight_info.dart';
 import '../services/hybrid_flight_service.dart';
 import '../services/real_flight_data_service.dart';
 import '../services/database_flight_service.dart';

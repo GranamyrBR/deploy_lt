@@ -16,7 +16,7 @@ class ThemeTestWidget extends ConsumerWidget {
         backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       body: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,7 +24,7 @@ class ThemeTestWidget extends ConsumerWidget {
             Text(
               'Teste de Tema - Modo Atual: ${themeMode.name}',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 20),
@@ -50,7 +50,7 @@ class ThemeTestWidget extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Background: ${Theme.of(context).colorScheme.background}',
+                    'Background: ${Theme.of(context).colorScheme.surface}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -62,7 +62,7 @@ class ThemeTestWidget extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    'OnBackground: ${Theme.of(context).colorScheme.onBackground}',
+                    'OnBackground: ${Theme.of(context).colorScheme.onSurface}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),

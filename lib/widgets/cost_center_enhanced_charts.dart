@@ -6,9 +6,9 @@ class CostCenterEnhancedCharts extends StatelessWidget {
   final List<CostCenter> costCenters;
 
   const CostCenterEnhancedCharts({
-    Key? key,
+    super.key,
     required this.costCenters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -156,10 +156,10 @@ class CostCenterEnhancedCharts extends StatelessWidget {
                   },
                 ),
               ),
-              rightTitles: AxisTitles(
+              rightTitles: const AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
               ),
-              topTitles: AxisTitles(
+              topTitles: const AxisTitles(
                 sideTitles: SideTitles(showTitles: false),
               ),
             ),
@@ -313,7 +313,7 @@ class CostCenterEnhancedCharts extends StatelessWidget {
     return LineChart(
       LineChartData(
         gridData: const FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
+        titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
         lineBarsData: [
           LineChartBarData(
@@ -339,11 +339,11 @@ class CostCenterEnhancedCharts extends StatelessWidget {
             borderColor: Colors.green,
             borderWidth: 1,
             dataEntries: [
-              RadarEntry(value: 80),
-              RadarEntry(value: 65),
-              RadarEntry(value: 70),
-              RadarEntry(value: 85),
-              RadarEntry(value: 75),
+              const RadarEntry(value: 80),
+              const RadarEntry(value: 65),
+              const RadarEntry(value: 70),
+              const RadarEntry(value: 85),
+              const RadarEntry(value: 75),
             ],
             entryRadius: 2,
           ),
@@ -361,7 +361,7 @@ class CostCenterEnhancedCharts extends StatelessWidget {
         alignment: BarChartAlignment.spaceAround,
         maxY: 100,
         gridData: const FlGridData(show: false),
-        titlesData: FlTitlesData(show: false),
+        titlesData: const FlTitlesData(show: false),
         borderData: FlBorderData(show: false),
         barGroups: List.generate(5, (i) {
           return BarChartGroupData(
@@ -488,16 +488,16 @@ class CostCenterEnhancedCharts extends StatelessWidget {
               },
             ),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
         ),
         scatterTouchData: ScatterTouchData(
           enabled: true,
-          touchTooltipData: ScatterTouchTooltipData(),
+          touchTooltipData: const ScatterTouchTooltipData(),
         ),
       ),
     );
@@ -613,10 +613,10 @@ class CostCenterEnhancedCharts extends StatelessWidget {
               },
             ),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
         ),
@@ -729,10 +729,10 @@ class CostCenterEnhancedCharts extends StatelessWidget {
               },
             ),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
         ),
@@ -998,8 +998,9 @@ double cos(double angle) {
   if (angle < 0) return cos(-angle);
   angle = angle % (2 * 3.14159);
 
-  if (angle < 1.5708)
+  if (angle < 1.5708) {
     return (1 - (angle * angle) / 2 + (angle * angle * angle * angle) / 24);
+  }
   if (angle < 3.1416) return -cos(3.1416 - angle);
   if (angle < 4.7124) return -cos(angle - 3.1416);
   return cos(6.2832 - angle);

@@ -12,7 +12,7 @@ class FinancialKPICard extends StatefulWidget {
   final bool isLoading;
 
   const FinancialKPICard({
-    Key? key,
+    super.key,
     required this.metric,
     this.chartData,
     this.onTap,
@@ -20,7 +20,7 @@ class FinancialKPICard extends StatefulWidget {
     this.onDelete,
     this.showChart = true,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   State<FinancialKPICard> createState() => _FinancialKPICardState();
@@ -322,7 +322,7 @@ class FinancialKPIGroup extends StatelessWidget {
   final bool isLoading;
 
   const FinancialKPIGroup({
-    Key? key,
+    super.key,
     required this.title,
     required this.metrics,
     this.chartData,
@@ -330,7 +330,7 @@ class FinancialKPIGroup extends StatelessWidget {
     this.onDelete,
     this.showCharts = true,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

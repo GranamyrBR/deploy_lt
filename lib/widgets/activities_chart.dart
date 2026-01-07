@@ -25,7 +25,7 @@ class ActivitiesChart extends ConsumerWidget {
     final validProfitPercentage = profitPercentage.isNaN ? 0.0 : profitPercentage;
     
     // Calcular crescimento vs ano anterior (usando dados de 2024 vs 2025)
-    final growthPercentage = 15.2; // Valor fixo por enquanto
+    const growthPercentage = 15.2; // Valor fixo por enquanto
     
     // Verificar se há dados válidos para mostrar o chart
     final hasValidData = validProfit > 0 || validCommissions > 0;
@@ -33,8 +33,8 @@ class ActivitiesChart extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Calcular altura disponível para o gráfico, descontando cabeçalhos/rodapé
-        final headerHeight = 80.0;
-        final footerHeight = 48.0;
+        const headerHeight = 80.0;
+        const footerHeight = 48.0;
         final availableHeight = (constraints.maxHeight.isFinite
                 ? constraints.maxHeight
                 : 240.0) - headerHeight - footerHeight;

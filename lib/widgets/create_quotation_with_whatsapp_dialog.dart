@@ -22,12 +22,12 @@ class CreateQuotationWithWhatsAppDialog extends ConsumerStatefulWidget {
   final String? leadTitle;
 
   const CreateQuotationWithWhatsAppDialog({
-    Key? key,
+    super.key,
     this.initialContact,
     required this.whatsappMessages,
     this.leadId,
     this.leadTitle,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<CreateQuotationWithWhatsAppDialog> createState() =>
@@ -56,8 +56,8 @@ class _CreateQuotationWithWhatsAppDialogState
   Agency? _selectedAgency;
   DateTime? _travelDate;
   DateTime? _returnDate;
-  QuotationType _quotationType = QuotationType.tourism;
-  double _taxRate = 0.0;
+  final QuotationType _quotationType = QuotationType.tourism;
+  final double _taxRate = 0.0;
   final List<db.Service> _selectedServices = [];
   final List<dbp.Product> _selectedProducts = [];
   List<LuggageItem> _luggageItems = [];
@@ -403,7 +403,7 @@ class _CreateQuotationWithWhatsAppDialogState
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 30,
               offset: const Offset(0, 15),
             ),
@@ -445,7 +445,7 @@ class _CreateQuotationWithWhatsAppDialogState
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF25D366).withOpacity(0.8),
+            const Color(0xFF25D366).withValues(alpha: 0.8),
             Theme.of(context).colorScheme.primary,
           ],
         ),

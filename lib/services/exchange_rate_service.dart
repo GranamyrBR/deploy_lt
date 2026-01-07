@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../config/api_keys.dart';
 
 class ExchangeRateService {
   // APIs em ordem de prioridade - BCB é a fonte oficial mais confiável
@@ -117,9 +116,9 @@ class ExchangeRateService {
               break;
               
             case 'currencyapi':
-              final data_rates = data['data'];
-              if (data_rates != null && data_rates['BRL'] != null) {
-                final rate = double.tryParse(data_rates['BRL']['value'].toString()) ?? 0.0;
+              final dataRates = data['data'];
+              if (dataRates != null && dataRates['BRL'] != null) {
+                final rate = double.tryParse(dataRates['BRL']['value'].toString()) ?? 0.0;
                 if (rate > 0) {
                   final result = {
                     'bid': rate * 0.98,

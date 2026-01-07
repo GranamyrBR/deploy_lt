@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 
 // Provider para gerenciar o tema da aplicação
@@ -10,11 +9,11 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeMode>((ref) {
 
 class ThemeNotifier extends StateNotifier<ThemeMode> {
   ThemeNotifier() : super(ThemeMode.light) {
-    print('ThemeNotifier initialized with: ${state}');
+    print('ThemeNotifier initialized with: $state');
   }
 
   void toggleTheme() {
-    print('Toggle theme called. Current: ${state}');
+    print('Toggle theme called. Current: $state');
     switch (state) {
       case ThemeMode.light:
         state = ThemeMode.dark;
@@ -33,7 +32,7 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
   }
 
   void setTheme(ThemeMode themeMode) {
-    print('Set theme called: ${themeMode}');
+    print('Set theme called: $themeMode');
     state = themeMode;
   }
 

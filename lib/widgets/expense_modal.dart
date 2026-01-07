@@ -8,11 +8,11 @@ class ExpenseModal extends StatefulWidget {
   final VoidCallback? onSave;
 
   const ExpenseModal({
-    Key? key,
+    super.key,
     this.expense,
     required this.costCenterId,
     this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   _ExpenseModalState createState() => _ExpenseModalState();
@@ -216,7 +216,7 @@ class _ExpenseModalState extends State<ExpenseModal> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<ExpenseType>(
-                        value: _selectedExpenseType,
+                        initialValue: _selectedExpenseType,
                         decoration: const InputDecoration(
                           labelText: 'Tipo de Despesa *',
                           border: OutlineInputBorder(),
@@ -241,7 +241,7 @@ class _ExpenseModalState extends State<ExpenseModal> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: _selectedCategory,
+                        initialValue: _selectedCategory,
                         decoration: const InputDecoration(
                           labelText: 'Categoria *',
                           border: OutlineInputBorder(),

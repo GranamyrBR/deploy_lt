@@ -6,10 +6,10 @@ class CustomerProfileScreen extends StatelessWidget {
   final String customerName;
 
   const CustomerProfileScreen({
-    Key? key,
+    super.key,
     required this.customerId,
     required this.customerName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class CustomerProfileScreen extends StatelessWidget {
         ),
       ),
       body: Container(
-        color: theme.colorScheme.background,
+        color: theme.colorScheme.surface,
         child: Column(
           children: [
             Expanded(

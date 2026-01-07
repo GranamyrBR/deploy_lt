@@ -9,7 +9,7 @@ import '../utils/smart_search_mixin.dart';
 
 
 class OperationsScreen extends ConsumerStatefulWidget {
-  const OperationsScreen({Key? key}) : super(key: key);
+  const OperationsScreen({super.key});
 
   @override
   ConsumerState<OperationsScreen> createState() => _OperationsScreenState();
@@ -18,7 +18,7 @@ class OperationsScreen extends ConsumerStatefulWidget {
 class _OperationsScreenState extends ConsumerState<OperationsScreen> 
     with SmartSearchMixin, SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _selectedFilter = 'all';
+  final String _selectedFilter = 'all';
   final TextEditingController _searchController = TextEditingController();
   String _searchTerm = '';
 

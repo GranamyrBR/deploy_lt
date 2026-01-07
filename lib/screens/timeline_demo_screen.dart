@@ -155,7 +155,7 @@ class _TimelineDemoScreenState extends State<TimelineDemoScreen> {
               const SizedBox(height: 24),
               
               // Exemplo de status de venda
-              SaleStatusTimeline(status: 'negociacao'),
+              const SaleStatusTimeline(status: 'negociacao'),
             ],
           ),
         ),

@@ -6,9 +6,9 @@ class CostCenterTemporalDashboard extends StatelessWidget {
   final List<CostCenter> costCenters;
 
   const CostCenterTemporalDashboard({
-    Key? key,
+    super.key,
     required this.costCenters,
-  }) : super(key: key);
+  });
 
 
 
@@ -76,7 +76,7 @@ class CostCenterTemporalDashboard extends StatelessWidget {
         isCurved: true,
         color: Colors.blue,
         barWidth: 3,
-        dotData: FlDotData(show: true),
+        dotData: const FlDotData(show: true),
         belowBarData: BarAreaData(show: true, color: Colors.blue.withValues(alpha: 0.1)),
       ),
       LineChartBarData(
@@ -84,7 +84,7 @@ class CostCenterTemporalDashboard extends StatelessWidget {
         isCurved: true,
         color: Colors.orange,
         barWidth: 3,
-        dotData: FlDotData(show: true),
+        dotData: const FlDotData(show: true),
         belowBarData: BarAreaData(show: true, color: Colors.orange.withValues(alpha: 0.1)),
       ),
     ];
@@ -169,7 +169,7 @@ class CostCenterTemporalDashboard extends StatelessWidget {
               height: 300,
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true),
+                  gridData: const FlGridData(show: true),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -210,7 +210,7 @@ class CostCenterTemporalDashboard extends StatelessWidget {
               height: 300,
               child: BarChart(
                 BarChartData(
-                  gridData: FlGridData(show: true),
+                  gridData: const FlGridData(show: true),
                   titlesData: FlTitlesData(
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
@@ -229,7 +229,7 @@ class CostCenterTemporalDashboard extends StatelessWidget {
                           if (index >= 0 && index < costCenters.length) {
                             return Text(
                               costCenters[index].name.length > 10
-                                  ? costCenters[index].name.substring(0, 10) + '...'
+                                  ? '${costCenters[index].name.substring(0, 10)}...'
                                   : costCenters[index].name,
                               style: const TextStyle(fontSize: 10),
                             );

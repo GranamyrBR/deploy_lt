@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -84,11 +82,6 @@ class CarsNotifier extends StateNotifier<AsyncValue<List<Car>>> {
           .from('cars')
           .select('*, drivers(name)')
           .order('name');
-
-      if (response == null) {
-        state = const AsyncValue.data([]);
-        return;
-      }
 
       final cars = (response as List)
           .map((json) => Car.fromJson(json))

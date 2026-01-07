@@ -6,9 +6,9 @@ class QuotationTimelineWidget extends StatefulWidget {
   final int quotationId;
 
   const QuotationTimelineWidget({
-    Key? key,
+    super.key,
     required this.quotationId,
-  }) : super(key: key);
+  });
 
   @override
   State<QuotationTimelineWidget> createState() => _QuotationTimelineWidgetState();
@@ -43,7 +43,7 @@ class _QuotationTimelineWidgetState extends State<QuotationTimelineWidget> {
       
       if (mounted) {
         setState(() {
-          _timeline = (result as List).map((e) => Map<String, dynamic>.from(e)).toList();
+          _timeline = (result).map((e) => Map<String, dynamic>.from(e)).toList();
           _isLoading = false;
         });
       }
@@ -240,7 +240,7 @@ class _QuotationTimelineWidgetState extends State<QuotationTimelineWidget> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                   border: Border.all(color: color, width: 2),
                 ),

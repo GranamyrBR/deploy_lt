@@ -4,8 +4,6 @@ import '../models/flight_info.dart';
 import '../models/operational_route.dart';
 import '../providers/api_providers.dart';
 import '../providers/operational_routes_provider.dart';
-import '../utils/date_time_utils.dart';
-import '../widgets/base_components.dart';
 import '../widgets/base_screen_layout.dart';
 
 import '../services/favicon_service.dart';
@@ -250,7 +248,7 @@ class _FlightsScreenState extends ConsumerState<FlightsScreen> with SingleTicker
         
         return asyncOptions.when(
           data: (options) => DropdownButtonFormField<String>(
-            value: value,
+            initialValue: value,
             decoration: InputDecoration(
               labelText: label,
               border: OutlineInputBorder(
@@ -276,7 +274,7 @@ class _FlightsScreenState extends ConsumerState<FlightsScreen> with SingleTicker
             onChanged: onChanged,
           ),
           loading: () => DropdownButtonFormField<String>(
-            value: null,
+            initialValue: null,
             decoration: InputDecoration(
               labelText: label,
               border: OutlineInputBorder(
@@ -294,7 +292,7 @@ class _FlightsScreenState extends ConsumerState<FlightsScreen> with SingleTicker
             onChanged: null,
           ),
           error: (error, stack) => DropdownButtonFormField<String>(
-            value: null,
+            initialValue: null,
             decoration: InputDecoration(
               labelText: label,
               border: OutlineInputBorder(
@@ -318,7 +316,7 @@ class _FlightsScreenState extends ConsumerState<FlightsScreen> with SingleTicker
 
   Widget _buildFilterDropdown(String label, String? value, List<String> options, Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(
@@ -756,9 +754,9 @@ class _FlightsScreenState extends ConsumerState<FlightsScreen> with SingleTicker
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline,
-                      color: const Color(0xFF856404),
+                      color: Color(0xFF856404),
                       size: 16,
                     ),
                     const SizedBox(width: 8),
@@ -1141,9 +1139,9 @@ class _FlightsScreenState extends ConsumerState<FlightsScreen> with SingleTicker
                 // Seta
                 Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.arrow_forward,
-                      color: const Color(0xFF3B82F6),
+                      color: Color(0xFF3B82F6),
                       size: 32,
                     ),
                     Text(

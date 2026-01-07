@@ -6,12 +6,10 @@ import '../utils/responsive_utils.dart';
 import '../widgets/base_components.dart';
 import '../widgets/metric_card.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../providers/seller_mock_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/digital_clock_widget.dart';
 import '../providers/exchange_rate_provider.dart';
-import '../widgets/seller_dashboard_content_drag.dart';
 import '../widgets/seller_negotiation_timeline.dart';
 
 class SellerDashboardScreen extends ConsumerWidget {
@@ -404,7 +402,7 @@ class SellerDashboardScreen extends ConsumerWidget {
                     ref.read(sellerPeriodProvider.notifier).state = opt,
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(width: 12),
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -534,8 +532,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                   SizedBox(
                     height: 320,
                     child: SfCartesianChart(
-                      primaryXAxis: CategoryAxis(),
-                      primaryYAxis: NumericAxis(),
+                      primaryXAxis: const CategoryAxis(),
+                      primaryYAxis: const NumericAxis(),
                       tooltipBehavior: TooltipBehavior(enable: true),
                       series: <ColumnSeries<SellerMetricPoint, String>>[
                         ColumnSeries<SellerMetricPoint, String>(
@@ -646,7 +644,7 @@ class SellerDashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildFunnel(BuildContext context, SellerMockData mock) {
-    final palette = const [
+    const palette = [
       Color(0xFF10B981),
       Color(0xFF3B82F6),
       Color(0xFFFF9F1C),
@@ -718,8 +716,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                   SizedBox(
                     height: 240,
                     child: SfCartesianChart(
-                      primaryXAxis: CategoryAxis(),
-                      primaryYAxis: NumericAxis(isVisible: false),
+                      primaryXAxis: const CategoryAxis(),
+                      primaryYAxis: const NumericAxis(isVisible: false),
                       series: <BarSeries<SellerMetricPoint, String>>[
                         BarSeries<SellerMetricPoint, String>(
                           dataSource: topCustomers,
@@ -757,8 +755,8 @@ class SellerDashboardScreen extends ConsumerWidget {
                   SizedBox(
                     height: 240,
                     child: SfCartesianChart(
-                      primaryXAxis: CategoryAxis(),
-                      primaryYAxis: NumericAxis(isVisible: false),
+                      primaryXAxis: const CategoryAxis(),
+                      primaryYAxis: const NumericAxis(isVisible: false),
                       series: <BarSeries<SellerMetricPoint, String>>[
                         BarSeries<SellerMetricPoint, String>(
                           dataSource: topProducts,
@@ -785,7 +783,7 @@ class SellerDashboardScreen extends ConsumerWidget {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 0),
-      child: Container(
+      child: SizedBox(
         height: 400, // Altura fixa para evitar overflow
         child: SellerNegotiationTimeline(
           sellerId: mock.sellerId,

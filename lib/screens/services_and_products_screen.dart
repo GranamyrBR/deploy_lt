@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/service_category.dart';
 import '../widgets/base_app_bar.dart';
-import '../design/design_tokens.dart';
 import '../utils/responsive_utils.dart';
 import '../providers/auth_provider.dart';
 
@@ -16,7 +15,7 @@ class ServicesAndProductsScreen extends ConsumerStatefulWidget {
 class _ServicesAndProductsScreenState extends ConsumerState<ServicesAndProductsScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  List<ServiceCategory> _serviceCategories = ServiceCategory.predefinedCategories;
+  final List<ServiceCategory> _serviceCategories = ServiceCategory.predefinedCategories;
   List<Map<String, dynamic>> _products = [];
   
   // Controllers para formulários

@@ -66,8 +66,8 @@ class SourceColors {
     
     // Converter hash para HSL e depois para RGB
     final hue = (hash.abs() % 360).toDouble();
-    final saturation = 0.7;
-    final lightness = 0.5;
+    const saturation = 0.7;
+    const lightness = 0.5;
     
     return HSLColor.fromAHSL(1.0, hue, saturation, lightness).toColor();
   }

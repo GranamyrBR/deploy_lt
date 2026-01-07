@@ -12,9 +12,9 @@ class OperationDetailsModal extends ConsumerStatefulWidget {
   final Operation operation;
 
   const OperationDetailsModal({
-    Key? key,
+    super.key,
     required this.operation,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<OperationDetailsModal> createState() => _OperationDetailsModalState();
@@ -89,7 +89,7 @@ class _OperationDetailsModalState extends ConsumerState<OperationDetailsModal>
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -125,7 +125,7 @@ class _OperationDetailsModalState extends ConsumerState<OperationDetailsModal>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _getStatusColor(widget.operation.status).withOpacity(0.1),
+        color: _getStatusColor(widget.operation.status).withValues(alpha: 0.1),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(16),
           topRight: Radius.circular(16),
@@ -619,7 +619,7 @@ class _OperationDetailsModalState extends ConsumerState<OperationDetailsModal>
 
   Widget _buildPriorityDropdown() {
     return DropdownButtonFormField<String>(
-      value: _selectedPriority,
+      initialValue: _selectedPriority,
       decoration: InputDecoration(
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

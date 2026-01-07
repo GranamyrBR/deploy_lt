@@ -1,8 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'service_model.dart';
 import 'product_model.dart';
-import 'agency_model.dart';
-import 'contact.dart';
 
 class ServiceCatalog {
   static final List<Service> _services = [

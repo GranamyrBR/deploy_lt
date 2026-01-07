@@ -9,7 +9,7 @@ final quotationTagProvider = ChangeNotifierProvider((ref) => QuotationTagProvide
 
 /// Tela de gerenciamento de tags
 class QuotationTagsManagementScreen extends ConsumerStatefulWidget {
-  const QuotationTagsManagementScreen({Key? key}) : super(key: key);
+  const QuotationTagsManagementScreen({super.key});
 
   @override
   ConsumerState<QuotationTagsManagementScreen> createState() => _QuotationTagsManagementScreenState();
@@ -171,7 +171,7 @@ class _QuotationTagsManagementScreenState extends ConsumerState<QuotationTagsMan
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -218,7 +218,7 @@ class _QuotationTagsManagementScreenState extends ConsumerState<QuotationTagsMan
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.2),
+            color: Colors.blue.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -260,7 +260,7 @@ class _QuotationTagsManagementScreenState extends ConsumerState<QuotationTagsMan
         leading: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.2),
+            color: color.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(

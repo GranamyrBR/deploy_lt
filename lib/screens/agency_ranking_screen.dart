@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/base_screen_layout.dart';
 
 class AgencyRankingScreen extends StatelessWidget {
-  const AgencyRankingScreen({Key? key}) : super(key: key);
+  const AgencyRankingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

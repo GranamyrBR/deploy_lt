@@ -209,9 +209,9 @@ class NewYorkTourPackage {
     if (minGroupSize == 1 && maxGroupSize == 1) {
       return 'Individual';
     } else if (minGroupSize == maxGroupSize) {
-      return 'Grupo de ${maxGroupSize} pessoas';
+      return 'Grupo de $maxGroupSize pessoas';
     } else {
-      return '${minGroupSize}-${maxGroupSize} pessoas';
+      return '$minGroupSize-$maxGroupSize pessoas';
     }
   }
 

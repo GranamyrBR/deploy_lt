@@ -38,7 +38,7 @@ class TextUtils {
       case 'GBP':
         return 'GBP ';
       default:
-        return currency.toUpperCase() + ' ';
+        return '${currency.toUpperCase()} ';
     }
   }
   
@@ -54,7 +54,7 @@ class TextUtils {
       case 'GBP':
         return 'GBP ';
       default:
-        return currency.toUpperCase() + ' ';
+        return '${currency.toUpperCase()} ';
     }
   }
 

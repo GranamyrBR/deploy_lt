@@ -7,7 +7,7 @@ import '../widgets/quotation_management_dialog.dart';
 import '../widgets/enhanced_quotation_dialog.dart';
 
 class QuotationsScreenEnhanced extends ConsumerStatefulWidget {
-  const QuotationsScreenEnhanced({Key? key}) : super(key: key);
+  const QuotationsScreenEnhanced({super.key});
 
   @override
   ConsumerState<QuotationsScreenEnhanced> createState() => _QuotationsScreenEnhancedState();
@@ -37,7 +37,7 @@ class _QuotationsScreenEnhancedState extends ConsumerState<QuotationsScreenEnhan
     
     try {
       final data = await _quotationService.getQuotations(
-        filter: QuotationFilter(limit: 200),
+        filter: const QuotationFilter(limit: 200),
       );
       
       if (mounted) {
@@ -196,7 +196,7 @@ class _QuotationsScreenEnhancedState extends ConsumerState<QuotationsScreenEnhan
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -348,7 +348,7 @@ class _QuotationsScreenEnhancedState extends ConsumerState<QuotationsScreenEnhan
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: isFollowUpDue 
-            ? BorderSide(color: Colors.red, width: 2)
+            ? const BorderSide(color: Colors.red, width: 2)
             : BorderSide.none,
       ),
       child: InkWell(
@@ -419,7 +419,7 @@ class _QuotationsScreenEnhancedState extends ConsumerState<QuotationsScreenEnhan
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '${NumberFormat.currency(symbol: currency == 'USD' ? '\$' : 'R\$').format(total)}',
+                      NumberFormat.currency(symbol: currency == 'USD' ? '\$' : 'R\$').format(total),
                       style: TextStyle(
                         color: Colors.green.shade700,
                         fontWeight: FontWeight.bold,
@@ -459,7 +459,7 @@ class _QuotationsScreenEnhancedState extends ConsumerState<QuotationsScreenEnhan
                         child: Text(
                           isFollowUpDue 
                               ? 'Follow-up ATRASADO!'
-                              : 'Follow-up hoje: ${DateFormat('HH:mm').format(followUpDate!)}',
+                              : 'Follow-up hoje: ${DateFormat('HH:mm').format(followUpDate)}',
                           style: TextStyle(
                             color: isFollowUpDue ? Colors.red.shade700 : Colors.orange.shade700,
                             fontWeight: FontWeight.bold,

@@ -121,7 +121,7 @@ class SalesCancellationItem {
   // Resumo do item
   String get itemSummary {
     if (quantity == 1) {
-      return '$serviceName';
+      return serviceName;
     } else {
       return '$serviceName (x$quantity)';
     }

@@ -10,13 +10,13 @@ class ContactsGridTableScreen extends StatelessWidget {
   final void Function(Map<String, dynamic>) onCreateSale;
 
   const ContactsGridTableScreen({
-    Key? key,
+    super.key,
     required this.contacts,
     required this.onOpenProfileModal,
     required this.onOpenProfilePage,
     required this.onOpenWhatsApp,
     required this.onCreateSale,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

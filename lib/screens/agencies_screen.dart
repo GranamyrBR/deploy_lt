@@ -37,10 +37,10 @@ class _AgenciesScreenState extends ConsumerState<AgenciesScreen> with SmartSearc
   bool _isSubmitting = false;
   bool _visualizarComoCartao = false;
 
-  String _buscaNome = '';
-  String _buscaEmail = '';
-  String _buscaCidade = '';
-  String _buscaTelefone = '';
+  final String _buscaNome = '';
+  final String _buscaEmail = '';
+  final String _buscaCidade = '';
+  final String _buscaTelefone = '';
   
   // Campo de busca unificado
   final TextEditingController _searchController = TextEditingController();
@@ -527,7 +527,7 @@ class _AgenciesScreenState extends ConsumerState<AgenciesScreen> with SmartSearc
                                 editIsActive = value;
                               });
                             },
-                            activeColor: Theme.of(context).colorScheme.primary,
+                            activeThumbColor: Theme.of(context).colorScheme.primary,
                           ),
                         ],
                       ),
@@ -1347,7 +1347,7 @@ class _DialogDropdownsTesteState extends State<_DialogDropdownsTeste> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<Department>(
-                    value: departments.contains(selectedDepartment) ? selectedDepartment : null,
+                    initialValue: departments.contains(selectedDepartment) ? selectedDepartment : null,
                     decoration: const InputDecoration(labelText: 'Departamento'),
                     items: departments.map((d) => DropdownMenuItem(
                       value: d,
@@ -1357,7 +1357,7 @@ class _DialogDropdownsTesteState extends State<_DialogDropdownsTeste> {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<Position>(
-                    value: positions.contains(selectedPosition) ? selectedPosition : null,
+                    initialValue: positions.contains(selectedPosition) ? selectedPosition : null,
                     decoration: const InputDecoration(labelText: 'Cargo'),
                     items: positions.map((p) => DropdownMenuItem(
                       value: p,

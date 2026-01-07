@@ -1,9 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:flutter/services.dart';
 import 'dart:convert';
-import 'package:intl/intl.dart';
 
 class WeeklyDistributionData {
   final Map<String, double> weeklyData;

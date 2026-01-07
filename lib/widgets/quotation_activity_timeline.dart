@@ -9,10 +9,10 @@ class QuotationActivityTimeline extends StatelessWidget {
   final List<QuotationFollowUp> followUps;
 
   const QuotationActivityTimeline({
-    Key? key,
+    super.key,
     required this.activities,
     required this.followUps,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +117,7 @@ class QuotationActivityTimeline extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _getActionColor(activity.actionType).withOpacity(0.2),
+                  color: _getActionColor(activity.actionType).withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: _getActionColor(activity.actionType),
@@ -197,7 +197,7 @@ class QuotationActivityTimeline extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: _getActionColor(activity.actionType).withOpacity(0.2),
+                              color: _getActionColor(activity.actionType).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -306,7 +306,7 @@ class QuotationActivityTimeline extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.2),
+                  color: statusColor.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: statusColor,
@@ -389,7 +389,7 @@ class QuotationActivityTimeline extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.2),
+                              color: statusColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -414,7 +414,7 @@ class QuotationActivityTimeline extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: _getPriorityColor(followUp.priority).withOpacity(0.2),
+                              color: _getPriorityColor(followUp.priority).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(

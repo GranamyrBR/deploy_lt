@@ -168,7 +168,7 @@ class ModernButton extends StatelessWidget {
           foregroundColor: DesignTokens.primaryBlue,
           elevation: 0,
           shadowColor: Colors.transparent,
-          side: BorderSide(color: DesignTokens.primaryBlue),
+          side: const BorderSide(color: DesignTokens.primaryBlue),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radius12),
           ),
@@ -334,20 +334,20 @@ class ModernTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(DesignTokens.radius12),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: DesignTokens.primaryBlue,
                 width: 2,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(DesignTokens.radius12),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: DesignTokens.error,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(DesignTokens.radius12),
-              borderSide: BorderSide(
+              borderSide: const BorderSide(
                 color: DesignTokens.error,
                 width: 2,
               ),
@@ -428,7 +428,7 @@ class ModernBadge extends StatelessWidget {
 
   TextStyle _getTextStyle(BuildContext context) {
     final fontSize = size == BadgeSize.small ? 10.0 : 12.0;
-    final fontWeight = FontWeight.w600;
+    const fontWeight = FontWeight.w600;
 
     switch (variant) {
       case BadgeVariant.primary:

@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 
 /// Modelo para logs de atividades do sistema
 /// Registra todas as ações dos usuários para auditoria

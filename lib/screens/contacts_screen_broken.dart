@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/contact.dart';
 import '../widgets/base_screen_layout.dart';
@@ -10,9 +9,7 @@ import 'create_sale_screen_v2.dart';
 import '../providers/sources_provider.dart';
 import '../providers/accounts_provider.dart';
 import '../providers/contact_categories_provider.dart';
-import '../utils/source_colors.dart';
 import '../utils/phone_utils.dart';
-import '../utils/flag_utils.dart';
 import '../widgets/whatsapp_messages_modal.dart';
 
 class ContactsScreen extends ConsumerStatefulWidget {
@@ -300,7 +297,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected 
-                          ? Theme.of(context).primaryColor.withOpacity(0.1)
+                          ? Theme.of(context).primaryColor.withValues(alpha: 0.1)
                           : Colors.grey[100],
                       border: Border.all(
                         color: isSelected 
@@ -471,7 +468,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Detalhes do Contato'),
+        title: const Text('Detalhes do Contato'),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -574,7 +571,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                 const SizedBox(height: 12),
                 sources.when(
                   data: (sourcesList) => DropdownButtonFormField<int>(
-                    value: selectedSourceId,
+                    initialValue: selectedSourceId,
                     decoration: _buildInputDecoration('Origem'),
                     items: sourcesList.map((source) {
                       return DropdownMenuItem<int>(
@@ -592,7 +589,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                 const SizedBox(height: 12),
                 accounts.when(
                   data: (accountsList) => DropdownButtonFormField<int>(
-                    value: selectedAccountId,
+                    initialValue: selectedAccountId,
                     decoration: _buildInputDecoration('Tipo de Conta'),
                     items: accountsList.map((account) {
                       return DropdownMenuItem<int>(
@@ -610,7 +607,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                 const SizedBox(height: 12),
                 categories.when(
                   data: (categoriesList) => DropdownButtonFormField<int>(
-                    value: selectedCategoryId,
+                    initialValue: selectedCategoryId,
                     decoration: _buildInputDecoration('Tipo de Contato'),
                     items: categoriesList.map((category) {
                       return DropdownMenuItem<int>(
@@ -826,7 +823,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   const SizedBox(height: 12),
                   sources.when(
                     data: (sourcesList) => DropdownButtonFormField<int>(
-                      value: selectedSourceId,
+                      initialValue: selectedSourceId,
                       decoration: _buildInputDecoration('Origem'),
                       items: sourcesList.map((source) {
                         return DropdownMenuItem<int>(
@@ -846,7 +843,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   const SizedBox(height: 12),
                   accounts.when(
                     data: (accountsList) => DropdownButtonFormField<int>(
-                      value: selectedAccountId,
+                      initialValue: selectedAccountId,
                       decoration: _buildInputDecoration('Tipo de Conta'),
                       items: accountsList.map((account) {
                         return DropdownMenuItem<int>(
@@ -866,7 +863,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   const SizedBox(height: 12),
                   categories.when(
                     data: (categoriesList) => DropdownButtonFormField<int>(
-                      value: selectedCategoryId,
+                      initialValue: selectedCategoryId,
                       decoration: _buildInputDecoration('Tipo de Contato'),
                       items: categoriesList.map((category) {
                         return DropdownMenuItem<int>(

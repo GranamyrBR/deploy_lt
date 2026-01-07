@@ -6,8 +6,6 @@ import '../models/sale.dart';
 import '../models/sale_item_detail.dart';
 import '../models/service.dart';
 import '../models/product.dart';
-import '../models/contact.dart';
-import '../models/flight_info.dart';
 import '../providers/auth_provider.dart';
 import '../providers/operational_routes_provider.dart';
 import '../models/operational_route.dart';
@@ -41,18 +39,18 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
   TabController? _tabController;
   
   // Mapas para armazenar configurações individuais de cada serviço
-  Map<int, DateTime?> _serviceDates = {};
-  Map<int, String> _serviceNotes = {};
-  Map<int, TextEditingController> _serviceDateControllers = {};
-  Map<int, TextEditingController> _serviceNoteControllers = {};
+  final Map<int, DateTime?> _serviceDates = {};
+  final Map<int, String> _serviceNotes = {};
+  final Map<int, TextEditingController> _serviceDateControllers = {};
+  final Map<int, TextEditingController> _serviceNoteControllers = {};
   
   // Mapas para armazenar configurações individuais de cada produto
-  Map<int, String> _productNotes = {};
-  Map<int, int> _productQuantities = {};
+  final Map<int, String> _productNotes = {};
+  final Map<int, int> _productQuantities = {};
   
   // Listas de itens selecionados para operacionalização
-  Set<int> _selectedServices = {};
-  Set<int> _selectedProducts = {};
+  final Set<int> _selectedServices = {};
+  final Set<int> _selectedProducts = {};
   
   // Controladores para campos de voo
   final _flightNumberController = TextEditingController();
@@ -75,13 +73,13 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
   int? _selectedCarId;
   
   // Lista para armazenar IDs das operações criadas (para rollback)
-  List<int> _createdOperationIds = [];
+  final List<int> _createdOperationIds = [];
   
   // Maps para controlar o status individual de cada operação
-  Map<int, bool> _serviceOperationCreated = {}; // serviceId -> bool
-  Map<int, bool> _productOperationCreated = {}; // productId -> bool
-  Map<int, bool> _serviceOperationCreating = {}; // serviceId -> bool (loading state)
-  Map<int, bool> _productOperationCreating = {}; // productId -> bool (loading state)
+  final Map<int, bool> _serviceOperationCreated = {}; // serviceId -> bool
+  final Map<int, bool> _productOperationCreated = {}; // productId -> bool
+  final Map<int, bool> _serviceOperationCreating = {}; // serviceId -> bool (loading state)
+  final Map<int, bool> _productOperationCreating = {}; // productId -> bool (loading state)
   
   @override
   void initState() {
@@ -536,7 +534,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                               });
                             });
                           },
-                          activeColor: Colors.green,
+                          activeThumbColor: Colors.green,
                         ),
                         IconButton(
                           onPressed: () => Navigator.of(context).pop(),
@@ -1283,7 +1281,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
         'number_of_passengers': saleItem.pax,
         'luggage_count': 0,
         'special_instructions': _serviceNotes[serviceId]?.isNotEmpty == true ? _serviceNotes[serviceId] : null,
-        'customer_notes': _serviceNoteControllers[serviceId]?.text?.isNotEmpty == true ? _serviceNoteControllers[serviceId]!.text : null,
+        'customer_notes': _serviceNoteControllers[serviceId]?.text.isNotEmpty == true ? _serviceNoteControllers[serviceId]!.text : null,
         'service_value_usd': saleItem.totalPrice,
         'driver_commission_usd': saleItem.totalPrice * 0.15,
         'driver_commission_percentage': 15.0,
@@ -1533,7 +1531,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
           'number_of_passengers': saleItem.pax,
           'luggage_count': 0,
           'special_instructions': _serviceNotes[serviceId]?.isNotEmpty == true ? _serviceNotes[serviceId] : null,
-          'customer_notes': _serviceNoteControllers[serviceId]?.text?.isNotEmpty == true ? _serviceNoteControllers[serviceId]!.text : null,
+          'customer_notes': _serviceNoteControllers[serviceId]?.text.isNotEmpty == true ? _serviceNoteControllers[serviceId]!.text : null,
           'service_value_usd': saleItem.totalPrice,
           'driver_commission_usd': saleItem.totalPrice * 0.15,
           'driver_commission_percentage': 15.0,
@@ -2056,7 +2054,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
           .eq('is_active', true)
           .single();
       
-      if (response != null && response['car'] != null) {
+      if (response['car'] != null) {
         final car = response['car'];
         setState(() {
           _selectedCarId = car['id'];
@@ -2202,7 +2200,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                             border: Border.all(color: Colors.purple.withValues(alpha: 0.3)),
                                           ),
                                           child: Text(
-                                            'Total: US\$ ${widget.sale.totalAmountUsd?.toStringAsFixed(2) ?? '0.00'}',
+                                            'Total: US\$ ${widget.sale.totalAmountUsd.toStringAsFixed(2) ?? '0.00'}',
                                             style: TextStyle(
                                               color: Colors.purple[700],
                                               fontWeight: FontWeight.w600,
@@ -2218,7 +2216,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                             border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
                                           ),
                                           child: Text(
-                                            'Pago: US\$ ${widget.sale.totalPaidUsd?.toStringAsFixed(2) ?? '0.00'}',
+                                            'Pago: US\$ ${widget.sale.totalPaidUsd.toStringAsFixed(2) ?? '0.00'}',
                                             style: TextStyle(
                                               color: Colors.green[700],
                                               fontWeight: FontWeight.w600,
@@ -2457,9 +2455,9 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                                         Container(
                                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                           decoration: BoxDecoration(
-                                                            color: Colors.purple.withOpacity(0.1),
+                                                            color: Colors.purple.withValues(alpha: 0.1),
                                                             borderRadius: BorderRadius.circular(6),
-                                                            border: Border.all(color: Colors.purple.withOpacity(0.3)),
+                                                            border: Border.all(color: Colors.purple.withValues(alpha: 0.3)),
                                                           ),
                                                           child: Text(
                                                             'Total: US\$ ${saleItem.totalPrice.toStringAsFixed(2)}',
@@ -2480,9 +2478,9 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                                     Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                                       decoration: BoxDecoration(
-                                                        color: Colors.blue.withOpacity(0.1),
+                                                        color: Colors.blue.withValues(alpha: 0.1),
                                                         borderRadius: BorderRadius.circular(6),
-                                                        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                                                        border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                                                       ),
                                                       child: Text(
                                                         product.category!,
@@ -2531,7 +2529,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                                           Container(
                                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                             decoration: BoxDecoration(
-                                                              color: Colors.orange.withOpacity(0.1),
+                                                              color: Colors.orange.withValues(alpha: 0.1),
                                                               borderRadius: BorderRadius.circular(4),
                                                             ),
                                                             child: Text(
@@ -2558,7 +2556,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                                                 Container(
                                                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                                   decoration: BoxDecoration(
-                                                                    color: Colors.green.withOpacity(0.1),
+                                                                    color: Colors.green.withValues(alpha: 0.1),
                                                                     borderRadius: BorderRadius.circular(4),
                                                                   ),
                                                                   child: Text(
@@ -2576,7 +2574,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                                                 Container(
                                                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                                   decoration: BoxDecoration(
-                                                                    color: Colors.red.withOpacity(0.1),
+                                                                    color: Colors.red.withValues(alpha: 0.1),
                                                                     borderRadius: BorderRadius.circular(4),
                                                                   ),
                                                                   child: Text(
@@ -2604,9 +2602,9 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                                 Container(
                                                   padding: const EdgeInsets.all(8),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.amber.withOpacity(0.05),
+                                                    color: Colors.amber.withValues(alpha: 0.05),
                                                     borderRadius: BorderRadius.circular(6),
-                                                    border: Border.all(color: Colors.amber.withOpacity(0.2)),
+                                                    border: Border.all(color: Colors.amber.withValues(alpha: 0.2)),
                                                   ),
                                                   child: Column(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2736,7 +2734,7 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                                     ),
                                   ),
                                 );
-                              }).toList(),
+                              }),
                           ],
                         ),
                       ),
@@ -3114,8 +3112,8 @@ class _CreateOperationFromSaleScreenState extends ConsumerState<CreateOperationF
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error, color: Colors.red, size: 48),
-                      SizedBox(height: 16),
+                      const Icon(Icons.error, color: Colors.red, size: 48),
+                      const SizedBox(height: 16),
                       Text('Erro ao carregar rotas: $error'),
                     ],
                   ),

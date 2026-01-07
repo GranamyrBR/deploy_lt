@@ -4,7 +4,7 @@ import '../widgets/base_screen_layout.dart';
 import '../providers/dashboard_provider.dart';
 
 class HubB2BScreen extends ConsumerWidget {
-  const HubB2BScreen({Key? key}) : super(key: key);
+  const HubB2BScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

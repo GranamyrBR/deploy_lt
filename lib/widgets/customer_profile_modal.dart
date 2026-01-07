@@ -10,11 +10,11 @@ class CustomerProfileModal extends ConsumerWidget {
   final CustomerAnalyticsService? analyticsService;
 
   const CustomerProfileModal({
-    Key? key,
+    super.key,
     required this.customerId,
     required this.customerName,
     this.analyticsService,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +31,7 @@ class CustomerProfileModal extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),

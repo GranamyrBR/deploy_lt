@@ -26,8 +26,8 @@ class GoogleMapsWidget extends StatefulWidget {
 
 class _GoogleMapsWidgetState extends State<GoogleMapsWidget> {
   GoogleMapController? _mapController;
-  Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
   LatLng? _center;
 
   @override
@@ -241,7 +241,7 @@ class _GoogleMapsWidgetState extends State<GoogleMapsWidget> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Icon(Icons.map, color: Colors.blue),
+                const Icon(Icons.map, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
                   widget.title,
@@ -253,7 +253,7 @@ class _GoogleMapsWidgetState extends State<GoogleMapsWidget> {
               ],
             ),
           ),
-          Container(
+          SizedBox(
             height: widget.height,
             width: double.infinity,
             child: ClipRRect(

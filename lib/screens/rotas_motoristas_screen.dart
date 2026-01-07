@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class RotasMotoristasScreen extends ConsumerStatefulWidget {
   const RotasMotoristasScreen({super.key});
@@ -134,11 +133,11 @@ class _RotasMotoristasScreenState extends ConsumerState<RotasMotoristasScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.filter_list, color: Colors.blue),
-                const SizedBox(width: 8),
-                const Text(
+                Icon(Icons.filter_list, color: Colors.blue),
+                SizedBox(width: 8),
+                Text(
                   'Filtros',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -162,7 +161,7 @@ class _RotasMotoristasScreenState extends ConsumerState<RotasMotoristasScreen> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _filtroDirection,
+                    initialValue: _filtroDirection,
                     decoration: const InputDecoration(
                       labelText: 'Direção',
                       border: OutlineInputBorder(),
@@ -183,7 +182,7 @@ class _RotasMotoristasScreenState extends ConsumerState<RotasMotoristasScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _filtroAirline,
+                    initialValue: _filtroAirline,
                     decoration: const InputDecoration(
                       labelText: 'Companhia',
                       border: OutlineInputBorder(),

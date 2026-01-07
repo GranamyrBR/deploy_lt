@@ -16,13 +16,13 @@ class LanguageSelector extends ConsumerWidget {
       icon: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.language, size: 20),
-          SizedBox(width: 4),
+          const Icon(Icons.language, size: 20),
+          const SizedBox(width: 4),
           Text(
             LocalizationService.getLanguageName(currentLanguage),
-            style: TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14),
           ),
-          Icon(Icons.arrow_drop_down, size: 16),
+          const Icon(Icons.arrow_drop_down, size: 16),
         ],
       ),
       onSelected: (String languageCode) {
@@ -71,7 +71,7 @@ class LanguageSelectorCard extends ConsumerWidget {
             Row(
               children: [
                 Icon(Icons.language, color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'settings.language'.tr(),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -80,7 +80,7 @@ class LanguageSelectorCard extends ConsumerWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ...languageOptions.map((language) {
               final isSelected = language['code'] == currentLanguage;
               return RadioListTile<String>(
@@ -95,7 +95,7 @@ class LanguageSelectorCard extends ConsumerWidget {
                 activeColor: Theme.of(context).primaryColor,
                 contentPadding: EdgeInsets.zero,
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -115,7 +115,7 @@ class LanguageSelectorDialog extends ConsumerWidget {
       title: Row(
         children: [
           Icon(Icons.language, color: Theme.of(context).primaryColor),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text('settings.language'.tr()),
         ],
       ),
@@ -168,11 +168,11 @@ class CurrentLanguageDisplay extends ConsumerWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.language, size: 16),
-        SizedBox(width: 4),
+        const Icon(Icons.language, size: 16),
+        const SizedBox(width: 4),
         Text(
           LocalizationService.getLanguageName(currentLanguage),
-          style: TextStyle(fontSize: 12),
+          style: const TextStyle(fontSize: 12),
         ),
       ],
     );

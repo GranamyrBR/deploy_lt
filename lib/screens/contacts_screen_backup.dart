@@ -832,7 +832,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
   // Método para editar contato
   void _editarContato(Map<String, dynamic> contact) async {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     String? name = contact['name'], 
              phone = contact['phone'], 
              email = contact['email'], 
@@ -844,7 +844,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     int? sourceId = contact['source_id'], 
           accountId = contact['account_id'], 
           contactCategoryId = contact['contact_category_id'];
-    bool _isSubmitting = false;
+    bool isSubmitting = false;
 
     await showDialog(
       context: context,
@@ -866,7 +866,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             content: SizedBox(
               width: 600,
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -920,7 +920,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                             flex: 1,
                             child: DropdownButtonFormField<String>(
                               decoration: _buildModernInputDecoration('Gênero'),
-                              value: gender,
+                              initialValue: gender,
                               items: const [
                                 DropdownMenuItem(value: null, child: Text('Selecione')),
                                 DropdownMenuItem(value: 'M', child: Text('Masculino')),
@@ -944,7 +944,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           return sourceAsync.when(
                             data: (source) => DropdownButtonFormField<int>(
                               decoration: _buildModernInputDecoration('Origem'),
-                              value: sourceId,
+                              initialValue: sourceId,
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Selecione')),
                                 ...source.map((source) => DropdownMenuItem(
@@ -978,7 +978,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           return accountAsync.when(
                             data: (account) => DropdownButtonFormField<int>(
                               decoration: _buildModernInputDecoration('Tipo Conta'),
-                              value: account.any((a) => a.id == accountId) ? accountId : null,
+                              initialValue: account.any((a) => a.id == accountId) ? accountId : null,
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Selecione')),
                                 ...account.map((account) => DropdownMenuItem(
@@ -1015,7 +1015,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           return contactCategoriesAsync.when(
                             data: (contactCategories) => DropdownButtonFormField<int>(
                               decoration: _buildModernInputDecoration('Tipo Contato'),
-                              value: contactCategories.any((c) => c.id == contactCategoryId) ? contactCategoryId : null,
+                              initialValue: contactCategories.any((c) => c.id == contactCategoryId) ? contactCategoryId : null,
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Selecione')),
                                 ...contactCategories.map((contactCategory) => DropdownMenuItem(
@@ -1101,7 +1101,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+                onPressed: isSubmitting ? null : () => Navigator.of(context).pop(),
                 style: TextButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -1109,13 +1109,13 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                 child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: _isSubmitting ? null : () async {
-                  if (_formKey.currentState!.validate()) {
+                onPressed: isSubmitting ? null : () async {
+                  if (formKey.currentState!.validate()) {
                     modalSetState(() {
-                      _isSubmitting = true;
+                      isSubmitting = true;
                     });
                     
-                    _formKey.currentState!.save();
+                    formKey.currentState!.save();
                     
                     // Validação adicional dos campos obrigatórios
                     if (sourceId == null) {
@@ -1123,7 +1123,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                         const SnackBar(content: Text('Selecione a origem do contato')),
                       );
                       modalSetState(() {
-                        _isSubmitting = false;
+                        isSubmitting = false;
                       });
                       return;
                     }
@@ -1133,7 +1133,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                         const SnackBar(content: Text('Selecione o tipo de contato')),
                       );
                       modalSetState(() {
-                        _isSubmitting = false;
+                        isSubmitting = false;
                       });
                       return;
                     }
@@ -1188,7 +1188,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     } finally {
                       if (mounted) {
                         modalSetState(() {
-                          _isSubmitting = false;
+                          isSubmitting = false;
                         });
                       }
                     }
@@ -1202,7 +1202,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: _isSubmitting
+                child: isSubmitting
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -1283,10 +1283,10 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
   // Método para adicionar novo contato
   Future<void> _adicionarCliente(BuildContext context) async {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     String? name, phone, email, cityName, countryCode, stateCode, zipCode, gender;
     int? sourceId, accountId, contactCategoryId;
-    bool _isSubmitting = false;
+    bool isSubmitting = false;
     final TextEditingController phoneController = TextEditingController();
     final TextEditingController countryController = TextEditingController();
     final TextEditingController stateController = TextEditingController();
@@ -1313,7 +1313,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             content: SizedBox(
               width: 600,
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -1366,10 +1366,10 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                                      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
-                                        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                                       ),
                                     ),
                                     child: Row(
@@ -1393,7 +1393,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                             decoration: BoxDecoration(
-                                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+                                              color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                             child: Text(
@@ -1433,7 +1433,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                             flex: 1,
                             child: DropdownButtonFormField<String>(
                               decoration: _buildModernInputDecoration('Gênero'),
-                              value: gender,
+                              initialValue: gender,
                               items: const [
                                 DropdownMenuItem(value: null, child: Text('Selecione')),
                                 DropdownMenuItem(value: 'M', child: Text('Masculino')),
@@ -1457,7 +1457,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           return sourceAsync.when(
                             data: (source) => DropdownButtonFormField<int>(
                               decoration: _buildModernInputDecoration('Origem'),
-                              value: sourceId,
+                              initialValue: sourceId,
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Selecione')),
                                 ...source.map((source) => DropdownMenuItem(
@@ -1491,7 +1491,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           return accountAsync.when(
                             data: (account) => DropdownButtonFormField<int>(
                               decoration: _buildModernInputDecoration('Tipo Conta'),
-                              value: account.any((a) => a.id == accountId) ? accountId : null,
+                              initialValue: account.any((a) => a.id == accountId) ? accountId : null,
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Selecione')),
                                 ...account.map((account) => DropdownMenuItem(
@@ -1528,7 +1528,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           return contactCategoriesAsync.when(
                             data: (contactCategories) => DropdownButtonFormField<int>(
                               decoration: _buildModernInputDecoration('Tipo Contato'),
-                              value: contactCategories.any((c) => c.id == contactCategoryId) ? contactCategoryId : null,
+                              initialValue: contactCategories.any((c) => c.id == contactCategoryId) ? contactCategoryId : null,
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Selecione')),
                                 ...contactCategories.map((contactCategory) => DropdownMenuItem(
@@ -1612,7 +1612,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+                onPressed: isSubmitting ? null : () => Navigator.of(context).pop(),
                 style: TextButton.styleFrom(
                   foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -1620,13 +1620,13 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                 child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: _isSubmitting ? null : () async {
-                  if (_formKey.currentState!.validate()) {
+                onPressed: isSubmitting ? null : () async {
+                  if (formKey.currentState!.validate()) {
                     modalSetState(() {
-                      _isSubmitting = true;
+                      isSubmitting = true;
                     });
                     
-                    _formKey.currentState!.save();
+                    formKey.currentState!.save();
                     
                     // Validação adicional dos campos obrigatórios
                     if (sourceId == null) {
@@ -1634,7 +1634,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                         const SnackBar(content: Text('Selecione a origem do contato')),
                       );
                       modalSetState(() {
-                        _isSubmitting = false;
+                        isSubmitting = false;
                       });
                       return;
                     }
@@ -1644,7 +1644,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                         const SnackBar(content: Text('Selecione o tipo de contato')),
                       );
                       modalSetState(() {
-                        _isSubmitting = false;
+                        isSubmitting = false;
                       });
                       return;
                     }
@@ -1696,7 +1696,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     } finally {
                       if (mounted) {
                         modalSetState(() {
-                          _isSubmitting = false;
+                          isSubmitting = false;
                         });
                       }
                     }
@@ -1710,7 +1710,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: _isSubmitting
+                child: isSubmitting
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -1874,7 +1874,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                             }).toList(),
                           ),
                         );
-                      }).toList(),
+                      }),
                     ],
                   ),
                 ),
@@ -1891,7 +1891,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       case 'name':
         return Text(
           contact['name'] ?? '',
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
           ),

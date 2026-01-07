@@ -3,8 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../models/sale.dart';
 import '../providers/sales_provider.dart';
-import '../providers/auth_provider.dart';
-import '../design/design_tokens.dart';
 import '../widgets/exchange_rate_display.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
@@ -333,7 +331,7 @@ class _PendingSalesScreenState extends ConsumerState<PendingSalesScreen> with Sm
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(

@@ -99,7 +99,7 @@ class ContactsService {
           .select('id')
           .eq('phone', normalizedPhone)
           .order('id', ascending: false).limit(1);
-      if (exists is List && exists.isNotEmpty) {
+      if (exists.isNotEmpty) {
         throw Exception('Telefone já cadastrado');
       }
       final response = await _client

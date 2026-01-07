@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lecotour_dashboard/models/api_configuration.dart';
@@ -35,10 +34,6 @@ class ApiConfigurationNotifier extends StateNotifier<ApiConfigurationState> {
           .order('api_name');
 
       debugPrint('Resposta do Supabase: $response');
-
-      if (response == null) {
-        throw Exception('Resposta nula do Supabase');
-      }
 
       final configurations = (response as List)
           .map((json) {

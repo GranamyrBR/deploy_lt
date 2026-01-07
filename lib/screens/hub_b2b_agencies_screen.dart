@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/base_screen_layout.dart';
-import '../models/agency.dart';
 import '../providers/agency_provider.dart';
 import 'agency_details_screen.dart';
 
 class HubB2BAgenciesScreen extends ConsumerStatefulWidget {
-  const HubB2BAgenciesScreen({Key? key}) : super(key: key);
+  const HubB2BAgenciesScreen({super.key});
 
   @override
   ConsumerState<HubB2BAgenciesScreen> createState() => _HubB2BAgenciesScreenState();

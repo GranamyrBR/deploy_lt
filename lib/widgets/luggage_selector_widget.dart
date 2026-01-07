@@ -47,11 +47,11 @@ class LuggageSelectorWidget extends StatefulWidget {
   final bool showHelp;
 
   const LuggageSelectorWidget({
-    Key? key,
+    super.key,
     this.initialLuggage,
     required this.onChanged,
     this.showHelp = true,
-  }) : super(key: key);
+  });
 
   @override
   State<LuggageSelectorWidget> createState() => _LuggageSelectorWidgetState();
@@ -108,7 +108,7 @@ class _LuggageSelectorWidgetState extends State<LuggageSelectorWidget> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -178,7 +178,7 @@ class _LuggageSelectorWidgetState extends State<LuggageSelectorWidget> {
             ...LuggageType.values.map((type) {
               final item = _luggageItems.firstWhere((i) => i.type == type);
               return _buildLuggageItem(context, item);
-            }).toList(),
+            }),
           ],
         ),
       ),

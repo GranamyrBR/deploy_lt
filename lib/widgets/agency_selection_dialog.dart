@@ -8,10 +8,10 @@ class AgencySelectionDialog extends ConsumerStatefulWidget {
   final Function(Agency) onAgencySelected;
 
   const AgencySelectionDialog({
-    Key? key,
+    super.key,
     this.selectedAgency,
     required this.onAgencySelected,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<AgencySelectionDialog> createState() => _AgencySelectionDialogState();

@@ -11,14 +11,14 @@ class CarPhotosWidget extends StatefulWidget {
   final EdgeInsets margin;
 
   const CarPhotosWidget({
-    Key? key,
+    super.key,
     required this.onPhotoSelected,
     this.selectedPhotoUrl,
     this.showSelectionIndicator = true,
     this.height = 120,
     this.itemWidth = 120,
     this.margin = const EdgeInsets.only(right: 8),
-  }) : super(key: key);
+  });
 
   @override
   State<CarPhotosWidget> createState() => _CarPhotosWidgetState();
@@ -78,7 +78,9 @@ class _CarPhotosWidgetState extends State<CarPhotosWidget> {
       fotosEncontradas.sort();
       
       print('🔍 Fotos encontradas dinamicamente: ${fotosEncontradas.length}');
-      fotosEncontradas.forEach((foto) => print('  ✅ $foto'));
+      for (var foto in fotosEncontradas) {
+        print('  ✅ $foto');
+      }
       
       if (fotosEncontradas.isEmpty) {
         print('⚠️ Nenhuma foto encontrada dinamicamente, usando fallback estático');
@@ -113,7 +115,7 @@ class _CarPhotosWidgetState extends State<CarPhotosWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Container(
+      return SizedBox(
         height: widget.height,
         child: const Center(
           child: CircularProgressIndicator(),
@@ -122,7 +124,7 @@ class _CarPhotosWidgetState extends State<CarPhotosWidget> {
     }
 
     if (_availablePhotos.isEmpty) {
-      return Container(
+      return SizedBox(
         height: widget.height,
         child: Center(
           child: Text(
@@ -146,7 +148,7 @@ class _CarPhotosWidgetState extends State<CarPhotosWidget> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        SizedBox(
           height: widget.height,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -178,7 +180,7 @@ class _CarPhotosWidgetState extends State<CarPhotosWidget> {
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                           child: const Icon(Icons.error),
                         );
                       },

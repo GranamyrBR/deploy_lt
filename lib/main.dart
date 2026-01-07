@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter/services.dart'; // Added for FlutterError and PlatformDispatcher
+// Added for FlutterError and PlatformDispatcher
 import 'package:intl/date_symbol_data_local.dart'; // Para formatação de datas em PT-BR
 
 import 'config/supabase_config.dart';
@@ -23,7 +23,6 @@ import 'screens/customer_profile_screen.dart';
 import 'screens/contacts_multi_view_screen.dart';
 import 'screens/contacts_grid_table_screen.dart';
 import 'screens/quotations_screen_premium.dart';
-import 'models/user_roles.dart';
 
 bool _hydratedAuth = false;
 Future<void> main() async {

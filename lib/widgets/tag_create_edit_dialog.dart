@@ -8,7 +8,7 @@ import '../screens/quotation_tags_management_screen.dart';
 class TagCreateEditDialog extends ConsumerStatefulWidget {
   final QuotationTag? tag; // Null = criar nova, não null = editar
 
-  const TagCreateEditDialog({Key? key, this.tag}) : super(key: key);
+  const TagCreateEditDialog({super.key, this.tag});
 
   @override
   ConsumerState<TagCreateEditDialog> createState() => _TagCreateEditDialogState();
@@ -273,7 +273,7 @@ class _TagCreateEditDialogState extends ConsumerState<TagCreateEditDialog> {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: _selectedColor.withOpacity(0.5),
+                    color: _selectedColor.withValues(alpha: 0.5),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -373,7 +373,7 @@ class _TagCreateEditDialogState extends ConsumerState<TagCreateEditDialog> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: _selectedColor.withOpacity(0.3),
+                  color: _selectedColor.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),

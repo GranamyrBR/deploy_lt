@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 /// Widget para exibir o painel de notificações
 class NotificationPanel extends StatefulWidget {
-  const NotificationPanel({Key? key}) : super(key: key);
+  const NotificationPanel({super.key});
 
   @override
   State<NotificationPanel> createState() => _NotificationPanelState();
@@ -164,7 +164,7 @@ class _NotificationPanelState extends State<NotificationPanel> {
                         },
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),

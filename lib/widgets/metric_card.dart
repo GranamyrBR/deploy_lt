@@ -145,7 +145,7 @@ class MetricCard extends StatelessWidget {
 
             // Barra de progresso
             if (numericValue != null && numericValue! > 0) ...[
-              Container(
+              SizedBox(
                 height: gaugeHeight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(gaugeHeight / 2),
@@ -157,7 +157,7 @@ class MetricCard extends StatelessWidget {
                     axisTrackStyle: LinearAxisTrackStyle(
                       color: Theme.of(context)
                           .colorScheme
-                          .surfaceVariant
+                          .surfaceContainerHighest
                           .withValues(alpha: 0.5),
                       edgeStyle: LinearEdgeStyle.bothCurve,
                     ),

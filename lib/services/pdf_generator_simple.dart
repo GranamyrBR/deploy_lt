@@ -193,7 +193,7 @@ class PdfGeneratorSimple {
                 children: [
                   pw.Text(
                     'DADOS DO CLIENTE',
-                    style: pw.TextStyle(
+                    style: const pw.TextStyle(
                       fontSize: 10,
                       color: PdfColors.grey600,
                     ),

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import '../providers/ai_assistant_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/base_screen_layout.dart';
-import '../models/ai_request_model.dart';
-import '../models/ai_response_model.dart';
 
 class AIAssistantScreen extends ConsumerStatefulWidget {
   const AIAssistantScreen({super.key});
@@ -87,7 +84,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
         color: Theme.of(context).colorScheme.primaryContainer,
         border: Border(
           bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
         ),
       ),
@@ -122,7 +119,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.7),
+                            .withValues(alpha: 0.7),
                       ),
                 ),
               ],
@@ -168,7 +165,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
             Icon(
               Icons.chat_bubble_outline,
               size: 64,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
@@ -177,7 +174,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
                   ),
             ),
             const SizedBox(height: 8),
@@ -187,7 +184,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.5),
+                        .withValues(alpha: 0.5),
                   ),
               textAlign: TextAlign.center,
             ),
@@ -245,10 +242,10 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color:
-                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Row(
@@ -266,7 +263,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.8),
+                            .withValues(alpha: 0.8),
                       ),
                 ),
               ],
@@ -314,7 +311,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                     ? Theme.of(context).colorScheme.primary
                     : (isError
                         ? Theme.of(context).colorScheme.errorContainer
-                        : Theme.of(context).colorScheme.surfaceVariant),
+                        : Theme.of(context).colorScheme.surfaceContainerHighest),
                 borderRadius: BorderRadius.circular(16).copyWith(
                   topLeft: isUser ? const Radius.circular(16) : Radius.zero,
                   topRight: isUser ? Radius.zero : const Radius.circular(16),
@@ -344,7 +341,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -354,7 +351,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
-                                        .withOpacity(0.5),
+                                        .withValues(alpha: 0.5),
                                     fontSize: 10,
                                   ),
                         ),
@@ -389,7 +386,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
         color: Theme.of(context).colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
         ),
       ),
@@ -410,14 +407,14 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide(
                     color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide(
                     color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -458,10 +455,10 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         border: Border(
           top: BorderSide(
-            color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
           ),
         ),
       ),
@@ -472,7 +469,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
             'Tokens usados: ${state.tokensUsed}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
           ),
           if (state.lastInteraction != null) ...[
@@ -482,7 +479,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.6),
+                        .withValues(alpha: 0.6),
                   ),
             ),
           ],
@@ -589,7 +586,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
-                                        .withOpacity(0.6),
+                                        .withValues(alpha: 0.6),
                                   ),
                             ),
                           );
@@ -738,7 +735,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -754,7 +751,7 @@ class _AIAssistantScreenState extends ConsumerState<AIAssistantScreen> {
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface
-                              .withOpacity(0.7),
+                              .withValues(alpha: 0.7),
                         ),
                   ),
                   Text(

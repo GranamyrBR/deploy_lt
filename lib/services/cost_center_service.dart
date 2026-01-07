@@ -32,7 +32,7 @@ class CostCenterService {
       final response =
           await _client.from('cost_center').select('*').eq('id', id).single();
 
-      return CostCenter.fromJson(response as Map<String, dynamic>);
+      return CostCenter.fromJson(response);
     } catch (e) {
       print('Error fetching cost center by ID: $e');
       return null;
@@ -59,7 +59,7 @@ class CostCenterService {
       final response =
           await _client.from('cost_center').insert(data).select().single();
 
-      return CostCenter.fromJson(response as Map<String, dynamic>);
+      return CostCenter.fromJson(response);
     } catch (e) {
       print('Error creating cost center: $e');
       return null;
@@ -81,8 +81,9 @@ class CostCenterService {
       if (name != null) data['name'] = name;
       if (description != null) data['description'] = description;
       if (budget != null) data['budget'] = budget;
-      if (responsibleUserId != null)
+      if (responsibleUserId != null) {
         data['responsible_user_id'] = responsibleUserId;
+      }
       if (isActive != null) data['is_active'] = isActive;
 
       final response = await _client
@@ -92,7 +93,7 @@ class CostCenterService {
           .select()
           .single();
 
-      return CostCenter.fromJson(response as Map<String, dynamic>);
+      return CostCenter.fromJson(response);
     } catch (e) {
       print('Error updating cost center: $e');
       return null;
@@ -201,7 +202,7 @@ class CostCenterService {
       // Update cost center spent amount
       await _updateCostCenterSpent(costCenterId);
 
-      return CostCenterExpense.fromJson(response as Map<String, dynamic>);
+      return CostCenterExpense.fromJson(response);
     } catch (e) {
       print('Error creating expense: $e');
       return null;
@@ -338,9 +339,9 @@ class CostCenterService {
         createdBy: 'system', // Default user
       );
 
-      if (newExpense != null && expense.id != null) {
+      if (newExpense != null) {
         // Delete the old expense
-        await deleteExpense(int.parse(costCenterId), int.parse(expense.id!));
+        await deleteExpense(int.parse(costCenterId), int.parse(expense.id));
 
         // Convert CostCenterExpense to Expense
         return Expense(

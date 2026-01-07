@@ -11,14 +11,14 @@ class PhoneInputWithFlags extends StatefulWidget {
   final bool required;
 
   const PhoneInputWithFlags({
-    Key? key,
+    super.key,
     required this.controller,
     this.labelText,
     this.hintText,
     this.onChanged,
     this.validator,
     this.required = false,
-  }) : super(key: key);
+  });
 
   @override
   State<PhoneInputWithFlags> createState() => _PhoneInputWithFlagsState();
@@ -108,12 +108,12 @@ class _PhoneInputWithFlagsState extends State<PhoneInputWithFlags> {
       children: [
         // Flag do Brasil
         Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Flag.fromString('BR', height: 20, width: 30),
               SizedBox(width: 4),
@@ -121,26 +121,26 @@ class _PhoneInputWithFlagsState extends State<PhoneInputWithFlags> {
             ],
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         
         // Flag do Estado
         Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             border: Border.all(color: Colors.grey.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
           child: DropdownButton<String>(
             value: selectedState,
-            underline: SizedBox(),
+            underline: const SizedBox(),
             items: estados.map((estado) {
               return DropdownMenuItem<String>(
                 value: estado['sigla'],
                 child: Row(
                   children: [
-                    Icon(Icons.location_on, size: 16, color: Colors.blue),
-                    SizedBox(width: 4),
-                    Text(estado['sigla']!, style: TextStyle(fontSize: 14)),
+                    const Icon(Icons.location_on, size: 16, color: Colors.blue),
+                    const SizedBox(width: 4),
+                    Text(estado['sigla']!, style: const TextStyle(fontSize: 14)),
                   ],
                 ),
               );
@@ -152,19 +152,19 @@ class _PhoneInputWithFlagsState extends State<PhoneInputWithFlags> {
             },
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         
         // Campo de telefone
         Expanded(
           child: TextFormField(
             controller: widget.controller,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
             decoration: InputDecoration(
               labelText: widget.labelText ?? 'Telefone',
-              labelStyle: TextStyle(fontSize: 16),
+              labelStyle: const TextStyle(fontSize: 16),
               hintText: widget.hintText ?? '(11) 99999-9999',
-              border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.all(16),
+              border: const OutlineInputBorder(),
+              contentPadding: const EdgeInsets.all(16),
             ),
             keyboardType: TextInputType.phone,
             inputFormatters: [

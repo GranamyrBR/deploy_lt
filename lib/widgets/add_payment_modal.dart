@@ -61,8 +61,8 @@ class AddPaymentModal extends ConsumerStatefulWidget {
 
   const AddPaymentModal({
     required this.sale,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   ConsumerState<AddPaymentModal> createState() => _AddPaymentModalState();
@@ -81,9 +81,9 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
   String _selectedPaymentMethod = 'PIX';
   String _selectedCurrency = 'BRL';
   bool _isAdvancePayment = false;
-  DateTime _selectedDate = DateTime.now();
+  final DateTime _selectedDate = DateTime.now();
   double? _exchangeRateSnapshot;
-  bool _isCalculating = false;
+  final bool _isCalculating = false;
 
   final List<String> _paymentMethods = [
     'PIX', 'Cartão de Crédito', 'Transferência Bancária', 'Dinheiro', 'Zelle'
@@ -130,7 +130,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.payment, color: _warningOrange, size: 24),
+                  const Icon(Icons.payment, color: _warningOrange, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -157,7 +157,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
                     onPressed: () => _fillRemainingAmount(remainingUsd, exchangeRate),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: _warningOrange,
-                      side: BorderSide(color: _warningOrange),
+                      side: const BorderSide(color: _warningOrange),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -180,7 +180,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
                   child: Column(
                     children: [
                       DropdownButtonFormField<String>(
-                        value: _selectedPaymentMethod,
+                        initialValue: _selectedPaymentMethod,
                         decoration: _buildInputDecoration('Método de Pagamento'),
                         items: _paymentMethods.map((method) => 
                           DropdownMenuItem(value: method, child: Text(method))
@@ -197,7 +197,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: _selectedCurrency,
+                              initialValue: _selectedCurrency,
                               decoration: _buildInputDecoration('Moeda'),
                               items: const [
                                 DropdownMenuItem(value: 'BRL', child: Text('BRL - Real')),
@@ -302,7 +302,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Resumo da Venda',
             style: TextStyle(
               color: _primaryBlue,
@@ -327,7 +327,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
               const Text('Total Pago:'),
               Text(
                 'US\$ ${widget.sale.totalPaidUsd.toStringAsFixed(2)}',
-                style: TextStyle(color: _successGreen, fontWeight: FontWeight.bold),
+                style: const TextStyle(color: _successGreen, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -370,7 +370,7 @@ class _AddPaymentModalState extends ConsumerState<AddPaymentModal> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: _primaryBlue),
+        borderSide: const BorderSide(color: _primaryBlue),
       ),
     );
   }

@@ -7,10 +7,10 @@ class FinancialMetricModal extends StatefulWidget {
   final Function(FinancialMetric) onSave;
 
   const FinancialMetricModal({
-    Key? key,
+    super.key,
     this.metric,
     required this.onSave,
-  }) : super(key: key);
+  });
 
   @override
   State<FinancialMetricModal> createState() => _FinancialMetricModalState();
@@ -180,7 +180,7 @@ class _FinancialMetricModalState extends State<FinancialMetricModal> {
                       
                       // Category Dropdown
                       DropdownButtonFormField<String>(
-                        value: _selectedCategory,
+                        initialValue: _selectedCategory,
                         decoration: const InputDecoration(
                           labelText: 'Categoria *',
                           border: OutlineInputBorder(),

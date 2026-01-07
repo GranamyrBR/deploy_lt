@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -72,11 +70,6 @@ class DriversNotifier extends StateNotifier<AsyncValue<List<Driver>>> {
           .from('driver')
           .select('*')
           .order('name');
-
-      if (response == null) {
-        state = const AsyncValue.data([]);
-        return;
-      }
 
       final drivers = (response as List)
           .map((json) => Driver.fromJson(json))

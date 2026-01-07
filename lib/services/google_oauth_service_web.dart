@@ -34,7 +34,7 @@ class GoogleOAuthService {
       }
 
       final state = _generateState();
-      final redirectUri = 'http://localhost:8081/oauth_callback.html';
+      const redirectUri = 'http://localhost:8081/oauth_callback.html';
       final authParams = {
         'client_id': clientId,
         'redirect_uri': redirectUri,

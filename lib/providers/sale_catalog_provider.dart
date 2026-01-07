@@ -31,7 +31,7 @@ final saleCatalogProvider = FutureProvider<List<SaleItem>>((ref) async {
     }).where((s) => s != null).cast<Service>().toList();
 
   // Transformar em SaleItem
-    final productItems = products.where((p) => p.name.isNotEmpty && p.pricePerUnit != null).map((p) => SaleItem(
+    final productItems = products.where((p) => p.name.isNotEmpty).map((p) => SaleItem(
     type: SaleItemType.product,
     id: p.productId,
     name: p.name,

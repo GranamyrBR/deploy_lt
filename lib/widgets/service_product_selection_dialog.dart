@@ -12,11 +12,11 @@ class ServiceProductSelectionDialog extends ConsumerStatefulWidget {
   final Function(List<db.Service>, List<dbp.Product>) onSelectionChanged;
 
   const ServiceProductSelectionDialog({
-    Key? key,
+    super.key,
     this.selectedServices = const [],
     this.selectedProducts = const [],
     required this.onSelectionChanged,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ServiceProductSelectionDialog> createState() =>

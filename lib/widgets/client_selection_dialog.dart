@@ -9,10 +9,10 @@ class ClientSelectionDialog extends ConsumerStatefulWidget {
   final Function(Contact) onClientSelected;
 
   const ClientSelectionDialog({
-    Key? key,
+    super.key,
     this.selectedClient,
     required this.onClientSelected,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ClientSelectionDialog> createState() => _ClientSelectionDialogState();
@@ -23,7 +23,7 @@ class _ClientSelectionDialogState extends ConsumerState<ClientSelectionDialog> {
   final ContactsService _service = ContactsService();
   bool _isLoading = false;
   List<db.Contact> _results = [];
-  int _pageSize = 100;
+  final int _pageSize = 100;
   int _offset = 0;
   bool _hasMore = true;
   bool _loadingMore = false;

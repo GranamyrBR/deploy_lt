@@ -16,9 +16,7 @@ class QuotationWhatsAppService {
     try {
       // Generate PDF if no attachment provided
       File? pdfFile = attachmentFile;
-      if (pdfFile == null) {
-        pdfFile = await PdfGeneratorSimple.generatePdf(quotation);
-      }
+      pdfFile ??= await PdfGeneratorSimple.generatePdf(quotation);
 
       // Create WhatsApp message
       final message = _createWhatsAppMessage(

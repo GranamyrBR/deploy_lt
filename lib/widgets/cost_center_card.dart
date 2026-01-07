@@ -9,13 +9,13 @@ class CostCenterCard extends StatefulWidget {
   final VoidCallback? onAddExpense;
 
   const CostCenterCard({
-    Key? key,
+    super.key,
     required this.costCenter,
     this.onTap,
     this.onEdit,
     this.onDelete,
     this.onAddExpense,
-  }) : super(key: key);
+  });
 
   @override
   State<CostCenterCard> createState() => _CostCenterCardState();

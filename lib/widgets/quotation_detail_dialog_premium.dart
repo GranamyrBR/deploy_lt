@@ -15,9 +15,9 @@ class QuotationDetailDialogPremium extends ConsumerStatefulWidget {
   final Quotation quotation;
 
   const QuotationDetailDialogPremium({
-    Key? key,
+    super.key,
     required this.quotation,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<QuotationDetailDialogPremium> createState() =>
@@ -63,7 +63,7 @@ class _QuotationDetailDialogPremiumState
       
       if (mounted) {
         setState(() {
-          _timeline = (result as List).map((e) => Map<String, dynamic>.from(e)).toList();
+          _timeline = (result).map((e) => Map<String, dynamic>.from(e)).toList();
           _isLoadingTimeline = false;
         });
       }
@@ -90,7 +90,7 @@ class _QuotationDetailDialogPremiumState
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
@@ -139,7 +139,7 @@ class _QuotationDetailDialogPremiumState
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(Icons.receipt_long, color: Colors.white, size: 28),
@@ -384,7 +384,7 @@ class _QuotationDetailDialogPremiumState
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.blue.withOpacity(0.3)),
+        side: BorderSide(color: Colors.blue.withValues(alpha: 0.3)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -394,7 +394,7 @@ class _QuotationDetailDialogPremiumState
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -565,7 +565,7 @@ class _QuotationDetailDialogPremiumState
                     icon: const Icon(Icons.send),
                     color: Colors.blue[600],
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.blue.withOpacity(0.1),
+                      backgroundColor: Colors.blue.withValues(alpha: 0.1),
                       padding: const EdgeInsets.all(12),
                     ),
                   ),
@@ -632,7 +632,7 @@ class _QuotationDetailDialogPremiumState
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                   border: Border.all(color: color, width: 3),
                 ),
@@ -655,7 +655,7 @@ class _QuotationDetailDialogPremiumState
               elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: color.withOpacity(0.3)),
+                side: BorderSide(color: color.withValues(alpha: 0.3)),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -815,8 +815,8 @@ class _QuotationDetailDialogPremiumState
             ? BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    color.withOpacity(0.1),
-                    color.withOpacity(0.05),
+                    color.withValues(alpha: 0.1),
+                    color.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -829,7 +829,7 @@ class _QuotationDetailDialogPremiumState
           leading: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: color, size: 28),

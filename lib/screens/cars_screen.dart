@@ -1,13 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter/services.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
 import '../widgets/car_photos_widget.dart';
-import '../providers/driver_provider.dart';
-import '../models/driver.dart';
 
 
 
@@ -182,11 +178,11 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
   }
 
   Future<void> _adicionarCarro(BuildContext context) async {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     String? make, model, licensePlate, color;
     int? year, capacity;
     bool hasWifi = false;
-    bool _isSubmitting = false;
+    bool isSubmitting = false;
 
 
 
@@ -210,7 +206,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
             content: SizedBox(
               width: 500,
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -322,12 +318,12 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                 child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: _isSubmitting ? null : () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
+                onPressed: isSubmitting ? null : () async {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
                     
                     modalSetState(() {
-                      _isSubmitting = true;
+                      isSubmitting = true;
                     });
 
                     try {
@@ -352,7 +348,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                       }
                     } catch (e) {
                       modalSetState(() {
-                        _isSubmitting = false;
+                        isSubmitting = false;
                       });
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -362,7 +358,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                     }
                   }
                 },
-                child: _isSubmitting
+                child: isSubmitting
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -378,11 +374,11 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
   }
 
   Future<void> _editarCarro(Map<String, dynamic> car) async {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     String? make = car['make'], model = car['model'], licensePlate = car['license_plate'], color = car['color'];
     int? year = car['year'], capacity = car['capacity'];
     bool hasWifi = car['has_wifi'] == true;
-    bool _isSubmitting = false;
+    bool isSubmitting = false;
 
     await showDialog(
       context: context,
@@ -404,7 +400,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
             content: SizedBox(
               width: 500,
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -520,11 +516,11 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                 child: const Text('Cancelar'),
               ),
               ElevatedButton(
-                onPressed: _isSubmitting ? null : () async {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
+                onPressed: isSubmitting ? null : () async {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
                     modalSetState(() {
-                      _isSubmitting = true;
+                      isSubmitting = true;
                     });
                     try {
                       await _client.from('car').update({
@@ -546,7 +542,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                       }
                     } catch (e) {
                       modalSetState(() {
-                        _isSubmitting = false;
+                        isSubmitting = false;
                       });
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -556,7 +552,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                     }
                   }
                 },
-                child: _isSubmitting
+                child: isSubmitting
                     ? const SizedBox(
                         width: 20,
                         height: 20,
@@ -820,7 +816,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                             }).toList(),
                           ),
                         );
-                      }).toList(),
+                      }),
                     ],
                   ),
                 ),
@@ -889,7 +885,7 @@ class _CarsScreenState extends ConsumerState<CarsScreen> {
                           height: double.infinity,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              color: Theme.of(context).colorScheme.surfaceVariant,
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
                               child: const Center(
                                 child: Icon(Icons.directions_car, size: 40),
                               ),

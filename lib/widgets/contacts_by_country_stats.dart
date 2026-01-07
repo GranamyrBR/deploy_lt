@@ -173,9 +173,9 @@ class _ContactsByCountryStatsState extends State<ContactsByCountryStats> {
       child: BarChart(
         BarChartData(
           titlesData: FlTitlesData(
-            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 40)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -195,7 +195,7 @@ class _ContactsByCountryStatsState extends State<ContactsByCountryStats> {
             ),
           ),
           borderData: FlBorderData(show: false),
-          gridData: FlGridData(show: true),
+          gridData: const FlGridData(show: true),
           barGroups: bars,
         ),
       ),

@@ -153,7 +153,7 @@ class _SellerNegotiationTimelineState extends ConsumerState<SellerNegotiationTim
                   border: Border.all(color: Colors.white, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -213,9 +213,9 @@ class _SellerNegotiationTimelineState extends ConsumerState<SellerNegotiationTim
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: statusColor.withOpacity(0.3)),
+                            border: Border.all(color: statusColor.withValues(alpha: 0.3)),
                           ),
                           child: Text(
                             _getStatusDisplayName(sale.status ?? ''),

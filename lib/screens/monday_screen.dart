@@ -5,7 +5,6 @@ import '../design/design_tokens.dart';
 import '../widgets/base_components.dart';
 import '../providers/monday_provider.dart';
 import '../models/monday_entry.dart';
-import 'package:lecotour_dashboard/design/app_theme.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
 import '../utils/smart_search_mixin.dart';
@@ -46,7 +45,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.person, color: DesignTokens.primaryBlue),
+            const Icon(Icons.person, color: DesignTokens.primaryBlue),
             const SizedBox(width: 8),
             Text('Detalhes do Registro #${entry.id}'),
           ],
@@ -517,9 +516,9 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
                 // Cards da coluna com DragTarget
                 Expanded(
                   child: DragTarget<MondayEntry>(
-                    onWillAccept: (data) => data != null,
-                    onAccept: (entry) {
-                      _moveCardToCategory(entry, status);
+                    onWillAcceptWithDetails: (data) => data != null,
+                    onAcceptWithDetails: (details) {
+                      _moveCardToCategory(details.data, status);
                     },
                     builder: (context, candidateData, rejectedData) {
                       return Container(
@@ -1086,7 +1085,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
         builder: (context, setState) => AlertDialog(
           title: Row(
             children: [
-              Icon(Icons.edit, color: DesignTokens.primaryBlue),
+              const Icon(Icons.edit, color: DesignTokens.primaryBlue),
               const SizedBox(width: 8),
               Text('Editar Registro #${entry.id}'),
             ],
@@ -1144,7 +1143,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
                     const SizedBox(width: 12),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: selectedSexo.isNotEmpty ? selectedSexo : null,
+                        initialValue: selectedSexo.isNotEmpty ? selectedSexo : null,
                         decoration: const InputDecoration(
                           labelText: 'Sexo',
                           border: OutlineInputBorder(),
@@ -1164,7 +1163,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: selectedStatus.isNotEmpty ? selectedStatus : null,
+                        initialValue: selectedStatus.isNotEmpty ? selectedStatus : null,
                         decoration: const InputDecoration(
                           labelText: 'Status',
                           border: OutlineInputBorder(),
@@ -1356,11 +1355,11 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Row(
+          title: const Row(
             children: [
               Icon(Icons.add, color: DesignTokens.primaryBlue),
-              const SizedBox(width: 8),
-              const Text('Novo Registro'),
+              SizedBox(width: 8),
+              Text('Novo Registro'),
             ],
           ),
           content: SingleChildScrollView(
@@ -1416,7 +1415,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
                     const SizedBox(width: 12),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: selectedSexo.isNotEmpty ? selectedSexo : null,
+                        initialValue: selectedSexo.isNotEmpty ? selectedSexo : null,
                         decoration: const InputDecoration(
                           labelText: 'Sexo',
                           border: OutlineInputBorder(),
@@ -1436,7 +1435,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        value: selectedStatus.isNotEmpty ? selectedStatus : null,
+                        initialValue: selectedStatus.isNotEmpty ? selectedStatus : null,
                         decoration: const InputDecoration(
                           labelText: 'Status *',
                           border: OutlineInputBorder(),
@@ -1599,7 +1598,7 @@ class _MondayScreenState extends ConsumerState<MondayScreen> with SmartSearchMix
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Registro criado com sucesso!'),
             backgroundColor: Colors.green,
           ),

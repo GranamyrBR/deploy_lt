@@ -13,10 +13,10 @@ class QuotationManagementDialog extends ConsumerStatefulWidget {
   final VoidCallback? onQuotationUpdated;
 
   const QuotationManagementDialog({
-    Key? key,
+    super.key,
     required this.quotation,
     this.onQuotationUpdated,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<QuotationManagementDialog> createState() => _QuotationManagementDialogState();
@@ -289,7 +289,7 @@ class _QuotationManagementDialogState extends ConsumerState<QuotationManagementD
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.warning_amber_rounded, size: 48, color: Colors.orange),
+                      const Icon(Icons.warning_amber_rounded, size: 48, color: Colors.orange),
                       const SizedBox(height: 8),
                       Text(
                         '⚠️ Nenhum serviço ou produto foi adicionado',
@@ -328,7 +328,7 @@ class _QuotationManagementDialogState extends ConsumerState<QuotationManagementD
                           child: Row(
                             children: [
                               // Quantidade editável
-                              Container(
+                              SizedBox(
                                 width: 80,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -584,13 +584,13 @@ class _QuotationManagementDialogState extends ConsumerState<QuotationManagementD
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.check_circle, color: Colors.green),
+                    const Icon(Icons.check_circle, color: Colors.green),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'PDF Gerado com Sucesso',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),

@@ -11,12 +11,12 @@ class NominatimAddressField extends StatefulWidget {
   final IconData? prefixIcon;
 
   const NominatimAddressField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     this.hintText,
     this.prefixIcon,
-  }) : super(key: key);
+  });
 
   @override
   State<NominatimAddressField> createState() => _NominatimAddressFieldState();
@@ -139,8 +139,8 @@ class _NominatimAddressFieldState extends State<NominatimAddressField> {
                 maxWidth: MediaQuery.of(context).size.width * 0.85,
               ),
               child: options.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(16),
+                  ? const Padding(
+                      padding: EdgeInsets.all(16),
                       child: Row(
                         children: [
                           SizedBox(

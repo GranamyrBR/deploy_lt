@@ -6,9 +6,9 @@ class InfotravelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BaseScreenLayout(
+    return const BaseScreenLayout(
       title: 'Integração Infotravel',
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

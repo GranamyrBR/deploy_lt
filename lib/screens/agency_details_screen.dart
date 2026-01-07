@@ -14,7 +14,7 @@ import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 class AgencyDetailsScreen extends ConsumerWidget {
   final Agency agency;
-  const AgencyDetailsScreen({Key? key, required this.agency}) : super(key: key);
+  const AgencyDetailsScreen({super.key, required this.agency});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -85,9 +85,9 @@ class AgencyDetailsScreen extends ConsumerWidget {
                           Row(
                             children: [
                               if (agency.email != null && agency.email!.isNotEmpty)
-                                Row(children: [Icon(Icons.email, size: 18), const SizedBox(width: 4), Text(agency.email!)]),
+                                Row(children: [const Icon(Icons.email, size: 18), const SizedBox(width: 4), Text(agency.email!)]),
                               if (agency.phone != null && agency.phone!.isNotEmpty)
-                                Row(children: [const SizedBox(width: 16), Icon(Icons.phone, size: 18), const SizedBox(width: 4), Text(agency.phone!)]),
+                                Row(children: [const SizedBox(width: 16), const Icon(Icons.phone, size: 18), const SizedBox(width: 4), Text(agency.phone!)]),
                             ],
                           ),
                         ],
@@ -166,15 +166,15 @@ class AgencyDetailsScreen extends ConsumerWidget {
                     
                     // Se não há funcionários, mostrar mensagem sem tentar atualizar automaticamente
                     if (employees.isEmpty) {
-                      return Center(
+                      return const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.people_outline, size: 64, color: Colors.grey),
-                            const SizedBox(height: 16),
-                            const Text('Nenhum funcionário cadastrado.'),
-                            const SizedBox(height: 8),
-                            const Text('Clique em "Novo Funcionário" para adicionar.', 
+                            Icon(Icons.people_outline, size: 64, color: Colors.grey),
+                            SizedBox(height: 16),
+                            Text('Nenhum funcionário cadastrado.'),
+                            SizedBox(height: 8),
+                            Text('Clique em "Novo Funcionário" para adicionar.', 
                               style: TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
@@ -188,7 +188,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          headingRowColor: MaterialStateProperty.all(const Color(0xFF1E3A8A)),
+                          headingRowColor: WidgetStateProperty.all(const Color(0xFF1E3A8A)),
                           headingTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           columns: const [
                             DataColumn(label: Text('Nome')),
@@ -242,8 +242,8 @@ class AgencyDetailsScreen extends ConsumerWidget {
                                             ),
                                             ElevatedButton(
                                               onPressed: () => Navigator.of(context).pop(true),
-                                              child: const Text('Excluir'),
                                               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                              child: const Text('Excluir'),
                                             ),
                                           ],
                                         ),
@@ -365,7 +365,7 @@ class AgencyDetailsScreen extends ConsumerWidget {
 class _EmployeeFormDialog extends ConsumerStatefulWidget {
   final int accountId;
   final AccountEmployee? employee;
-  const _EmployeeFormDialog({Key? key, required this.accountId, this.employee}) : super(key: key);
+  const _EmployeeFormDialog({required this.accountId, this.employee});
 
   @override
   ConsumerState<_EmployeeFormDialog> createState() => _EmployeeFormDialogState();
@@ -467,7 +467,7 @@ class _EmployeeFormDialogState extends ConsumerState<_EmployeeFormDialog> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<Position>(
-                        value: _positions.contains(_selectedPosition) ? _selectedPosition : null,
+                        initialValue: _positions.contains(_selectedPosition) ? _selectedPosition : null,
                         decoration: const InputDecoration(labelText: 'Cargo'),
                         isExpanded: true, // Prevent overflow
                         items: _positions.map((p) => DropdownMenuItem(
@@ -483,13 +483,13 @@ class _EmployeeFormDialogState extends ConsumerState<_EmployeeFormDialog> {
                         validator: (v) => v == null ? 'Selecione o cargo' : null,
                       ),
                       if (_positions.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8.0),
                           child: Text('Nenhum cargo encontrado no banco.', style: TextStyle(color: Colors.red)),
                         ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<Department>(
-                        value: _departments.contains(_selectedDepartment) ? _selectedDepartment : null,
+                        initialValue: _departments.contains(_selectedDepartment) ? _selectedDepartment : null,
                         decoration: const InputDecoration(labelText: 'Departamento'),
                         isExpanded: true, // Prevent overflow
                         items: _departments.map((d) => DropdownMenuItem(
@@ -505,8 +505,8 @@ class _EmployeeFormDialogState extends ConsumerState<_EmployeeFormDialog> {
                         validator: (v) => v == null ? 'Selecione o departamento' : null,
                       ),
                       if (_departments.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8.0),
                           child: Text('Nenhum departamento encontrado no banco.', style: TextStyle(color: Colors.red)),
                         ),
                       const SizedBox(height: 12),

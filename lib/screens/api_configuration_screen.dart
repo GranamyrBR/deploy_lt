@@ -4,7 +4,7 @@ import '../providers/api_configuration_provider.dart';
 import '../widgets/base_screen_layout.dart';
 
 class ApiConfigurationScreen extends ConsumerStatefulWidget {
-  const ApiConfigurationScreen({Key? key}) : super(key: key);
+  const ApiConfigurationScreen({super.key});
 
   @override
   ConsumerState<ApiConfigurationScreen> createState() => _ApiConfigurationScreenState();

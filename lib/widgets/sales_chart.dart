@@ -19,11 +19,11 @@ class SalesChart extends ConsumerWidget {
     }
     
     if (monthlyData.errorMessage != null) {
-      return Center(
+      return const Center(
         child: Column(
           children: [
             Icon(Icons.error, color: Colors.red, size: 32),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Text(
               'Erro ao carregar vendas',
               style: DesignTokens.bodySmall,

@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/service.dart';
 import '../services/services_service.dart';
 

@@ -6,8 +6,6 @@ import '../utils/currency_utils.dart';
 import 'base_components.dart';
 import 'metric_card.dart';
 import 'sales_chart.dart';
-import 'activities_chart.dart';
-import 'resource_distribution_table.dart';
 import '../providers/seller_mock_provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -324,7 +322,7 @@ class DraggableSellerCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Expanded(
+                  const Expanded(
                     child: SalesChart(),
                   ),
                 ],
@@ -392,11 +390,11 @@ class DraggableSellerCard extends ConsumerWidget {
 
   Widget _buildMonthlyChart(List<SellerMetricPoint> monthlyData) {
     return SfCartesianChart(
-      primaryXAxis: CategoryAxis(
+      primaryXAxis: const CategoryAxis(
         isVisible: true,
         labelRotation: -45,
       ),
-      primaryYAxis: NumericAxis(isVisible: false),
+      primaryYAxis: const NumericAxis(isVisible: false),
       tooltipBehavior: TooltipBehavior(enable: true),
       series: <ColumnSeries<SellerMetricPoint, String>>[
         ColumnSeries<SellerMetricPoint, String>(
@@ -422,9 +420,9 @@ class DraggableSellerCard extends ConsumerWidget {
         return ListTile(
           leading: CircleAvatar(
             backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
-            child: Icon(
+            child: const Icon(
               Icons.star,
-              color: const Color(0xFF10B981),
+              color: Color(0xFF10B981),
               size: 20,
             ),
           ),

@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../utils/responsive_utils.dart';
-import '../design/design_tokens.dart';
 import '../widgets/sidebar.dart';
 import '../widgets/dashboard_content.dart';
-import '../widgets/dashboard_content_drag.dart';
-import '../widgets/base_screen_layout.dart';
 import '../widgets/base_app_bar.dart';
 import '../widgets/theme_test_widget.dart';
 import '../providers/dashboard_provider.dart';
 import '../models/user_roles.dart';
-import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
 import 'flights_screen.dart';
 import 'contacts_screen.dart';
@@ -26,7 +22,6 @@ import 'quotation_tags_management_screen.dart';
 import 'monday_screen.dart';
 import 'global_search_screen.dart';
 import 'timeline_demo_screen.dart';
-import 'operations_screen.dart';
 import 'operations_dashboard_screen.dart';
 import 'google_calendar_screen.dart';
 import 'new_york_screen.dart';
@@ -41,8 +36,6 @@ import 'b2b_opportunities_screen.dart';
 import 'b2b_documents_screen.dart';
 
 import 'create_sale_screen_v2.dart';
-import 'hub_b2b_agencies_screen.dart';
-import 'create_operation_from_sale_screen.dart';
 import 'financial_dashboard_screen.dart';
 import 'cost_center_management_screen.dart';
 import 'seller_dashboard_screen.dart';
@@ -90,7 +83,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final authState = ref.watch(authProvider);
     final userName = authState.user?.name ?? 'Usuário';
 
-    Widget _buildContent(DashboardPage page) {
+    Widget buildContent(DashboardPage page) {
       switch (page) {
         case DashboardPage.home:
           return const DashboardContent();
@@ -182,7 +175,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             // Conteúdo principal
             Container(
               color: Theme.of(context).colorScheme.surface,
-              child: _buildContent(currentPage),
+              child: buildContent(currentPage),
             ),
             // Sidebar móvel (overlay)
             if (_isSidebarOpen)
@@ -270,7 +263,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             // Sidebar fixa
             SizedBox(
               width: sidebarWidth,
-              child: Sidebar(),
+              child: const Sidebar(),
             ),
             // Conteúdo principal
             Expanded(
@@ -279,7 +272,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: _buildContent(currentPage),
+                      child: buildContent(currentPage),
                     ),
                   ],
                 ),

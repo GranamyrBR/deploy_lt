@@ -7,12 +7,12 @@ class StandardSearchBar extends StatefulWidget {
   final VoidCallback? onClear;
 
   const StandardSearchBar({
-    Key? key,
+    super.key,
     this.controller,
     this.hintText = 'Buscar...',
     this.onChanged,
     this.onClear,
-  }) : super(key: key);
+  });
 
   @override
   State<StandardSearchBar> createState() => _StandardSearchBarState();

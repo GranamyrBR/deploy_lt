@@ -20,7 +20,7 @@ final attractionsProvider = FutureProvider.family<List<NewYorkAttraction>, Strin
   final service = ref.read(newYorkServiceProvider);
   // Parse filterKey para extrair parâmetros
   final parts = filterKey.split('|');
-  final category = parts.length > 0 && parts[0] != 'null' ? parts[0] : null;
+  final category = parts.isNotEmpty && parts[0] != 'null' ? parts[0] : null;
   final neighborhood = parts.length > 1 && parts[1] != 'null' ? parts[1] : null;
   final limit = parts.length > 2 ? int.tryParse(parts[2]) ?? 20 : 20;
   final sortBy = parts.length > 3 && parts[3] != 'null' ? parts[3] : null;
@@ -38,7 +38,7 @@ final tourPackagesProvider = FutureProvider.family<List<NewYorkTourPackage>, Str
   final service = ref.read(newYorkServiceProvider);
   // Parse filterKey para extrair parâmetros
   final parts = filterKey.split('|');
-  final category = parts.length > 0 && parts[0] != 'null' ? parts[0] : null;
+  final category = parts.isNotEmpty && parts[0] != 'null' ? parts[0] : null;
   final duration = parts.length > 1 && parts[1] != 'null' ? parts[1] : null;
   final maxPrice = parts.length > 2 ? double.tryParse(parts[2]) : null;
   final groupSize = parts.length > 3 ? int.tryParse(parts[3]) : null;
@@ -352,11 +352,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.recommend, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Recomendação para Turismo',
                   style: TextStyle(
                     fontSize: 18,
@@ -393,11 +393,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.attractions, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Atividades Recomendadas',
                   style: TextStyle(
                     fontSize: 18,
@@ -411,7 +411,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.green, size: 16),
+                  const Icon(Icons.check_circle, color: Colors.green, size: 16),
                   const SizedBox(width: 8),
                   Expanded(child: Text(activity)),
                 ],
@@ -431,11 +431,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.checkroom, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   'Roupas Recomendadas',
                   style: TextStyle(
                     fontSize: 18,
@@ -449,7 +449,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.blue, size: 16),
+                  const Icon(Icons.check_circle, color: Colors.blue, size: 16),
                   const SizedBox(width: 8),
                   Expanded(child: Text(clothing)),
                 ],
@@ -717,7 +717,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
                   ),
                   child: Text(
                     tag,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 10,
                       color: AppTheme.primaryBlue,
                     ),
@@ -1015,7 +1015,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
                   ),
                   child: Text(
                     highlight,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 10,
                       color: AppTheme.primaryBlue,
                     ),
@@ -1451,7 +1451,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
                     color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.map,
                     color: AppTheme.primaryBlue,
                     size: 32,
@@ -1492,7 +1492,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
               ),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: Colors.green, size: 20),
+                  const Icon(Icons.check_circle, color: Colors.green, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1522,11 +1522,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.location_on, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   '🌍 Geocoding API',
                   style: TextStyle(
                     fontSize: 16,
@@ -1627,11 +1627,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.directions, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   '🗺️ Directions API',
                   style: TextStyle(
                     fontSize: 16,
@@ -1658,7 +1658,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedMode,
+              initialValue: selectedMode,
               decoration: const InputDecoration(
                 labelText: 'Modo de transporte',
                 border: OutlineInputBorder(),
@@ -1759,11 +1759,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.grid_on, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   '📏 Distance Matrix API',
                   style: TextStyle(
                     fontSize: 16,
@@ -1783,7 +1783,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedMode,
+              initialValue: selectedMode,
               decoration: const InputDecoration(
                 labelText: 'Modo de transporte',
                 border: OutlineInputBorder(),
@@ -1898,11 +1898,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.route, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   '🎯 Rota Otimizada',
                   style: TextStyle(
                     fontSize: 16,
@@ -1930,7 +1930,7 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedMode,
+              initialValue: selectedMode,
               decoration: const InputDecoration(
                 labelText: 'Modo de transporte',
                 border: OutlineInputBorder(),
@@ -2048,11 +2048,11 @@ class _NewYorkScreenState extends ConsumerState<NewYorkScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.analytics, color: AppTheme.primaryBlue),
-                const SizedBox(width: 8),
-                const Text(
+                SizedBox(width: 8),
+                Text(
                   '📊 Estatísticas de Uso',
                   style: TextStyle(
                     fontSize: 16,

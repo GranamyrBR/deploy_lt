@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 class AppTheme {
   // Ordem correta: fonte principal primeiro, depois fallbacks
@@ -28,7 +27,7 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    primarySwatch: MaterialColor(0xFF1E3A8A, {
+    primarySwatch: const MaterialColor(0xFF1E3A8A, {
       50: Color(0xFFE8F2FF),
       100: Color(0xFFC5D9FF),
       200: Color(0xFF9FBFFF),
@@ -57,11 +56,9 @@ class AppTheme {
       secondary: secondaryBlue,
       tertiary: accentBlue,
       surface: cardLight,
-      background: backgroundLight,
       onPrimary: textLight,
       onSecondary: textLight,
       onSurface: textPrimary,
-      onBackground: textPrimary,
       error: Color(0xFFE74C3C),
       onError: textLight,
       outline: Color(0xFFE0E0E0),
@@ -73,7 +70,7 @@ class AppTheme {
       inversePrimary: primaryBlue,
       surfaceTint: primaryBlue,
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       displayLarge: TextStyle(color: textPrimary, fontFamily: 'NotoSans', fontFamilyFallback: _fontFallbacks, fontFeatures: [FontFeature.tabularFigures()]),
       displayMedium: TextStyle(color: textPrimary, fontFamily: 'NotoSans', fontFamilyFallback: _fontFallbacks, fontFeatures: [FontFeature.tabularFigures()]),
       displaySmall: TextStyle(color: textPrimary, fontFamily: 'NotoSans', fontFamilyFallback: _fontFallbacks, fontFeatures: [FontFeature.tabularFigures()]),
@@ -129,14 +126,14 @@ class AppTheme {
       ),
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return primaryBlue;
         }
         return Colors.grey;
       }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return primaryBlue.withValues(alpha: 0.5);
         }
         return Colors.grey.withValues(alpha: 0.5);
@@ -147,7 +144,7 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
-    primarySwatch: MaterialColor(0xFF1E3A8A, {
+    primarySwatch: const MaterialColor(0xFF1E3A8A, {
       50: Color(0xFFE8F2FF),
       100: Color(0xFFC5D9FF),
       200: Color(0xFF9FBFFF),
@@ -176,11 +173,9 @@ class AppTheme {
       secondary: secondaryBlue,
       tertiary: accentBlue,
       surface: cardDark,
-      background: backgroundDark,
       onPrimary: textLight,
       onSecondary: textLight,
       onSurface: textLight,
-      onBackground: textLight,
       error: Color(0xFFE74C3C),
       onError: textLight,
       outline: Color(0xFF404040),
@@ -192,7 +187,7 @@ class AppTheme {
       inversePrimary: primaryBlue,
       surfaceTint: primaryBlue,
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       displayLarge: TextStyle(color: textLight, fontFamily: 'NotoSans', fontFamilyFallback: _fontFallbacks, fontFeatures: [FontFeature.tabularFigures()]),
       displayMedium: TextStyle(color: textLight, fontFamily: 'NotoSans', fontFamilyFallback: _fontFallbacks, fontFeatures: [FontFeature.tabularFigures()]),
       displaySmall: TextStyle(color: textLight, fontFamily: 'NotoSans', fontFamilyFallback: _fontFallbacks, fontFeatures: [FontFeature.tabularFigures()]),
@@ -248,14 +243,14 @@ class AppTheme {
       ),
     ),
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return primaryBlue;
         }
         return Colors.grey;
       }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
           return primaryBlue.withValues(alpha: 0.5);
         }
         return Colors.grey.withValues(alpha: 0.5);

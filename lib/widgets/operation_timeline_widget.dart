@@ -11,11 +11,11 @@ class OperationTimelineWidget extends ConsumerStatefulWidget {
   final double? maxHeight;
 
   const OperationTimelineWidget({
-    Key? key,
+    super.key,
     required this.operationId,
     this.showHeader = true,
     this.maxHeight,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<OperationTimelineWidget> createState() =>
@@ -50,7 +50,7 @@ class _OperationTimelineWidgetState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
               color: Colors.red,
               size: 48,
@@ -87,7 +87,7 @@ class _OperationTimelineWidgetState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.timeline,
               color: Colors.grey,
               size: 48,

@@ -197,7 +197,7 @@ class Sale {
       paidAt: json['paid_at'] != null ? DateTime.tryParse(json['paid_at']) : null,
       updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
       payments: paymentsJson is List 
-          ? (paymentsJson as List).map((payment) => SalePayment(
+          ? (paymentsJson).map((payment) => SalePayment(
               paymentId: payment['id'] ?? 0,
               salesId: payment['sales_id'] ?? 0,
               paymentMethodId: payment['payment_method_id'] ?? 0,
@@ -306,9 +306,9 @@ class Sale {
   // Método para obter o valor total em ambas as moedas
   String get dualCurrencyDisplay {
     if (currencyCode == 'BRL') {
-      return '$totalAmountFormatted (${totalAmountUsdFormatted})';
+      return '$totalAmountFormatted ($totalAmountUsdFormatted)';
     } else {
-      return '$totalAmountFormatted (${totalAmountBrlFormatted})';
+      return '$totalAmountFormatted ($totalAmountBrlFormatted)';
     }
   }
 

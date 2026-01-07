@@ -8,13 +8,13 @@ class ContactsMultiView extends StatefulWidget {
   final void Function(Map<String, dynamic>) onCreateSale;
 
   const ContactsMultiView({
-    Key? key,
+    super.key,
     required this.contacts,
     required this.onOpenProfileModal,
     required this.onOpenProfilePage,
     required this.onOpenWhatsApp,
     required this.onCreateSale,
-  }) : super(key: key);
+  });
 
   @override
   State<ContactsMultiView> createState() => _ContactsMultiViewState();
@@ -454,9 +454,9 @@ class _ContactsMultiViewState extends State<ContactsMultiView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.08),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.25)),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

@@ -7,7 +7,7 @@ import '../widgets/financial_kpi_card.dart';
 import '../widgets/financial_metric_modal.dart';
 
 class FinancialDashboardScreen extends ConsumerStatefulWidget {
-  const FinancialDashboardScreen({Key? key}) : super(key: key);
+  const FinancialDashboardScreen({super.key});
 
   @override
   ConsumerState<FinancialDashboardScreen> createState() => _FinancialDashboardScreenState();
@@ -76,7 +76,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(Icons.attach_money, size: 18),
@@ -118,7 +118,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
                               // Filtro de período
                               Expanded(
                                 child: DropdownButtonFormField<String>(
-                                  value: _selectedTimeRange,
+                                  initialValue: _selectedTimeRange,
                                   decoration: const InputDecoration(
                                     labelText: 'Período',
                                     border: OutlineInputBorder(),
@@ -143,7 +143,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
                               // Filtro de categoria
                               Expanded(
                                 child: DropdownButtonFormField<String>(
-                                  value: _selectedCategory,
+                                  initialValue: _selectedCategory,
                                   decoration: const InputDecoration(
                                     labelText: 'Categoria',
                                     border: OutlineInputBorder(),
@@ -280,9 +280,9 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,8 +372,8 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            color.withOpacity(0.1),
-            color.withOpacity(0.05),
+            color.withValues(alpha: 0.1),
+            color.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
@@ -390,7 +390,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: color.withOpacity(0.8),
+                  color: color.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -484,13 +484,13 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
           verticalInterval: 1,
           getDrawingHorizontalLine: (value) {
             return FlLine(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
               strokeWidth: 1,
             );
           },
           getDrawingVerticalLine: (value) {
             return FlLine(
-              color: Colors.grey.withOpacity(0.2),
+              color: Colors.grey.withValues(alpha: 0.2),
               strokeWidth: 1,
             );
           },
@@ -537,7 +537,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
         ),
         borderData: FlBorderData(
           show: true,
-          border: Border.all(color: Colors.grey.withOpacity(0.3)),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
         ),
         minX: 0,
         maxX: 11,
@@ -557,7 +557,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
-                colors: [Colors.green.withOpacity(0.1), Colors.green.withOpacity(0.3)],
+                colors: [Colors.green.withValues(alpha: 0.1), Colors.green.withValues(alpha: 0.3)],
               ),
             ),
           ),
@@ -574,7 +574,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
-                colors: [Colors.red.withOpacity(0.1), Colors.red.withOpacity(0.3)],
+                colors: [Colors.red.withValues(alpha: 0.1), Colors.red.withValues(alpha: 0.3)],
               ),
             ),
           ),
@@ -591,7 +591,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
-                colors: [Colors.blue.withOpacity(0.1), Colors.blue.withOpacity(0.3)],
+                colors: [Colors.blue.withValues(alpha: 0.1), Colors.blue.withValues(alpha: 0.3)],
               ),
             ),
           ),
@@ -668,7 +668,7 @@ class _FinancialDashboardScreenState extends ConsumerState<FinancialDashboardScr
     } else if (value >= 1000) {
       return '${(value / 1000).toStringAsFixed(1)}K';
     } else {
-      return '${value.toStringAsFixed(0)}';
+      return value.toStringAsFixed(0);
     }
   }
 

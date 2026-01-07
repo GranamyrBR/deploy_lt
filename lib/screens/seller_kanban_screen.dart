@@ -24,7 +24,7 @@ class SellerKanbanScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _HeaderSection(),
+            const _HeaderSection(),
             const SizedBox(height: 32),
             _KanbanSection(board: board, ref: ref),
             const SizedBox(height: 32),
@@ -435,8 +435,8 @@ class _TodoSectionState extends State<_TodoSection> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                SalesTimelineWidget(
-                  steps: const [
+                const SalesTimelineWidget(
+                  steps: [
                     TimelineStep(
                       title: 'Lead',
                       description: 'Cliente identificado',

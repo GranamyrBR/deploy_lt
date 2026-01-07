@@ -52,7 +52,7 @@ class AuditService {
         params: {'p_quotation_id': quotationId},
       );
 
-      return (response as List)
+      return (response)
           .map((json) => ActivityLog.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
@@ -72,7 +72,7 @@ class AuditService {
         },
       );
 
-      return (response as List)
+      return (response)
           .map((json) => ActivityLog.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
@@ -126,7 +126,7 @@ class AuditService {
         params: {'p_quotation_id': quotationId},
       );
 
-      return (response as List)
+      return (response)
           .map((json) => QuotationFollowUp.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {

@@ -9,12 +9,12 @@ class CustomerProfileView extends StatefulWidget {
   final bool? highContrast;
 
   const CustomerProfileView({
-    Key? key,
+    super.key,
     required this.customerId,
     required this.customerName,
     this.analyticsService,
     this.highContrast,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomerProfileView> createState() => _CustomerProfileViewState();
@@ -121,7 +121,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView>
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: widget.highContrast == true
-            ? LinearGradient(colors: [Colors.black, Colors.black])
+            ? const LinearGradient(colors: [Colors.black, Colors.black])
             : LinearGradient(
                 colors: isVip
                     ? [Colors.amber[700]!, Colors.amber[500]!]
@@ -134,7 +134,7 @@ class _CustomerProfileViewState extends State<CustomerProfileView>
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: widget.highContrast == true ? Colors.white : Colors.white.withOpacity(0.2),
+            backgroundColor: widget.highContrast == true ? Colors.white : Colors.white.withValues(alpha: 0.2),
             child: Text(
               widget.customerName.isNotEmpty ? widget.customerName[0].toUpperCase() : 'C',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: widget.highContrast == true ? Colors.black : Colors.white),
@@ -172,10 +172,10 @@ class _CustomerProfileViewState extends State<CustomerProfileView>
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(customer?['email'] ?? 'Email não informado', style: TextStyle(fontSize: 14, color: widget.highContrast == true ? Colors.white : Colors.white.withOpacity(0.9))),
+                Text(customer?['email'] ?? 'Email não informado', style: TextStyle(fontSize: 14, color: widget.highContrast == true ? Colors.white : Colors.white.withValues(alpha: 0.9))),
                 if (customer?['account']?['name'] != null) ...[
                   const SizedBox(height: 4),
-                  Text('Agência: ${customer['account']['name']}', style: TextStyle(fontSize: 14, color: widget.highContrast == true ? Colors.white : Colors.white.withOpacity(0.9))),
+                  Text('Agência: ${customer['account']['name']}', style: TextStyle(fontSize: 14, color: widget.highContrast == true ? Colors.white : Colors.white.withValues(alpha: 0.9))),
                 ],
               ],
             ),

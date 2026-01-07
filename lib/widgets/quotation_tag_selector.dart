@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/quotation_tag.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 /// Widget para selecionar tags para uma cotação
 class QuotationTagSelector extends StatefulWidget {
@@ -10,12 +9,12 @@ class QuotationTagSelector extends StatefulWidget {
   final bool allowCreateNew;
 
   const QuotationTagSelector({
-    Key? key,
+    super.key,
     required this.availableTags,
     required this.selectedTagIds,
     required this.onTagsChanged,
     this.allowCreateNew = false,
-  }) : super(key: key);
+  });
 
   @override
   State<QuotationTagSelector> createState() => _QuotationTagSelectorState();
@@ -74,7 +73,7 @@ class _QuotationTagSelectorState extends State<QuotationTagSelector> {
       ),
       selected: isSelected,
       onSelected: (_) => _toggleTag(tag.id),
-      backgroundColor: color.withOpacity(0.1),
+      backgroundColor: color.withValues(alpha: 0.1),
       selectedColor: color,
       checkmarkColor: Colors.white,
       labelStyle: TextStyle(
@@ -134,11 +133,11 @@ class QuotationTagDisplay extends StatelessWidget {
   final double size;
 
   const QuotationTagDisplay({
-    Key? key,
+    super.key,
     required this.tags,
     this.maxVisible = 3,
     this.size = 24,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +166,7 @@ class QuotationTagDisplay extends StatelessWidget {
         borderRadius: BorderRadius.circular(size * 0.4),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/exchange_rate_provider.dart';
 import '../design/design_tokens.dart';
-import 'package:intl/intl.dart';
 
 class ExchangeRateDisplay extends ConsumerStatefulWidget {
-  const ExchangeRateDisplay({Key? key}) : super(key: key);
+  const ExchangeRateDisplay({super.key});
 
   @override
   ConsumerState<ExchangeRateDisplay> createState() => _ExchangeRateDisplayState();
@@ -48,7 +47,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
     final textColor = isDark ? Colors.white : const Color(0xFF181A20);
     final textSecondaryColor = isDark ? const Color(0xFFB0B3B8) : const Color(0xFF5F6368);
     final borderColor = isDark ? const Color(0xFF2C2F36) : const Color(0xFFE0E0E0);
-    final primaryColor = const Color(0xFFFFD600);
+    const primaryColor = Color(0xFFFFD600);
 
     return Container(
       decoration: BoxDecoration(
@@ -96,7 +95,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                 ),
               ),
               IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.refresh,
                   color: primaryColor,
                   size: 18,
@@ -222,7 +221,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4),
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: primaryColor,
                                   width: 1,
                                 ),
@@ -293,7 +292,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                 ],
               );
             },
-            loading: () => Center(
+            loading: () => const Center(
               child: CircularProgressIndicator(
                 color: primaryColor,
               ),

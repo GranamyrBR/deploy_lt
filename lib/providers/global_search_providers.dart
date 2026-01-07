@@ -17,7 +17,7 @@ final globalContactSearchProvider = FutureProvider.family<List<Contact>, String>
     final response = await supabase
         .from('contact')
         .select()
-        .or('name.ilike.%${term}%,email.ilike.%${term}%,phone.ilike.%${term}%')
+        .or('name.ilike.%$term%,email.ilike.%$term%,phone.ilike.%$term%')
         .order('id', ascending: false)
         .order('id', ascending: false).limit(10);
     
@@ -85,7 +85,7 @@ final globalUserSearchProvider = FutureProvider.family<List<app_user.User>, Stri
     final response = await supabase
         .from('user')
         .select('*, department:department_id(*)')
-        .or('username.ilike.%${term}%,email.ilike.%${term}%')
+        .or('username.ilike.%$term%,email.ilike.%$term%')
         .order('id', ascending: false)
         .order('id', ascending: false).limit(10);
     
@@ -107,7 +107,7 @@ final globalAgencySearchProvider = FutureProvider.family<List<Agency>, String>((
     final response = await supabase
         .from('account')
         .select()
-        .or('name.ilike.%${term}%,email.ilike.%${term}%,phone.ilike.%${term}%')
+        .or('name.ilike.%$term%,email.ilike.%$term%,phone.ilike.%$term%')
         .order('id', ascending: false)
         .order('id', ascending: false).limit(10);
     
@@ -129,7 +129,7 @@ final globalDriverSearchProvider = FutureProvider.family<List<Driver>, String>((
     final response = await supabase
         .from('driver')
         .select()
-        .or('name.ilike.%${term}%,email.ilike.%${term}%,phone.ilike.%${term}%,city_name.ilike.%${term}%')
+        .or('name.ilike.%$term%,email.ilike.%$term%,phone.ilike.%$term%,city_name.ilike.%$term%')
         .order('id', ascending: false)
         .order('id', ascending: false).limit(10);
     
@@ -151,7 +151,7 @@ final globalLeadTintimSearchProvider = FutureProvider.family<List<LeadTintim>, S
     final response = await supabase
         .from('leadstintim')
         .select()
-        .or('name.ilike.%${term}%,phone.ilike.%${term}%,message.ilike.%${term}%')
+        .or('name.ilike.%$term%,phone.ilike.%$term%,message.ilike.%$term%')
         .order('id', ascending: false)
         .order('id', ascending: false).limit(10);
     
@@ -178,7 +178,7 @@ final globalMondaySearchProvider = FutureProvider.family<List<MondayEntry>, Stri
           source:source_id(id, name),
           account:account_id(id, name)
         ''')
-        .or('name.ilike.%${term}%,email.ilike.%${term}%,phone.ilike.%${term}%')
+        .or('name.ilike.%$term%,email.ilike.%$term%,phone.ilike.%$term%')
         .order('id', ascending: false).limit(10);
     
     return (response as List<dynamic>)

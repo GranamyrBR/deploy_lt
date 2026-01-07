@@ -300,7 +300,7 @@ class CostCenterKpiDashboard extends StatelessWidget {
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
                   maxY: 100,
-                  barTouchData: BarTouchData(enabled: true),
+                  barTouchData: const BarTouchData(enabled: true),
                   titlesData: FlTitlesData(
                     show: true,
                     rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),

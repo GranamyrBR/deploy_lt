@@ -9,11 +9,11 @@ class QuotationStatusManager extends StatelessWidget {
   final bool enabled;
 
   const QuotationStatusManager({
-    Key? key,
+    super.key,
     required this.currentStatus,
     required this.onStatusChanged,
     this.enabled = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class QuotationStatusManager extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(currentStatus).withOpacity(0.2),
+                    color: _getStatusColor(currentStatus).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -296,7 +296,7 @@ class QuotationStatusManager extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: _getStatusColor(currentStatus).withOpacity(0.2),
+                              color: _getStatusColor(currentStatus).withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
@@ -311,7 +311,7 @@ class QuotationStatusManager extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: color.withOpacity(0.2),
+                              color: color.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(icon, color: color, size: 20),

@@ -12,7 +12,7 @@ import '../widgets/quotation_tag_selector.dart';
 import '../screens/quotation_tags_management_screen.dart';
 
 class QuotationsScreenPremium extends ConsumerStatefulWidget {
-  const QuotationsScreenPremium({Key? key}) : super(key: key);
+  const QuotationsScreenPremium({super.key});
 
   @override
   ConsumerState<QuotationsScreenPremium> createState() => _QuotationsScreenPremiumState();
@@ -46,7 +46,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
     
     try {
       final data = await _quotationService.getQuotations(
-        filter: QuotationFilter(limit: 200),
+        filter: const QuotationFilter(limit: 200),
       );
       
       if (mounted) {
@@ -87,7 +87,9 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
       if (_dateRange != null) {
         final quotationDate = DateTime.parse(q['quotation_date'] ?? q['created_at']);
         if (quotationDate.isBefore(_dateRange!.start) || 
-            quotationDate.isAfter(_dateRange!.end)) return false;
+            quotationDate.isAfter(_dateRange!.end)) {
+          return false;
+        }
       }
       
       // 🆕 FILTRO POR PERÍODO DE VIAGEM
@@ -134,7 +136,9 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
         
         if (!clientName.contains(searchLower) && 
             !quotationNumber.contains(searchLower) &&
-            !destination.contains(searchLower)) return false;
+            !destination.contains(searchLower)) {
+          return false;
+        }
       }
       
       return true;
@@ -297,7 +301,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -312,7 +316,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.receipt_long, color: Colors.white, size: 22),
@@ -478,7 +482,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
         border: isPulse ? Border.all(color: color, width: 2) : null,
         boxShadow: [
           BoxShadow(
-            color: isPulse ? color.withOpacity(0.3) : Colors.black.withOpacity(0.05),
+            color: isPulse ? color.withValues(alpha: 0.3) : Colors.black.withValues(alpha: 0.05),
             blurRadius: isPulse ? 15 : 8,
             offset: const Offset(0, 4),
           ),
@@ -491,7 +495,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 24),
@@ -526,7 +530,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
         color: isDark ? Colors.grey[850] : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -824,7 +828,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
       ),
       style: OutlinedButton.styleFrom(
         backgroundColor: _dateRange != null 
-            ? Colors.blue.withOpacity(0.1) 
+            ? Colors.blue.withValues(alpha: 0.1) 
             : (isDark ? Colors.grey[800] : Colors.grey[100]),
         side: BorderSide(
           color: _dateRange != null ? Colors.blue : Colors.transparent,
@@ -943,7 +947,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.2),
+                            color: statusColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -985,10 +989,10 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: urgencyColor.withOpacity(0.15),
+                          color: urgencyColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: urgencyColor.withOpacity(0.5),
+                            color: urgencyColor.withValues(alpha: 0.5),
                             width: 2,
                           ),
                         ),
@@ -1160,7 +1164,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: urgencyColor.withOpacity(0.5),
+                              color: urgencyColor.withValues(alpha: 0.5),
                               blurRadius: daysUntilTravel <= 3 ? 12 : 8,
                               offset: const Offset(0, 2),
                             ),
@@ -1190,11 +1194,11 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                     // 🆕 Menu de Ações CRUD
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -1312,7 +1316,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.2),
+                  color: statusColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(_getStatusIcon(status), color: statusColor),
@@ -1410,7 +1414,7 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.2),
+                          color: statusColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -2243,7 +2247,7 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(Icons.label, color: Colors.white, size: 24),
@@ -2354,7 +2358,7 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
-                                color: isSelected ? color : color.withOpacity(0.1),
+                                color: isSelected ? color : color.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: color,
@@ -2363,7 +2367,7 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: color.withOpacity(0.3),
+                                          color: color.withValues(alpha: 0.3),
                                           blurRadius: 8,
                                           offset: const Offset(0, 3),
                                         ),
@@ -2412,7 +2416,7 @@ class _TagSelectionDialogState extends State<_TagSelectionDialog> {
                 borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     offset: const Offset(0, -2),
                     blurRadius: 4,
                   ),

@@ -39,7 +39,7 @@ class FaviconService {
     }
 
     // Usar Image.asset para PNG com fit: BoxFit.contain para evitar fundo quadriculado
-    return Container(
+    return SizedBox(
       width: adjustedSize,
       height: adjustedSize,
       child: Image.asset(

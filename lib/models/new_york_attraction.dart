@@ -81,7 +81,7 @@ class NewYorkAttraction {
   String get formattedDuration {
     if (estimatedDuration == null) return 'Duração não informada';
     if (estimatedDuration! < 60) {
-      return '${estimatedDuration} min';
+      return '$estimatedDuration min';
     } else {
       final hours = estimatedDuration! ~/ 60;
       final minutes = estimatedDuration! % 60;

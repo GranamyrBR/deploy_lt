@@ -9,11 +9,11 @@ class OperationCard extends StatelessWidget {
   final Function(String)? onStatusChanged;
 
   const OperationCard({
-    Key? key,
+    super.key,
     required this.operation,
     this.onTap,
     this.onStatusChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

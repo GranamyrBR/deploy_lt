@@ -15,7 +15,7 @@ class AddressAutocompleteField extends StatefulWidget {
   final bool enabled;
 
   const AddressAutocompleteField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     this.hintText,
@@ -23,7 +23,7 @@ class AddressAutocompleteField extends StatefulWidget {
     this.onAddressSelected,
     this.validator,
     this.enabled = true,
-  }) : super(key: key);
+  });
 
   @override
   State<AddressAutocompleteField> createState() => _AddressAutocompleteFieldState();

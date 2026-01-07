@@ -11,7 +11,6 @@ import 'resource_distribution_table.dart';
 import 'weekly_distribution_chart.dart';
 import '../providers/dashboard_metrics_provider.dart';
 import '../providers/driver_commission_provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import '../providers/auth_provider.dart';
 
 class DashboardContentDrag extends ConsumerStatefulWidget {
@@ -383,8 +382,8 @@ class DraggableCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Expanded(
-                    child: const SalesChart(),
+                  const Expanded(
+                    child: SalesChart(),
                   ),
                 ],
               ),
@@ -409,8 +408,8 @@ class DraggableCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Expanded(
-                    child: const ActivitiesChart(),
+                  const Expanded(
+                    child: ActivitiesChart(),
                   ),
                 ],
               ),
@@ -435,7 +434,7 @@ class DraggableCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Expanded(
+                  const Expanded(
                     child: ResourceDistributionTable(),
                   ),
                 ],
@@ -461,8 +460,8 @@ class DraggableCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Expanded(
-                    child: const WeeklyDistributionChart(),
+                  const Expanded(
+                    child: WeeklyDistributionChart(),
                   ),
                 ],
               ),

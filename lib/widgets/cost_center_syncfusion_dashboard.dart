@@ -10,9 +10,9 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
   final List<CostCenter> costCenters;
 
   const CostCenterSyncfusionDashboard({
-    Key? key,
+    super.key,
     required this.costCenters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -185,9 +185,9 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
             SizedBox(
               height: 300,
               child: SfCircularChart(
-                title: ChartTitle(text: 'Orçamento Total por Centro'),
+                title: const ChartTitle(text: 'Orçamento Total por Centro'),
                 legend:
-                    Legend(isVisible: true, position: LegendPosition.bottom),
+                    const Legend(isVisible: true, position: LegendPosition.bottom),
                 series: <CircularSeries>[
                   PieSeries<ChartData, String>(
                     dataSource: data,
@@ -238,17 +238,17 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
             SizedBox(
               height: 350,
               child: SfCartesianChart(
-                primaryXAxis: CategoryAxis(
+                primaryXAxis: const CategoryAxis(
                   title: AxisTitle(text: 'Centros de Custo'),
                   labelRotation: -45,
                 ),
                 primaryYAxis: NumericAxis(
-                  title: AxisTitle(text: 'Valor (R\$)'),
+                  title: const AxisTitle(text: 'Valor (R\$)'),
                   numberFormat:
                       NumberFormat.currency(symbol: 'R\$', decimalDigits: 0),
                 ),
                 legend:
-                    Legend(isVisible: true, position: LegendPosition.bottom),
+                    const Legend(isVisible: true, position: LegendPosition.bottom),
                 tooltipBehavior: TooltipBehavior(enable: true),
                 series: <StackedColumnSeries<ExpenseData, String>>[
                   StackedColumnSeries<ExpenseData, String>(
@@ -333,7 +333,7 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
                         _buildLegendItem(
                             'Variáveis', totalVariable, Colors.orange, total),
                         const SizedBox(height: 16),
-                        Divider(),
+                        const Divider(),
                         Text(
                           'Total: R\$ ${total.toStringAsFixed(0)}',
                           style: const TextStyle(
@@ -506,16 +506,16 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
             SizedBox(
               height: 300,
               child: SfCartesianChart(
-                primaryXAxis: CategoryAxis(
+                primaryXAxis: const CategoryAxis(
                   title: AxisTitle(text: 'Departamentos'),
                 ),
                 primaryYAxis: NumericAxis(
-                  title: AxisTitle(text: 'Valor (R\$)'),
+                  title: const AxisTitle(text: 'Valor (R\$)'),
                   numberFormat:
                       NumberFormat.currency(symbol: 'R\$', decimalDigits: 0),
                 ),
                 legend:
-                    Legend(isVisible: true, position: LegendPosition.bottom),
+                    const Legend(isVisible: true, position: LegendPosition.bottom),
                 tooltipBehavior: TooltipBehavior(enable: true),
                 series: <ColumnSeries<DepartmentComparisonData, String>>[
                   ColumnSeries<DepartmentComparisonData, String>(
@@ -551,7 +551,7 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
     final months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'];
     final data = months.map((month) {
       final monthIndex = months.indexOf(month);
-      final baseValue = 50000;
+      const baseValue = 50000;
       final variation = (monthIndex * 5000) + (monthIndex % 3) * 2000;
       final utilized = baseValue + variation - (monthIndex * 3000);
       return TrendData(
@@ -578,16 +578,16 @@ class CostCenterSyncfusionDashboard extends StatelessWidget {
             SizedBox(
               height: 300,
               child: SfCartesianChart(
-                primaryXAxis: CategoryAxis(
+                primaryXAxis: const CategoryAxis(
                   title: AxisTitle(text: 'Meses'),
                 ),
                 primaryYAxis: NumericAxis(
-                  title: AxisTitle(text: 'Valor (R\$)'),
+                  title: const AxisTitle(text: 'Valor (R\$)'),
                   numberFormat:
                       NumberFormat.currency(symbol: 'R\$', decimalDigits: 0),
                 ),
                 legend:
-                    Legend(isVisible: true, position: LegendPosition.bottom),
+                    const Legend(isVisible: true, position: LegendPosition.bottom),
                 tooltipBehavior: TooltipBehavior(enable: true),
                 series: <LineSeries<TrendData, String>>[
                   LineSeries<TrendData, String>(

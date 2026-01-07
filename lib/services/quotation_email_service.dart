@@ -15,9 +15,7 @@ class QuotationEmailService {
     try {
       // Generate PDF if no attachment provided
       File? pdfFile = attachmentFile;
-      if (pdfFile == null) {
-        pdfFile = await PdfGeneratorSimple.generatePdf(quotation);
-      }
+      pdfFile ??= await PdfGeneratorSimple.generatePdf(quotation);
 
       // Create email subject
       final subject = 'Cotação de Viagem - ${quotation.quotationNumber}';

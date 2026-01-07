@@ -7,14 +7,13 @@ import '../providers/cars_provider.dart';
 import '../utils/responsive_utils.dart';
 import '../utils/timezone_utils.dart';
 import '../widgets/operation_card.dart';
-import '../widgets/base_screen_layout.dart';
 import '../widgets/base_app_bar.dart';
 import '../widgets/operation_details_modal.dart';
 import '../widgets/digital_clock_widget.dart';
 import '../providers/auth_provider.dart';
 
 class OperationsDashboardScreen extends ConsumerStatefulWidget {
-  const OperationsDashboardScreen({Key? key}) : super(key: key);
+  const OperationsDashboardScreen({super.key});
 
   @override
   ConsumerState<OperationsDashboardScreen> createState() =>
@@ -26,7 +25,7 @@ class _OperationsDashboardScreenState
     with TickerProviderStateMixin {
   late TabController _tabController;
   late AnimationController _pulseController;
-  String _selectedFilter = 'all';
+  final String _selectedFilter = 'all';
   bool _showUrgentOnly = false;
 
   // Estados de filtro
@@ -902,7 +901,7 @@ class _OperationsDashboardScreenState
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Filtros'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Filtros aqui

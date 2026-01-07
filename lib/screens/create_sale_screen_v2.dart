@@ -9,12 +9,10 @@ import '../models/sale.dart';
 import '../providers/sales_provider.dart';
 import '../providers/contacts_provider.dart';
 import '../providers/product_categories_provider.dart';
-import '../providers/products_provider.dart';
 import '../providers/filtered_services_provider.dart';
 import '../providers/filtered_products_provider.dart';
 import '../providers/service_types_provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import '../providers/exchange_rate_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../widgets/exchange_rate_display.dart';
@@ -162,10 +160,8 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     print('DEBUG: Carregando dados da venda #${widget.sale!.id} para edição');
 
     // Carregar cliente
-    if (widget.sale!.contactId != null) {
-      _loadContactById(widget.sale!.contactId!);
-    }
-
+    _loadContactById(widget.sale!.contactId);
+  
     // Carregar itens da venda
     _loadSaleItems();
 
@@ -173,10 +169,8 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     _loadSalePayments();
 
     // Definir moeda
-    if (widget.sale!.currencyCode != null) {
-      _setCurrencyByCode(widget.sale!.currencyCode!);
+    _setCurrencyByCode(widget.sale!.currencyCode);
     }
-  }
 
   Future<void> _loadContactById(int contactId) async {
     try {
@@ -287,7 +281,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
         setState(() {
           _selectedCurrency = foundCurrency;
         });
-        print('DEBUG: Moeda definida: ${foundCurrency!.currencyCode}');
+        print('DEBUG: Moeda definida: ${foundCurrency.currencyCode}');
       } catch (e) {
         print(
             'DEBUG: Moeda não encontrada: $currencyCode, usando primeira disponível');
@@ -989,7 +983,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
         color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -1104,7 +1098,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
           Container(
             width: 50,
             height: 50,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: _successGreen,
               shape: BoxShape.circle,
             ),
@@ -1215,9 +1209,9 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               height: 40,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: _primaryBlue.withOpacity(0.1),
+                color: _primaryBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: _primaryBlue.withOpacity(0.3)),
+                border: Border.all(color: _primaryBlue.withValues(alpha: 0.3)),
               ),
               child: DropdownButtonHideUnderline(
                 child: Consumer(
@@ -1225,14 +1219,14 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                     final serviceTypesAsync = ref.watch(serviceTypesProvider);
 
                     return serviceTypesAsync.when(
-                      loading: () => Text(
+                      loading: () => const Text(
                         'Carregando...',
                         style: TextStyle(
                           color: _primaryBlue,
                           fontSize: 14,
                         ),
                       ),
-                      error: (error, stack) => Text(
+                      error: (error, stack) => const Text(
                         'Erro',
                         style: TextStyle(
                           color: _errorRed,
@@ -1253,7 +1247,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
 
                         return DropdownButton<String?>(
                           value: _selectedServiceCategory,
-                          hint: Text(
+                          hint: const Text(
                             'Categoria',
                             style: TextStyle(
                               color: _primaryBlue,
@@ -1292,12 +1286,12 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
 
               return servicesAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
+                error: (error, stack) => const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.error, color: _errorRed, size: 32),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text('Erro ao carregar serviços',
                           style: TextStyle(color: _errorRed)),
                     ],
@@ -1324,8 +1318,9 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                     // Filtro por categoria
                     if (_selectedServiceCategory != null &&
                         _selectedServiceCategory!.isNotEmpty) {
-                      if (service.category != _selectedServiceCategory)
+                      if (service.category != _selectedServiceCategory) {
                         return false;
+                      }
                     }
 
                     // Filtro por texto
@@ -1351,7 +1346,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                               size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 8),
                           Text(
-                              'Nenhum serviço encontrado para "${_serviceSearchQuery}"',
+                              'Nenhum serviço encontrado para "$_serviceSearchQuery"',
                               style: TextStyle(color: Colors.grey[600])),
                         ],
                       ),
@@ -1396,7 +1391,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _accentPurple.withOpacity(0.1),
+                color: _accentPurple.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -1437,12 +1432,12 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _accentPurple.withOpacity(0.1),
+                        color: _accentPurple.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         product.category!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: _accentPurple,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -1460,7 +1455,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               children: [
                 Text(
                   'US\$ ${product.pricePerUnit.toStringAsFixed(2)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: _successGreen,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -1510,7 +1505,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: _primaryBlue.withOpacity(0.1),
+                color: _primaryBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -1555,12 +1550,12 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _secondaryBlue.withOpacity(0.1),
+                        color: _secondaryBlue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         service.category!,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: _secondaryBlue,
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -1579,7 +1574,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                 if (service.price != null) ...[
                   Text(
                     'US\$ ${service.price!.toStringAsFixed(2)}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: _successGreen,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
@@ -1692,7 +1687,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(
-        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         fontSize: 14,
         fontWeight: FontWeight.w500,
       ),
@@ -1701,7 +1696,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
         borderSide: BorderSide(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
           width: 1.5,
         ),
       ),
@@ -1740,7 +1735,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
   void _showItemConfigurationModal() {
     if (_selectedProduct == null && _selectedService == null) return;
 
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     int quantity = 1;
     int pax = 1;
     double discount = 0.0;
@@ -1756,7 +1751,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
-            'Configurar ${_itemType}',
+            'Configurar $_itemType',
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.bold,
@@ -1767,7 +1762,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Form(
-                  key: _formKey,
+                  key: formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2081,9 +2076,9 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               height: 40,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: _accentPurple.withOpacity(0.1),
+                color: _accentPurple.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: _accentPurple.withOpacity(0.3)),
+                border: Border.all(color: _accentPurple.withValues(alpha: 0.3)),
               ),
               child: DropdownButtonHideUnderline(
                 child: Consumer(
@@ -2092,14 +2087,14 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                         ref.watch(productCategoriesProvider);
 
                     return productCategoriesAsync.when(
-                      loading: () => Text(
+                      loading: () => const Text(
                         'Carregando...',
                         style: TextStyle(
                           color: _accentPurple,
                           fontSize: 14,
                         ),
                       ),
-                      error: (error, stack) => Text(
+                      error: (error, stack) => const Text(
                         'Erro',
                         style: TextStyle(
                           color: _errorRed,
@@ -2120,7 +2115,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
 
                         return DropdownButton<int?>(
                           value: _selectedProductCategoryId,
-                          hint: Text(
+                          hint: const Text(
                             'Categoria',
                             style: TextStyle(
                               color: _accentPurple,
@@ -2160,12 +2155,12 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
 
               return productsAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
+                error: (error, stack) => const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.error, color: _errorRed, size: 32),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8),
                       Text('Erro ao carregar produtos',
                           style: TextStyle(color: _errorRed)),
                     ],
@@ -2209,7 +2204,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                           const SizedBox(height: 8),
                           Text(
                             _productSearchQuery.isNotEmpty
-                                ? 'Nenhum produto encontrado para "${_productSearchQuery}"'
+                                ? 'Nenhum produto encontrado para "$_productSearchQuery"'
                                 : 'Nenhum produto encontrado para a categoria selecionada',
                             style: TextStyle(color: Colors.grey[600]),
                             textAlign: TextAlign.center,
@@ -2242,9 +2237,9 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
       {Product? product}) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: InkWell(
         onTap: () {
@@ -2276,7 +2271,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                 Text(
                   'US\$ ${product.pricePerUnit.toStringAsFixed(2)}',
                   style: TextStyle(
-                    color: color.withOpacity(0.8),
+                    color: color.withValues(alpha: 0.8),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                   ),
@@ -2293,13 +2288,16 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     final productName = name?.toLowerCase() ?? '';
 
     if (productName.contains('seguro')) return Icons.security;
-    if (productName.contains('chip') || productName.contains('sim'))
+    if (productName.contains('chip') || productName.contains('sim')) {
       return Icons.sim_card;
+    }
     if (productName.contains('bagagem')) return Icons.luggage;
-    if (productName.contains('camera') || productName.contains('foto'))
+    if (productName.contains('camera') || productName.contains('foto')) {
       return Icons.camera_alt;
-    if (productName.contains('guia') || productName.contains('book'))
+    }
+    if (productName.contains('guia') || productName.contains('book')) {
       return Icons.book;
+    }
     if (productName.contains('mapa')) return Icons.map;
     if (productName.contains('souvenir')) return Icons.card_giftcard;
 
@@ -2337,14 +2335,14 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: _warningOrange.withOpacity(0.1),
+            color: _warningOrange.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _warningOrange.withOpacity(0.3)),
+            border: Border.all(color: _warningOrange.withValues(alpha: 0.3)),
           ),
-          child: Row(
+          child: const Row(
             children: [
               Icon(Icons.currency_exchange, color: _warningOrange, size: 20),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -2357,7 +2355,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                         fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       'A empresa vende em dólares. Adiantamentos em reais travam a cotação. Flutuações cambiais são do cliente.',
                       style: TextStyle(
@@ -2421,8 +2419,8 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     final totalPaidUsd = _salePayments.fold<double>(0, (sum, payment) {
       if (payment.currencyCode == 'USD') {
         return sum + payment.amount;
-      } else if (payment.currencyCode == 'BRL' && payment.amountInUsd != null) {
-        return sum + payment.amountInUsd!;
+      } else if (payment.currencyCode == 'BRL') {
+        return sum + payment.amountInUsd;
       }
       return sum;
     });
@@ -2442,21 +2440,21 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            _warningOrange.withOpacity(0.1),
-            _warningOrange.withOpacity(0.05),
+            _warningOrange.withValues(alpha: 0.1),
+            _warningOrange.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _warningOrange.withOpacity(0.3)),
+        border: Border.all(color: _warningOrange.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             children: [
               Icon(Icons.account_balance_wallet,
                   color: _warningOrange, size: 20),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Resumo Financeiro',
                 style: TextStyle(
@@ -2500,9 +2498,9 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
 
           if (_salePayments.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Divider(color: _warningOrange.withOpacity(0.3)),
+            Divider(color: _warningOrange.withValues(alpha: 0.3)),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               '💡 Valores em reais mostram a cotação travada no momento do adiantamento',
               style: TextStyle(
                 color: _warningOrange,
@@ -2543,7 +2541,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             Text(
               brlValue,
               style: TextStyle(
-                color: color.withOpacity(0.8),
+                color: color.withValues(alpha: 0.8),
                 fontSize: 12,
               ),
             ),
@@ -2557,8 +2555,8 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     return _salePayments.fold<double>(0, (sum, payment) {
       if (payment.currencyCode == 'BRL') {
         return sum + payment.amount;
-      } else if (payment.currencyCode == 'USD' && payment.amountInBrl != null) {
-        return sum + payment.amountInBrl!;
+      } else if (payment.currencyCode == 'USD') {
+        return sum + payment.amountInBrl;
       }
       return sum;
     });
@@ -2587,11 +2585,11 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             ),
             child: Row(
               children: [
-                Icon(Icons.payment, color: _successGreen, size: 20),
+                const Icon(Icons.payment, color: _successGreen, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Pagamentos Registrados (${_salePayments.length})',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: _successGreen,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -2631,11 +2629,11 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             height: 48,
             decoration: BoxDecoration(
               color: _getPaymentMethodColor(payment.paymentMethodName)
-                  .withOpacity(0.1),
+                  .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: _getPaymentMethodColor(payment.paymentMethodName)
-                    .withOpacity(0.3),
+                    .withValues(alpha: 0.3),
               ),
             ),
             child: Icon(
@@ -2738,11 +2736,10 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               if (payment.dualCurrencyDisplay != payment.amountFormatted) ...[
                 const SizedBox(height: 2),
                 Text(
-                  payment.currencyCode == 'BRL' && payment.amountInUsd != null
-                      ? 'US\$ ${payment.amountInUsd!.toStringAsFixed(2)}'
-                      : payment.currencyCode == 'USD' &&
-                              payment.amountInBrl != null
-                          ? 'R\$ ${payment.amountInBrl!.toStringAsFixed(2)}'
+                  payment.currencyCode == 'BRL'
+                      ? 'US\$ ${payment.amountInUsd.toStringAsFixed(2)}'
+                      : payment.currencyCode == 'USD'
+                          ? 'R\$ ${payment.amountInBrl.toStringAsFixed(2)}'
                           : '',
                   style: TextStyle(
                     color: Colors.grey[600],
@@ -2824,8 +2821,8 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     final totalPaidUsd = _salePayments.fold<double>(0, (sum, payment) {
       if (payment.currencyCode == 'USD') {
         return sum + payment.amount;
-      } else if (payment.currencyCode == 'BRL' && payment.amountInUsd != null) {
-        return sum + payment.amountInUsd!;
+      } else if (payment.currencyCode == 'BRL') {
+        return sum + payment.amountInUsd;
       }
       return sum;
     });
@@ -2840,14 +2837,14 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _successGreen.withOpacity(0.1),
+              color: _successGreen.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: _successGreen.withValues(alpha: 0.3)),
             ),
-            child: Row(
+            child: const Row(
               children: [
                 Icon(Icons.check_circle, color: _successGreen, size: 24),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2860,7 +2857,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         'Revise todas as informações antes de confirmar a criação da venda.',
                         style: TextStyle(
@@ -2918,9 +2915,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
               _salePayments.map((payment) {
                 final type =
                     payment.isAdvancePayment ? 'Adiantamento' : 'Pagamento';
-                final rate = payment.exchangeRateToUsd != null
-                    ? ' (Cotação: R\$ ${(1.0 / payment.exchangeRateToUsd!).toStringAsFixed(2)}/USD)'
-                    : '';
+                final rate = ' (Cotação: R\$ ${(1.0 / payment.exchangeRateToUsd).toStringAsFixed(2)}/USD)';
                 return '$type: ${payment.amountFormatted} via ${payment.paymentMethodName}$rate';
               }).toList(),
             ),
@@ -2955,15 +2950,15 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                 end: Alignment.bottomRight,
                 colors: [
                   (remainingUsd > 0.01 ? _warningOrange : _successGreen)
-                      .withOpacity(0.1),
+                      .withValues(alpha: 0.1),
                   (remainingUsd > 0.01 ? _warningOrange : _successGreen)
-                      .withOpacity(0.05),
+                      .withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: (remainingUsd > 0.01 ? _warningOrange : _successGreen)
-                    .withOpacity(0.3),
+                    .withValues(alpha: 0.3),
               ),
             ),
             child: Column(
@@ -3009,7 +3004,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
@@ -3021,7 +3016,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -3105,7 +3100,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             ],
           ),
         ),
-        child: Column(
+        child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -3115,7 +3110,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                   color: _primaryBlue,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Câmbio USD/BRL',
                   style: TextStyle(
@@ -3126,8 +3121,8 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            const ExchangeRateDisplay(),
+            SizedBox(height: 12),
+            ExchangeRateDisplay(),
           ],
         ),
       ),
@@ -3163,14 +3158,14 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.receipt_long,
                   color: _accentPurple,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Resumo da Venda',
                   style: TextStyle(
@@ -3250,14 +3245,14 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(
                   Icons.settings,
                   color: _successGreen,
                   size: 20,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Ações Rápidas',
                   style: TextStyle(
@@ -3305,7 +3300,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                 onPressed: _clearForm,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: _errorRed,
-                  side: BorderSide(color: _errorRed),
+                  side: const BorderSide(color: _errorRed),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -3332,7 +3327,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                 onPressed: _previousStep,
                 style: OutlinedButton.styleFrom(
                   foregroundColor: _primaryBlue,
-                  side: BorderSide(color: _primaryBlue),
+                  side: const BorderSide(color: _primaryBlue),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -3637,7 +3632,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _primaryBlue.withOpacity(0.2),
+          color: _primaryBlue.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -3664,7 +3659,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                   const SizedBox(width: 8),
                   Text(
                     'Itens Contratados (${_saleItems.length})',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: _primaryBlue,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -3680,7 +3675,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
                     ),
                     child: Text(
                       'Total: ${_formatCurrency(_calculateTotal())}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: _primaryBlue,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -3763,7 +3758,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
             children: [
               Text(
                 _formatCurrency(item.totalPrice),
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                   color: _primaryBlue,
@@ -3879,7 +3874,7 @@ class _CreateSaleScreenV2State extends ConsumerState<CreateSaleScreenV2>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar Remoção'),
-        content: Text('Tem certeza que deseja remover este item?'),
+        content: const Text('Tem certeza que deseja remover este item?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -4107,7 +4102,7 @@ class _ContactSelectorDialogState
             // Header
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.person_search,
                   color: _primaryBlue,
                   size: 24,
@@ -4140,11 +4135,11 @@ class _ContactSelectorDialogState
               ),
               child: TextField(
                 controller: _searchController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Buscar por nome, email ou telefone...',
                   prefixIcon: Icon(Icons.search, color: _primaryBlue),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
+                  contentPadding: EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 12,
                   ),
@@ -4288,7 +4283,7 @@ class _ContactSelectorDialogState
                   contact.name?.isNotEmpty == true
                       ? contact.name![0].toUpperCase()
                       : '?',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: _secondaryBlue,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

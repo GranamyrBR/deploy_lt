@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/auth_provider.dart';
-import '../design/design_tokens.dart';
 import '../utils/responsive_utils.dart';
 import 'package:flutter/foundation.dart'; // Added for kDebugMode
 import 'statistics_modal.dart';
@@ -31,7 +30,7 @@ class _NavItemData {
 
 // Function to get colored icon for navigation items
 Widget _buildColoredIcon(_NavItemData item, bool isSelected, ThemeData theme) {
-  final iconSize = 20.0;
+  const iconSize = 20.0;
   final primary = theme.colorScheme.primary;
   final onSurface = theme.colorScheme.onSurface;
 
@@ -55,7 +54,7 @@ Widget _buildColoredIcon(_NavItemData item, bool isSelected, ThemeData theme) {
             : const Color(0xFF25D366).withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(4),
       ),
-      child: Icon(
+      child: const Icon(
         Icons.chat_bubble,
         size: iconSize * 0.6,
         color: Colors.white,
@@ -698,7 +697,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
                   ],
 
                   // Botão de tema - melhor contraste
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () => themeNotifier.toggleTheme(),
@@ -731,7 +730,7 @@ class _SidebarState extends ConsumerState<Sidebar> {
                   const SizedBox(height: 8),
 
                   // Botão de desenvolvimento
-                  Container(
+                  SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {

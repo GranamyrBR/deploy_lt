@@ -11,9 +11,6 @@ import '../providers/contacts_provider.dart';
 import '../providers/currencies_provider.dart';
 import '../providers/filtered_services_provider.dart';
 import '../providers/filtered_products_provider.dart';
-import '../providers/exchange_rate_provider.dart';
-import '../design/design_tokens.dart';
-import '../utils/currency_utils.dart';
 
 class SaleRegulationModal extends ConsumerStatefulWidget {
   final Sale? sale; // Se null, é uma nova venda
@@ -49,8 +46,8 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
   double _itemTax = 0;
   
   // Validações
-  List<String> _validationErrors = [];
-  List<String> _validationWarnings = [];
+  final List<String> _validationErrors = [];
+  final List<String> _validationWarnings = [];
 
   @override
   void initState() {
@@ -83,9 +80,7 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
       print('DEBUG: - Currency Code: ${widget.sale!.currencyCode}');
       print('DEBUG: - Notes: ${widget.sale!.notes}');
       
-      _selectedContact = widget.sale!.contactId != null 
-          ? await _getContactById(widget.sale!.contactId)
-          : null;
+      _selectedContact = await _getContactById(widget.sale!.contactId);
       _notesController.text = widget.sale!.notes ?? '';
       
       // Carregar itens da venda
@@ -109,18 +104,16 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
       print('DEBUG: ${_salePayments.length} pagamentos carregados');
       
       // Definir moeda da venda
-      if (widget.sale!.currencyCode != null) {
-        try {
-          final currencyAsync = await ref.read(currenciesProvider.future);
-          _selectedCurrency = currencyAsync.firstWhere(
-            (currency) => currency.currencyCode == widget.sale!.currencyCode,
-            orElse: () => currencyAsync.first,
-          );
-        } catch (e) {
-          print('Erro ao definir moeda da venda: $e');
-        }
+      try {
+        final currencyAsync = await ref.read(currenciesProvider.future);
+        _selectedCurrency = currencyAsync.firstWhere(
+          (currency) => currency.currencyCode == widget.sale!.currencyCode,
+          orElse: () => currencyAsync.first,
+        );
+      } catch (e) {
+        print('Erro ao definir moeda da venda: $e');
       }
-    } else if (widget.preSelectedContact != null) {
+        } else if (widget.preSelectedContact != null) {
       _selectedContact = widget.preSelectedContact;
     }
   }
@@ -388,7 +381,7 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
                 final contacts = snapshot.data ?? [];
                 
                 return DropdownButtonFormField<Contact>(
-                  value: _selectedContact,
+                  initialValue: _selectedContact,
                   decoration: const InputDecoration(
                     labelText: 'Selecione o cliente',
                     border: OutlineInputBorder(),
@@ -448,7 +441,7 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
                 final currencies = snapshot.data ?? [];
                 
                 return DropdownButtonFormField<Currency>(
-                  value: _selectedCurrency,
+                  initialValue: _selectedCurrency,
                   decoration: const InputDecoration(
                     labelText: 'Selecione a moeda',
                     border: OutlineInputBorder(),
@@ -633,7 +626,7 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
         final services = snapshot.data ?? [];
         
         return DropdownButtonFormField<Service>(
-          value: _selectedService,
+          initialValue: _selectedService,
           decoration: const InputDecoration(
             labelText: 'Serviço',
             border: OutlineInputBorder(),
@@ -669,7 +662,7 @@ class _SaleRegulationModalState extends ConsumerState<SaleRegulationModal> {
         final products = snapshot.data ?? [];
         
         return DropdownButtonFormField<Product>(
-          value: _selectedProduct,
+          initialValue: _selectedProduct,
           decoration: const InputDecoration(
             labelText: 'Produto',
             border: OutlineInputBorder(),

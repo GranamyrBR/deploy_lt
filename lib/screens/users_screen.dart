@@ -89,7 +89,7 @@ class UsersScreenState extends ConsumerState<UsersScreen> with SmartSearchMixin 
               color: Theme.of(context).colorScheme.error,
             ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'Acesso Negado',
               style: TextStyle(
                 fontSize: 24,
@@ -611,7 +611,7 @@ class _UserDialogState extends State<_UserDialog> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _selectedDepartmentId,
+                  initialValue: _selectedDepartmentId,
                   decoration: const InputDecoration(
                     labelText: 'Departamento',
                     border: OutlineInputBorder(),
@@ -799,7 +799,7 @@ class _UserDialogState extends State<_UserDialog> {
               );
             }).toList(),
           );
-        }).toList(),
+        }),
       ],
     );
   }

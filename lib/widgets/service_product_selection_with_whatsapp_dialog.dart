@@ -15,12 +15,12 @@ class ServiceProductSelectionWithWhatsAppDialog extends ConsumerStatefulWidget {
   final void Function(List<db.Service>, List<dbp.Product>) onSelectionChanged;
 
   const ServiceProductSelectionWithWhatsAppDialog({
-    Key? key,
+    super.key,
     this.selectedServices = const [],
     this.selectedProducts = const [],
     required this.whatsappMessages,
     required this.onSelectionChanged,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<ServiceProductSelectionWithWhatsAppDialog> createState() =>
@@ -56,7 +56,7 @@ class _ServiceProductSelectionWithWhatsAppDialogState
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 24,
               offset: const Offset(0, 12),
             ),
@@ -145,7 +145,7 @@ class _ServiceProductSelectionWithWhatsAppDialogState
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF25D366).withOpacity(0.1),
+              color: const Color(0xFF25D366).withValues(alpha: 0.1),
               border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
             ),
             child: Row(

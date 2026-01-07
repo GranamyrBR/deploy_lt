@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/services.dart';
@@ -300,7 +299,7 @@ class DashboardMetricsNotifier extends StateNotifier<DashboardMetrics> {
     try {
       final response = await _supabase.from('sale').select('total_amount');
       
-      if (response == null || response.isEmpty) return 0.0;
+      if (response.isEmpty) return 0.0;
       
       double total = 0.0;
       for (final sale in response) {

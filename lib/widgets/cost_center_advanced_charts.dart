@@ -7,9 +7,9 @@ class CostCenterAdvancedCharts extends StatelessWidget {
   final List<CostCenter> costCenters;
 
   const CostCenterAdvancedCharts({
-    Key? key,
+    super.key,
     required this.costCenters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

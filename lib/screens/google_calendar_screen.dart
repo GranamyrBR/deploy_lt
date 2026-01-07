@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../providers/google_calendar_provider.dart';
 import '../providers/api_configuration_provider.dart';
 import '../models/google_calendar_event.dart';
-import '../design/design_tokens.dart';
 import '../services/google_oauth_service.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart'; // Added import for StandardSearchBar
@@ -1285,7 +1284,7 @@ class _GoogleCalendarScreenState extends ConsumerState<GoogleCalendarScreen>
 
   String _formatDateTime(GoogleCalendarDateTime dateTime) {
     if (dateTime.dateTime != null) {
-      return DateFormat('dd/MM/yyyy HH:mm').format(TimezoneUtils.convertToNewYork(dateTime.dateTime!)) + ' (NYC)';
+      return '${DateFormat('dd/MM/yyyy HH:mm').format(TimezoneUtils.convertToNewYork(dateTime.dateTime!))} (NYC)';
     } else if (dateTime.date != null) {
       return DateFormat('dd/MM/yyyy').format(DateTime.parse(dateTime.date!));
     }

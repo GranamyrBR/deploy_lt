@@ -9,13 +9,13 @@ class ContactsMultiViewScreen extends StatelessWidget {
   final void Function(Map<String, dynamic>) onCreateSale;
 
   const ContactsMultiViewScreen({
-    Key? key,
+    super.key,
     required this.contacts,
     required this.onOpenProfileModal,
     required this.onOpenProfilePage,
     required this.onOpenWhatsApp,
     required this.onCreateSale,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

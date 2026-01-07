@@ -126,9 +126,9 @@ class ProvisionalInvoiceCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                Text(
+                const Text(
                   'Valor: ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Text(invoice.dualCurrencyDisplay),
               ],
@@ -288,7 +288,7 @@ class _InvoicePreviewDialogState extends State<_InvoicePreviewDialog> {
                           Padding(padding: const EdgeInsets.all(6), child: Text('${it.quantity}')),
                           Padding(padding: const EdgeInsets.all(6), child: Text(it.unitPriceFormatted)),
                           Padding(padding: const EdgeInsets.all(6), child: Text(it.dualCurrencyDisplay)),
-                        ])).toList(),
+                        ])),
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -398,7 +398,7 @@ class _CreateProvisionalInvoiceDialogState extends State<_CreateProvisionalInvoi
                     ]),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
-                      value: _accountId,
+                      initialValue: _accountId,
                       items: _accounts.map((a) => DropdownMenuItem<int>(
                         value: a['id'] as int,
                         child: Text(a['name'] as String),
@@ -409,7 +409,7 @@ class _CreateProvisionalInvoiceDialogState extends State<_CreateProvisionalInvoi
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
-                      value: _currencyId,
+                      initialValue: _currencyId,
                       items: _currencies.map((c) => DropdownMenuItem<int>(
                         value: c['currency_id'] as int,
                         child: Text('${c['currency_code']} - ${c['currency_name']}'),

@@ -30,8 +30,8 @@ class ResponseTimeKPICard extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
-              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.2),
+              Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2),
+              Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.2),
             ],
           ),
         ),
@@ -52,7 +52,7 @@ class ResponseTimeKPICard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: _getPerformanceColor(context, metrics.overallPerformance).withOpacity(0.2),
+            color: _getPerformanceColor(context, metrics.overallPerformance).withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Icon(
@@ -77,7 +77,7 @@ class ResponseTimeKPICard extends StatelessWidget {
                 '${metrics.totalResponses} resposta${metrics.totalResponses != 1 ? "s" : ""}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontSize: 10,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
               ),
             ],
@@ -137,7 +137,7 @@ class ResponseTimeKPICard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -146,7 +146,7 @@ class ResponseTimeKPICard extends StatelessWidget {
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontSize: 9,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
           ),
           Text(

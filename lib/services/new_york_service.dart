@@ -194,7 +194,6 @@ class NewYorkService {
   Future<List<NewYorkAttraction>> _getAttractionsFromGooglePlaces({
     String? category,
     String? neighborhood,
-    int limit = 20,
   }) async {
     final uri = Uri.parse('$_googlePlacesBaseUrl/nearbysearch/json').replace(
       queryParameters: {
@@ -459,7 +458,7 @@ class NewYorkService {
 
   Future<NewYorkWeather> getCurrentWeather() async {
     // Criar chave única para cache (clima muda a cada 10 minutos)
-    final cacheKey = 'weather_current';
+    const cacheKey = 'weather_current';
     
     // Verificar cache primeiro
     final cachedData = _getFromCache<NewYorkWeather>(cacheKey);

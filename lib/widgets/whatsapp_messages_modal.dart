@@ -29,7 +29,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
   String? _errorMessage;
 
   // Mapa para armazenar o tipo de usuário selecionado para cada mensagem
-  Map<int, UserType> _messageUserTypes = {};
+  final Map<int, UserType> _messageUserTypes = {};
 
   @override
   void initState() {
@@ -179,7 +179,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
 
       print('🔄 Convertendo dados para objetos LeadTintim...');
       try {
-        final List<LeadTintim> messages = (response as List)
+        final List<LeadTintim> messages = (response)
             .map((json) => LeadTintim.fromJson(json))
             .toList();
         print('✅ Conversão bem-sucedida: ${messages.length} mensagens');
@@ -269,7 +269,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
             : const Color(0xFF1976D2);
       case UserType.normal:
       default:
-        return Theme.of(context).colorScheme.primary.withOpacity(0.7);
+        return Theme.of(context).colorScheme.primary.withValues(alpha: 0.7);
     }
   }
 
@@ -364,7 +364,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
                                   : Theme.of(context)
                                       .colorScheme
                                       .onSurface
-                                      .withOpacity(0.7),
+                                      .withValues(alpha: 0.7),
                             ),
                       ),
                     ],
@@ -478,14 +478,14 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
           Icon(
             Icons.chat_bubble_outline,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
             'Nenhuma mensagem encontrada',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
           ),
           const SizedBox(height: 8),
@@ -493,7 +493,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
             'Este contato ainda não possui mensagens do WhatsApp.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color:
-                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                      Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
             textAlign: TextAlign.center,
           ),
@@ -670,7 +670,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -757,7 +757,7 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.2),
+                        color: Colors.green.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(

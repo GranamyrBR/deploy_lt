@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/car.dart';
@@ -25,15 +24,11 @@ class CarNotifierRestoredDb extends StateNotifier<AsyncValue<List<Car>>> {
           .order('make')
           .order('model');
 
-      if (response != null) {
-        final cars = (response as List)
-            .map((data) => Car.fromJson(data))
-            .toList();
-        state = AsyncValue.data(cars);
-      } else {
-        state = const AsyncValue.data([]);
-      }
-    } catch (error, stackTrace) {
+      final cars = (response as List)
+          .map((data) => Car.fromJson(data))
+          .toList();
+      state = AsyncValue.data(cars);
+        } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
     }
   }

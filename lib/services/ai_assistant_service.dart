@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/ai_response_model.dart';
 import '../models/ai_request_model.dart';
-import '../config/env.dart';
 
 class AIAssistantService {
   static final AIAssistantService _instance = AIAssistantService._internal();
@@ -293,7 +292,7 @@ RESPONDA SEMPRE:
   Future<AIResponse> _callViaSupabaseEdgeFunction(String prompt, String conversationId) async {
     try {
       // URL do backend Node.js
-      final backendUrl = kIsWeb 
+      const backendUrl = kIsWeb 
           ? 'http://localhost:3030/api/ai/chat'  // Desenvolvimento
           : 'https://seu-backend.axioscode.com/api/ai/chat';  // Produção
       

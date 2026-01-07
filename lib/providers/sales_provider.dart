@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import '../models/provisional_invoice_item.dart';
 import '../models/contact.dart';
@@ -70,7 +69,7 @@ class SalesNotifier extends StateNotifier<List<Sale>> {
           .eq('id', customerId)
           .single();
       
-      return response as Map<String, dynamic>;
+      return response;
     } catch (e) {
       print('Erro ao buscar dados do cliente $customerId: $e');
       return null;
@@ -304,7 +303,7 @@ class SalesNotifier extends StateNotifier<List<Sale>> {
       final sales = <Sale>[];
       for (int i = 0; i < response.length; i++) {
         try {
-          final saleData = response[i] as Map<String, dynamic>;
+          final saleData = response[i];
           
           // Adicionar dados do cliente
           if (saleData['customer_id'] != null && customersData.containsKey(saleData['customer_id'])) {
@@ -722,7 +721,7 @@ final servicesProvider = FutureProvider.family<List<Service>, bool?>((ref, isAct
     final services = await service.getServices(isActive: isActive);
     
     // Filtrar apenas serviços válidos
-    final validServices = services.where((s) => s.id != null && s.name != null && s.name!.isNotEmpty).toList();
+    final validServices = services.where((s) => s.name != null && s.name!.isNotEmpty).toList();
     
     return validServices;
   } catch (e) {

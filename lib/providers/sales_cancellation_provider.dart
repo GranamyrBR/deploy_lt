@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:state_notifier/state_notifier.dart';
 
 import '../models/sales_cancellation_log.dart';
 import '../models/sales_cancellation_item.dart';

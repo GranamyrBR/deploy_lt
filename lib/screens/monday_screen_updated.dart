@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design/design_tokens.dart';
-import '../widgets/base_components.dart';
 import '../providers/monday_provider_updated.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
@@ -43,7 +42,7 @@ class _MondayScreenUpdatedState extends ConsumerState<MondayScreenUpdated> with 
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.person, color: DesignTokens.primaryBlue),
+            const Icon(Icons.person, color: DesignTokens.primaryBlue),
             const SizedBox(width: 8),
             Text('Detalhes do Registro #${entry.contactId}'),
           ],

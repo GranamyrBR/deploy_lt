@@ -11,12 +11,12 @@ class OperationTimelineCompact extends ConsumerStatefulWidget {
   final VoidCallback? onViewAll;
 
   const OperationTimelineCompact({
-    Key? key,
+    super.key,
     required this.operationId,
     this.maxItems = 3,
     this.showViewAllButton = true,
     this.onViewAll,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<OperationTimelineCompact> createState() => _OperationTimelineCompactState();
@@ -53,7 +53,7 @@ class _OperationTimelineCompactState extends ConsumerState<OperationTimelineComp
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.error_outline,
                 color: Colors.red,
                 size: 24,
@@ -80,7 +80,7 @@ class _OperationTimelineCompactState extends ConsumerState<OperationTimelineComp
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.timeline,
                 color: Colors.grey,
                 size: 24,
@@ -138,7 +138,7 @@ class _OperationTimelineCompactState extends ConsumerState<OperationTimelineComp
               final item = entry.value;
               final isLast = index == displayHistory.length - 1;
               return _buildCompactTimelineItem(item, isLast);
-            }).toList(),
+            }),
             
             // Show more indicator
             if (hasMore && !widget.showViewAllButton)

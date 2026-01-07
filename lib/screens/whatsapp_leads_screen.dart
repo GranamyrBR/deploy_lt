@@ -7,11 +7,9 @@ import '../providers/lead_tintim_provider.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
 import '../utils/smart_search_mixin.dart';
-import '../utils/date_time_utils.dart';
 import '../utils/flag_utils.dart';
 import '../services/contacts_service.dart';
 import '../models/contact.dart';
-import '../models/response_time_metrics.dart';
 import '../services/response_time_calculator.dart';
 import '../widgets/response_time_badge.dart';
 import '../widgets/response_time_kpi_card.dart';
@@ -130,7 +128,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
             ? const Color(0xFF0D47A1)
             : const Color(0xFF1976D2);
       case UserType.normal:
-        return Theme.of(context).colorScheme.primary.withOpacity(0.7);
+        return Theme.of(context).colorScheme.primary.withValues(alpha: 0.7);
     }
   }
 
@@ -379,10 +377,12 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
       final lastB = groupedLeads[b]?.first.datelast;
 
       if (lastA == null && lastB == null) return 0;
-      if (lastA == null)
+      if (lastA == null) {
         return 1; // Coloca grupos sem data (ou com datas nulas) por último
-      if (lastB == null)
+      }
+      if (lastB == null) {
         return -1; // Coloca grupos sem data (ou com datas nulas) por último
+      }
       return lastB
           .compareTo(lastA); // Ordena do mais recente para o mais antigo
     });
@@ -678,7 +678,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
           final agentTime = lead.datelast ?? lead.createdAt;
           if (customerTime != null && agentTime != null) {
             responseTime = agentTime.difference(customerTime);
-            if (responseTime!.inSeconds < 0) responseTime = null; // Ignora se negativo
+            if (responseTime.inSeconds < 0) responseTime = null; // Ignora se negativo
           }
           break;
         }
@@ -736,7 +736,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
                 borderRadius: radius,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 3,
                     offset: const Offset(0, 1),
                   ),
@@ -752,7 +752,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
                       Icon(
                         isFromMe ? Icons.person : Icons.person_outline,
                         size: 12,
-                        color: textColor.withOpacity(0.7),
+                        color: textColor.withValues(alpha: 0.7),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -761,7 +761,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
                           fontFamily: 'Inter',
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: textColor.withOpacity(0.7),
+                          color: textColor.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -784,7 +784,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 11,
-                          color: textColor.withOpacity(0.6),
+                          color: textColor.withValues(alpha: 0.6),
                         ),
                       ),
                       if (isFromMe) ...[
@@ -799,7 +799,7 @@ class _WhatsAppLeadsScreenState extends ConsumerState<WhatsAppLeadsScreen> with 
                       if (isFromMe && responseTime != null) ...[
                         const SizedBox(width: 8),
                         ResponseTimeBadge(
-                          responseTime: responseTime!,
+                          responseTime: responseTime,
                           compact: true,
                         ),
                       ],

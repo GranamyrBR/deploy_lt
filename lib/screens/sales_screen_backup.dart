@@ -364,7 +364,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -736,13 +736,13 @@ class ContactServiceCard extends StatelessWidget {
               'Cliente: ${service.contactName}',
               style: const TextStyle(fontSize: 16),
             ),
-            if (service.scheduledDate != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                'Data: ${DateFormat('dd/MM/yyyy HH:mm').format(TimezoneUtils.convertToNewYork(service.scheduledDate!))} (NYC)',
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-            ],
+            ...[
+            const SizedBox(height: 4),
+            Text(
+              'Data: ${DateFormat('dd/MM/yyyy HH:mm').format(TimezoneUtils.convertToNewYork(service.scheduledDate))} (NYC)',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
             if (service.finalPrice != null) ...[
               const SizedBox(height: 4),
               Text(

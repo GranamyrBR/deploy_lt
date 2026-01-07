@@ -13,7 +13,7 @@ class QuotationsTableView extends StatelessWidget {
   final void Function(Map<String, dynamic>)? onDelete;
 
   const QuotationsTableView({
-    Key? key,
+    super.key,
     required this.quotations,
     required this.isDark,
     required this.onQuotationTap,
@@ -23,7 +23,7 @@ class QuotationsTableView extends StatelessWidget {
     this.onEdit,
     this.onDuplicate,
     this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +255,7 @@ class QuotationsTableView extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.15),
+                  color: statusColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: statusColor, width: 1),
                 ),

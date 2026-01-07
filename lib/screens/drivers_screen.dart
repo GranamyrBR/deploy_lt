@@ -9,7 +9,6 @@ import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
 import '../utils/smart_search_mixin.dart';
 import '../utils/flag_utils.dart';
-import 'package:flutter/foundation.dart';
 
 class DriversScreen extends ConsumerStatefulWidget {
   const DriversScreen({super.key});

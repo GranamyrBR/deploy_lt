@@ -6,9 +6,9 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
   final List<CostCenter> costCenters;
 
   const CostCenterComprehensiveCharts({
-    Key? key,
+    super.key,
     required this.costCenters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +93,9 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
         maxY: 100,
-        barTouchData: BarTouchData(enabled: true),
+        barTouchData: const BarTouchData(enabled: true),
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
+          leftTitles: const AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
@@ -112,14 +112,14 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
                 if (index >= 0 && index < months.length) {
                   return Text(months[index]);
                 }
-                return Text('');
+                return const Text('');
               },
             ),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
         ),
@@ -252,7 +252,7 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
     return LineChartData(
       gridData: const FlGridData(show: true),
       titlesData: FlTitlesData(
-        leftTitles: AxisTitles(
+        leftTitles: const AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 40,
@@ -269,14 +269,14 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
               if (index >= 0 && index < months.length) {
                 return Text(months[index]);
               }
-              return Text('');
+              return const Text('');
             },
           ),
         ),
-        rightTitles: AxisTitles(
+        rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        topTitles: AxisTitles(
+        topTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
       ),
@@ -409,7 +409,7 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ))
-            .toList(),
+            ,
         const SizedBox(width: 8),
         Text('Mais', style: Theme.of(context).textTheme.bodySmall),
       ],
@@ -459,18 +459,18 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
             borderColor: Colors.blue,
             borderWidth: 2,
             dataEntries: [
-              RadarEntry(value: 80),
-              RadarEntry(value: 65),
-              RadarEntry(value: 45),
-              RadarEntry(value: 30),
-              RadarEntry(value: 55),
-              RadarEntry(value: 70),
-              RadarEntry(value: 85),
-              RadarEntry(value: 90),
-              RadarEntry(value: 75),
-              RadarEntry(value: 60),
-              RadarEntry(value: 40),
-              RadarEntry(value: 50),
+              const RadarEntry(value: 80),
+              const RadarEntry(value: 65),
+              const RadarEntry(value: 45),
+              const RadarEntry(value: 30),
+              const RadarEntry(value: 55),
+              const RadarEntry(value: 70),
+              const RadarEntry(value: 85),
+              const RadarEntry(value: 90),
+              const RadarEntry(value: 75),
+              const RadarEntry(value: 60),
+              const RadarEntry(value: 40),
+              const RadarEntry(value: 50),
             ],
             entryRadius: 3,
           ),
@@ -479,18 +479,18 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
             borderColor: Colors.red,
             borderWidth: 2,
             dataEntries: [
-              RadarEntry(value: 60),
-              RadarEntry(value: 70),
-              RadarEntry(value: 80),
-              RadarEntry(value: 85),
-              RadarEntry(value: 65),
-              RadarEntry(value: 50),
-              RadarEntry(value: 45),
-              RadarEntry(value: 55),
-              RadarEntry(value: 70),
-              RadarEntry(value: 80),
-              RadarEntry(value: 85),
-              RadarEntry(value: 75),
+              const RadarEntry(value: 60),
+              const RadarEntry(value: 70),
+              const RadarEntry(value: 80),
+              const RadarEntry(value: 85),
+              const RadarEntry(value: 65),
+              const RadarEntry(value: 50),
+              const RadarEntry(value: 45),
+              const RadarEntry(value: 55),
+              const RadarEntry(value: 70),
+              const RadarEntry(value: 80),
+              const RadarEntry(value: 85),
+              const RadarEntry(value: 75),
             ],
             entryRadius: 3,
           ),
@@ -543,9 +543,9 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
         maxY: 100,
-        barTouchData: BarTouchData(enabled: true),
+        barTouchData: const BarTouchData(enabled: true),
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(
+          leftTitles: const AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
@@ -565,17 +565,17 @@ class CostCenterComprehensiveCharts extends StatelessWidget {
                     child: Text(labels[index]),
                   );
                 }
-                return RotatedBox(
+                return const RotatedBox(
                   quarterTurns: 3,
                   child: Text(''),
                 );
               },
             ),
           ),
-          rightTitles: AxisTitles(
+          rightTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
-          topTitles: AxisTitles(
+          topTitles: const AxisTitles(
             sideTitles: SideTitles(showTitles: false),
           ),
         ),
@@ -683,9 +683,9 @@ class SankeyChartPainter extends CustomPainter {
             sourceRect.center.dy - textPainter.height / 2));
 
     // Desenhar centros de custo como nós de destino
-    final nodeWidth = 80.0;
-    final nodeHeight = 60.0;
-    final nodeSpacing = 20.0;
+    const nodeWidth = 80.0;
+    const nodeHeight = 60.0;
+    const nodeSpacing = 20.0;
 
     for (int i = 0; i < costCenters.length; i++) {
       final center = costCenters[i];

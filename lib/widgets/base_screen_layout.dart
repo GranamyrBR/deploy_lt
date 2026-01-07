@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import '../design/design_tokens.dart';
 import 'standard_app_header.dart';
 
 class BaseScreenLayout extends ConsumerWidget {

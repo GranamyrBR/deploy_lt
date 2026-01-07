@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/operational_route.dart';
-import '../models/flight_info.dart';
 
 class DatabaseFlightService {
   SupabaseClient get _supabase => Supabase.instance.client;
@@ -21,7 +20,7 @@ class DatabaseFlightService {
 
       print('📊 Resposta do banco: ${response.length} registros encontrados');
       
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         print('⚠️ Nenhuma rota encontrada na tabela brasil_eua_operacional');
         print('🔍 Verificando se a tabela rotas_operacionais tem dados...');
         
@@ -124,7 +123,7 @@ class DatabaseFlightService {
 
       print('Resposta filtrada: ${response.length} registros');
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         return [];
       }
 
@@ -164,11 +163,6 @@ class DatabaseFlightService {
           .eq('voo', flightNumber)
           .single();
 
-      if (response == null) {
-        print('⚠️ Voo $flightNumber não encontrado');
-        return null;
-      }
-
       final route = OperationalRoute.fromJson(response);
       print('✅ Voo encontrado: ${route.voo}');
       return route;
@@ -187,7 +181,7 @@ class DatabaseFlightService {
           .from('brasil_eua_operacional')
           .select('*');
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         return {
           'total_routes': 0,
           'saida_brasil': 0,
@@ -269,7 +263,7 @@ class DatabaseFlightService {
           .select('*')
           .order('id', ascending: false).limit(1);
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         return {
           'table_exists': true,
           'has_data': false,
@@ -278,7 +272,7 @@ class DatabaseFlightService {
         };
       }
 
-      final sample = response[0] as Map<String, dynamic>;
+      final sample = response[0];
       final columns = sample.keys.toList();
 
       return {
