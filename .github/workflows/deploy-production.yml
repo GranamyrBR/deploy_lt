@@ -1,0 +1,47 @@
+name: Deploy to Production (Coolify)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Permite deploy manual
+
+jobs:
+  deploy:
+    name: Deploy para AxiosCode.com
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout código
+      uses: actions/checkout@v4
+
+    - name: 🚀 Trigger Coolify Deploy
+      run: |
+        echo "🔔 Notificando Coolify para fazer deploy..."
+        
+        # Coolify webhook URL deve estar em GitHub Secrets como COOLIFY_WEBHOOK_URL
+        # Formato: https://waha.axioscode.com/api/v1/deploy?uuid=xxxxx&force=true
+        
+        response=$(curl -X GET "${{ secrets.COOLIFY_WEBHOOK_URL }}" \
+          -H "Content-Type: application/json" \
+          --silent --write-out "HTTPSTATUS:%{http_code}" \
+          --max-time 30)
+        
+        http_code=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+        
+        if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 201 ] || [ "$http_code" -eq 202 ]; then
+          echo "✅ Deploy iniciado com sucesso no Coolify!"
+          echo "🌐 URL: https://axioscode.com/"
+        else
+          echo "❌ Erro ao iniciar deploy. HTTP Code: $http_code"
+          exit 1
+        fi
+
+    - name: 📊 Summary
+      run: |
+        echo "### 🚀 Deploy Triggered!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Coolify foi notificado para fazer deploy" >> $GITHUB_STEP_SUMMARY
+        echo "🌐 URL: https://axioscode.com/" >> $GITHUB_STEP_SUMMARY
+        echo "⏱️ O deploy no Coolify leva ~2-5 minutos" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Monitore o progresso no Coolify: https://waha.axioscode.com/" >> $GITHUB_STEP_SUMMARY
