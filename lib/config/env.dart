@@ -11,7 +11,7 @@ part 'env.g.dart';
 /// ```
 @Envied(path: '.env')
 abstract class Env {
-  @EnviedField(varName: 'OPENAI_API_KEY')
+  @EnviedField(varName: 'OPENAI_API_KEY', defaultValue: '')
   static const String openAiApiKey = _Env.openAiApiKey;
   
   @EnviedField(varName: 'OPENAI_ORGANIZATION', defaultValue: '')

@@ -21,16 +21,15 @@ RUN flutter pub run build_runner build --delete-conflicting-outputs || true
 
 # Build Flutter Web with optimizations + Cache Busting
 # - release mode for production
-# - pwa-strategy for offline support
+# - pwa-strategy for offline-first support
 # - base-href for proper routing
 # - split-debug-info for smaller bundle
-# - deferred loading enabled
+# Note: --web-renderer is deprecated in newer Flutter versions
 RUN flutter build web \
     --release \
     --pwa-strategy=offline-first \
     --base-href="/" \
     --dart-define=FLUTTER_WEB_USE_SKIA=false \
-    --web-renderer=canvaskit \
     --split-debug-info=build/debug_info
 
 # Apply cache busting - inject version into files
