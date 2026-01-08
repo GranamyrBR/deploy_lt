@@ -1,89 +1,49 @@
 # ============================================
-# Caddyfile para Lecotour Dashboard
-# Configuração para Container (Coolify gerencia o domínio)
+# Caddyfile para Lecotour Dashboard (Deploy Prebuilt)
+# Configuração simples para Container
 # ============================================
 
 :8080 {
     root * /usr/share/caddy
     encode zstd gzip
 
+    # SPA routing
     @notFile {
         not file
     }
     rewrite @notFile /index.html
 
-    file_server
-}
-    
     # Headers de segurança
     header {
-        # Security headers
         X-Frame-Options "SAMEORIGIN"
         X-Content-Type-Options "nosniff"
         X-XSS-Protection "1; mode=block"
         Referrer-Policy "no-referrer-when-downgrade"
-        
-        # CORS (ajustar conforme necessário)
         Access-Control-Allow-Origin "*"
-        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-        Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
     }
     
-    # Cache Busting Strategy - Baseado em Lukas Nevosad
-    
-    # 1. Assets versionados (via query string ?v=) - Cache longo
-    @versioned_assets {
-        path_regexp versioned \\.(js|css|woff2?)\\?v=
+    # Cache para assets versionados
+    @versioned {
+        path_regexp \\.(js|css|woff2?)\\?v=
     }
-    header @versioned_assets {
-        Cache-Control "public, max-age=31536000, immutable"
-    }
+    header @versioned Cache-Control "public, max-age=31536000, immutable"
     
-    # 2. Assets estáticos (imagens, fontes) - Cache médio
+    # Cache para assets estáticos
     @static {
-        path *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf *.eot *.wasm
+        path *.png *.jpg *.jpeg *.gif *.ico *.svg *.woff *.woff2 *.ttf
     }
-    header @static {
-        Cache-Control "public, max-age=2592000"
-    }
+    header @static Cache-Control "public, max-age=2592000"
     
-    # 3. Service Worker - Sempre revalidar
-    @sw {
-        path /flutter_service_worker.js
-    }
-    header @sw {
-        Cache-Control "no-cache, must-revalidate"
-    }
+    # Service Worker sem cache
+    @sw path /flutter_service_worker.js
+    header @sw Cache-Control "no-cache"
     
-    # 4. Version file - Nunca fazer cache
-    @version {
-        path /version.txt
-    }
-    header @version {
-        Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
-    }
-    
-    # 5. HTML e outros - Sem cache (para pegar sempre a versão mais nova)
-    @html {
-        path *.html / /cache-bust-loader.js
-    }
-    header @html {
-        Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
-    }
-    
-    # Health check endpoint
-    respond /health 200 {
-        body "healthy"
-    }
-    
-    # Logs
-    log {
-        output file /var/log/caddy/access.log
-        format json
-    }
-}
+    # HTML sem cache
+    @html path *.html /
+    header @html Cache-Control "no-store"
 
-# Redirecionar www para não-www
-www.axioscode.com {
-    redir https://axioscode.com{uri} permanent
+    file_server
+    
+    # Health check
+    respond /health 200
 }
