@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/lead_tintim.dart';
 import '../models/contact.dart';
 import '../services/contacts_service.dart';
+import '../services/whatsapp_service.dart';
 import 'create_quotation_with_whatsapp_dialog.dart';
 
 class WhatsAppMessagesModal extends ConsumerStatefulWidget {
@@ -368,6 +369,22 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
                     ],
                   ),
                 ),
+                // Botão Enviar Mensagem
+                ElevatedButton.icon(
+                  onPressed: () => _showSendMessageDialog(),
+                  icon: const Icon(Icons.send, size: 20),
+                  label: const Text('Enviar Mensagem'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    backgroundColor: const Color(0xFF25D366), // Verde WhatsApp
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 2,
+                  ),
+                ),
+                const SizedBox(width: 12),
                 // Botão Criar Cotação - PROFISSIONAL COM FORMULÁRIO!
                 ElevatedButton.icon(
                 onPressed: _messages.isEmpty
@@ -804,6 +821,117 @@ class _WhatsAppMessagesModalState extends ConsumerState<WhatsAppMessagesModal> {
             const SizedBox(width: 8),
             _buildAvatar(message, userType, isConversion),
           ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showSendMessageDialog() async {
+    final messageController = TextEditingController();
+    final whatsappService = WhatsAppService();
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF25D366),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.send, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text('Enviar Mensagem WhatsApp'),
+          ],
+        ),
+        content: SizedBox(
+          width: 500,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Para: ${widget.contact.name}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                'Telefone: ${widget.contact.phone}',
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: messageController,
+                decoration: const InputDecoration(
+                  labelText: 'Mensagem',
+                  hintText: 'Digite sua mensagem...',
+                  border: OutlineInputBorder(),
+                  alignLabelWithHint: true,
+                ),
+                maxLines: 5,
+                autofocus: true,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              if (messageController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Digite uma mensagem')),
+                );
+                return;
+              }
+
+              try {
+                // Enviar mensagem
+                await whatsappService.sendMessage(
+                  phone: widget.contact.phone ?? '',
+                  name: widget.contact.name ?? 'Cliente',
+                  message: messageController.text.trim(),
+                  recipientType: 'lead',
+                  context: {
+                    'contact_id': widget.contact.id,
+                    'sent_from': 'modal',
+                  },
+                );
+
+                Navigator.pop(context);
+                
+                // Mostrar sucesso
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Mensagem enviada com sucesso!'),
+                    backgroundColor: Color(0xFF25D366),
+                  ),
+                );
+
+                // Recarregar mensagens para mostrar a nova
+                await Future.delayed(const Duration(seconds: 1));
+                _loadMessages();
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('❌ Erro ao enviar: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.send),
+            label: const Text('Enviar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF25D366),
+              foregroundColor: Colors.white,
+            ),
+          ),
         ],
       ),
     );
