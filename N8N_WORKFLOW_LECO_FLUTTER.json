@@ -1,0 +1,170 @@
+{
+  "name": "Leco_Flutter - Send WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Leco_Flutter",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "leco-flutter-webhook"
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/leadstintim",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "=eq.{{ $json.leadstintim_id }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-message-data",
+      "name": "Get Message from Supabase",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.EVOLUTION_API_URL }}/message/sendText/{{ $env.EVOLUTION_INSTANCE }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"{{ $json.whatsapp_normalizado }}\",\n  \"text\": \"{{ $json.message }}\"\n}",
+        "options": {}
+      },
+      "id": "send-whatsapp",
+      "name": "Send WhatsApp via Evolution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/rpc/update_outbound_status",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"p_leadstintim_id\": {{ $('Webhook Trigger').item.json.leadstintim_id }},\n  \"p_status\": \"sent\",\n  \"p_n8n_execution_id\": \"{{ $execution.id }}\"\n}",
+        "options": {}
+      },
+      "id": "update-success",
+      "name": "Update Status - Success",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 250]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/rpc/update_outbound_status",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"p_leadstintim_id\": {{ $('Webhook Trigger').item.json.leadstintim_id }},\n  \"p_status\": \"failed\",\n  \"p_error\": \"{{ $json.error || $json.message || 'Unknown error' }}\"\n}",
+        "options": {}
+      },
+      "id": "update-failed",
+      "name": "Update Status - Failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [850, 350]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"success\": true, \"leadstintim_id\": {{ $('Webhook Trigger').item.json.leadstintim_id }}, \"status\": \"queued\" }",
+        "options": {}
+      },
+      "id": "respond-webhook",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Message from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Message from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp via Evolution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send WhatsApp via Evolution": {
+      "main": [
+        [
+          {
+            "node": "Update Status - Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status - Success": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status - Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-01-09T19:00:00.000Z",
+  "versionId": "1"
+}
