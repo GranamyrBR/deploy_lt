@@ -7,8 +7,7 @@ UPDATE n8n_webhook_config
 SET 
     webhook_url = 'https://critical.axioscode.com/webhook/Leco_Flutter',
     description = 'Webhook N8N (Leco_Flutter) para envio de mensagens WhatsApp via Evolution API',
-    is_active = true,
-    updated_at = NOW()
+    is_active = true
 WHERE name = 'send_whatsapp';
 
 -- Verificar configuração
