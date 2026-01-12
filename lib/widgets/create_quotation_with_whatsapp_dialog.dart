@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/enhanced_quotation_model.dart';
@@ -39,6 +40,7 @@ class _CreateQuotationWithWhatsAppDialogState
     extends ConsumerState<CreateQuotationWithWhatsAppDialog> {
   // Form controllers
   final _formKey = GlobalKey<FormState>();
+  bool _isCreating = false; // Lock para evitar double-submit
   final _clientNameController = TextEditingController();
   final _clientEmailController = TextEditingController();
   final _passengerCountController = TextEditingController(text: '1');
@@ -270,6 +272,12 @@ class _CreateQuotationWithWhatsAppDialogState
   }
 
   Future<void> _createQuotation() async {
+    // Prevenir double-submit
+    if (_isCreating) {
+      print('⚠️ Tentativa de criar cotação duplicada bloqueada');
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -328,7 +336,7 @@ class _CreateQuotationWithWhatsAppDialogState
     // Create quotation with all filled data INCLUDING ITEMS
     final quotation = Quotation(
       id: '0',
-      quotationNumber: 'QT-${DateTime.now().millisecondsSinceEpoch}',
+      quotationNumber: 'QT-${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(9999).toString().padLeft(4, '0')}',
       type: _quotationType,
       status: QuotationStatus.draft,
       clientName: _clientNameController.text,
@@ -359,13 +367,21 @@ class _CreateQuotationWithWhatsAppDialogState
       agency: _selectedAgency,
     );
 
+    setState(() {
+      _isCreating = true;
+    });
+
     try {
       final service = QuotationService();
-      await service.saveQuotation(
+      final result = await service.saveQuotation(
         quotation, 
         luggage: luggageList,
         vehicles: vehiclesList,
       );
+
+      if (!result.success) {
+        throw Exception(result.errorMessage ?? 'Erro desconhecido ao salvar cotação');
+      }
 
       if (mounted) {
         // Close this dialog
@@ -386,11 +402,14 @@ class _CreateQuotationWithWhatsAppDialogState
           ),
         );
 
-        // Open management dialog
+        // Atualizar quotation com o ID real do banco
+        final savedQuotation = quotation.copyWith(id: result.id.toString());
+
+        // Open management dialog com cotação já salva (não vai salvar novamente)
         await showDialog<void>(
           context: context,
           builder: (context) => QuotationManagementDialog(
-            quotation: quotation,
+            quotation: savedQuotation,
           ),
         );
       }
@@ -402,6 +421,12 @@ class _CreateQuotationWithWhatsAppDialogState
             backgroundColor: Colors.red,
           ),
         );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isCreating = false;
+        });
       }
     }
   }
@@ -1010,9 +1035,15 @@ class _CreateQuotationWithWhatsAppDialogState
                 ),
                 const SizedBox(width: 12),
                 ElevatedButton.icon(
-                  onPressed: _createQuotation,
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Criar Cotação'),
+                  onPressed: _isCreating ? null : _createQuotation,
+                  icon: _isCreating 
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Icon(Icons.check_circle),
+                  label: Text(_isCreating ? 'Criando...' : 'Criar Cotação'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     backgroundColor: Theme.of(context).colorScheme.primary,

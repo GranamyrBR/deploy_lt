@@ -20,7 +20,6 @@ import 'utils/timezone_utils.dart';
 import 'screens/seller_dashboard_screen.dart';
 import 'screens/seller_kanban_screen.dart';
 import 'screens/customer_profile_screen.dart';
-import 'screens/contacts_multi_view_screen.dart';
 import 'screens/contacts_grid_table_screen.dart';
 import 'screens/quotations_screen_premium.dart';
 import 'config/deferred_imports.dart';
@@ -144,24 +143,6 @@ class LecotourApp extends ConsumerWidget {
             return CustomerProfileScreen(customerId: id, customerName: name);
           }
           return const Scaffold(body: Center(child: Text('Parâmetros inválidos para /customer-profile')));
-        },
-        '/contacts-multi': (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          if (args is Map<String, dynamic>) {
-            final contacts = (args['contacts'] as List).cast<Map<String, dynamic>>();
-            final onOpenProfileModal = args['onOpenProfileModal'] as void Function(Map<String, dynamic>);
-            final onOpenProfilePage = args['onOpenProfilePage'] as void Function(Map<String, dynamic>);
-            final onOpenWhatsApp = args['onOpenWhatsApp'] as void Function(Map<String, dynamic>);
-            final onCreateSale = args['onCreateSale'] as void Function(Map<String, dynamic>);
-            return ContactsMultiViewScreen(
-              contacts: contacts,
-              onOpenProfileModal: onOpenProfileModal,
-              onOpenProfilePage: onOpenProfilePage,
-              onOpenWhatsApp: onOpenWhatsApp,
-              onCreateSale: onCreateSale,
-            );
-          }
-          return const Scaffold(body: Center(child: Text('Parâmetros inválidos para /contacts-multi')));
         },
         '/contacts-grid': (context) {
           final args = ModalRoute.of(context)?.settings.arguments;

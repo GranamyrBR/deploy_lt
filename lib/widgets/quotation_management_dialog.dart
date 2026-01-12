@@ -482,14 +482,7 @@ class _QuotationManagementDialogState extends ConsumerState<QuotationManagementD
   Future<void> _saveQuotation() async {
     if (!mounted) return;
     
-    // Validar antes de salvar
-    if (_items.isEmpty) {
-      _showSafeSnackBar(
-        message: 'Adicione pelo menos 1 servico ou produto',
-        backgroundColor: Colors.orange,
-      );
-      return;
-    }
+    // Apenas datas são obrigatórias (validação removida de itens)
     
     setState(() {
       _isSaving = true;

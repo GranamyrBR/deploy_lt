@@ -18,6 +18,11 @@ import '../widgets/whatsapp_messages_modal.dart';
 import '../services/contacts_service.dart';
 import '../widgets/enhanced_quotation_dialog.dart';
 import '../widgets/quotation_management_dialog.dart';
+import '../widgets/create_quotation_with_whatsapp_dialog.dart';
+import '../widgets/quick_dates_dialog.dart';
+import '../providers/lead_tintim_provider.dart';
+import '../models/lead_tintim.dart';
+import 'dart:math';
 
 class ContactsScreen extends ConsumerStatefulWidget {
   const ContactsScreen({super.key});
@@ -33,6 +38,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   List<Map<String, dynamic>> _contacts = [];
   bool _isLoading = false;
   bool _visualizarComoCartao = false;
+  bool _visualizarComoKanban = false;
   String _searchTerm = '';
 
   // Adicionado para scroll sincronizado
@@ -375,21 +381,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     );
   }
 
-  void _abrirVisualizacaoMultipla() {
-    Navigator.pushNamed(
-      context,
-      '/contacts-multi',
-      arguments: {
-        'contacts': _contacts,
-        'onOpenProfileModal': (Map<String, dynamic> c) =>
-            _abrirPerfilCompleto(c),
-        'onOpenProfilePage': (Map<String, dynamic> c) =>
-            _abrirPerfilNaPagina(c),
-        'onOpenWhatsApp': (Map<String, dynamic> c) => _abrirWhatsApp(c),
-        'onCreateSale': (Map<String, dynamic> c) => _criarVendaParaCliente(c),
-      },
-    );
-  }
 
   void _abrirTabelaGrid() {
     Navigator.pushNamed(
@@ -468,6 +459,156 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   }
 
   // Método para construir estatísticas de estados
+
+  Future<void> _abrirCriarCotacaoComWhatsApp(Map<String, dynamic> contactData) async {
+    final phone = contactData['phone'] as String?;
+    if (phone == null || phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Este contato não possui número de telefone cadastrado'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Criar objeto Contact a partir dos dados
+    final contact = Contact(
+      id: contactData['id'],
+      name: contactData['name'],
+      phone: phone,
+      email: contactData['email'],
+      country: contactData['country'],
+      state: contactData['state'],
+      city: contactData['city'],
+      sourceId: contactData['source_id'],
+      contactCategoryId: contactData['contact_category_id'],
+      createdAt: contactData['created_at'] != null
+          ? DateTime.parse(contactData['created_at'])
+          : null,
+      updatedAt: contactData['updated_at'] != null
+          ? DateTime.parse(contactData['updated_at'])
+          : null,
+    );
+
+    // Buscar mensagens do WhatsApp diretamente do banco
+    List<LeadTintim> whatsappMessages = [];
+    try {
+      // Normalizar telefone (remover caracteres especiais)
+      final normalizedPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
+      
+      print('🔍 Buscando mensagens para telefone: $phone (normalizado: $normalizedPhone)');
+      
+      // Buscar por telefone exato ou normalizado
+      final response = await _client
+          .from('leadstintim')
+          .select()
+          .or('phone.eq.$phone,phone.eq.$normalizedPhone')
+          .order('created_at', ascending: false);
+      
+      whatsappMessages = (response as List)
+          .map((json) => LeadTintim.fromJson(json))
+          .toList();
+      
+      print('✅ Carregadas ${whatsappMessages.length} mensagens para $phone');
+    } catch (e) {
+      print('❌ Erro ao carregar mensagens: $e');
+    }
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => CreateQuotationWithWhatsAppDialog(
+        initialContact: contact,
+        whatsappMessages: whatsappMessages,
+      ),
+    );
+  }
+
+  Future<void> _abrirDatasRapidas(Map<String, dynamic> contactData) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) => QuickDatesDialog(
+        contactName: contactData['name'] ?? 'Sem nome',
+        contactPhone: contactData['phone'] ?? '',
+        contactId: contactData['id'],
+      ),
+    );
+
+    if (result == null) return;
+
+    // Salvar cotação rápida com apenas as datas
+    await _salvarCotacaoRapida(contactData, result);
+  }
+
+  Future<void> _salvarCotacaoRapida(
+    Map<String, dynamic> contactData,
+    Map<String, dynamic> dates,
+  ) async {
+    try {
+      // Criar cotação simplificada
+      final quotationNumber = 'QT-${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(9999).toString().padLeft(4, '0')}';
+      
+      final payload = {
+        'quotation_number': quotationNumber,
+        'type': 'quick_dates', // Tipo especial para cotações rápidas
+        'status': 'lead_quente', // Status específico para leads com data
+        'client_name': contactData['name'],
+        'client_phone': contactData['phone'],
+        'client_email': contactData['email'],
+        'travel_date': (dates['departure_date'] as DateTime).toIso8601String(),
+        'return_date': dates['return_date'] != null 
+            ? (dates['return_date'] as DateTime).toIso8601String() 
+            : null,
+        'notes': dates['notes'] ?? '',
+        'subtotal': 0,
+        'total': 0,
+        'currency': 'USD',
+        'quotation_date': DateTime.now().toIso8601String(),
+        'created_by': 'system',
+      };
+
+      final response = await _client
+          .from('quotation')
+          .insert(payload)
+          .select()
+          .single();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Text('Datas salvas! ${_formatDate(dates['departure_date'])}'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+
+        // Recarregar contatos para atualizar badges
+        _fetchContacts();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao salvar datas: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
 
   // Função para extrair o código ISO do país a partir do DDI do telefone
   String? _getCountryCodeFromPhone(dynamic phone) {
@@ -2167,13 +2308,26 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           onPressed: () {
             setState(() {
               _visualizarComoCartao = !_visualizarComoCartao;
+              _visualizarComoKanban = false; // Desativa kanban
             });
           },
         ),
         IconButton(
-          icon: const Icon(Icons.dashboard),
-          onPressed: _contacts.isEmpty ? null : _abrirVisualizacaoMultipla,
-          tooltip: 'Visualização múltipla',
+          icon: Icon(
+            _visualizarComoKanban ? Icons.view_list : Icons.view_kanban,
+            color: _visualizarComoKanban ? Colors.blue : null,
+          ),
+          tooltip: _visualizarComoKanban
+              ? 'Visualizar como lista'
+              : 'Visualizar como Kanban',
+          onPressed: () {
+            setState(() {
+              _visualizarComoKanban = !_visualizarComoKanban;
+              if (_visualizarComoKanban) {
+                _visualizarComoCartao = false; // Desativa cartão quando ativa kanban
+              }
+            });
+          },
         ),
         IconButton(
           icon: const Icon(Icons.table_rows),
@@ -2233,7 +2387,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                     ? const Center(
                         child: Text(
                             'Nenhum contato encontrado com os filtros aplicados.'))
-                    : ListView.builder(
+                    : _visualizarComoKanban
+                        ? _buildKanbanView(contatosExibidos)
+                        : ListView.builder(
                         padding: const EdgeInsets.all(16.0),
                         itemCount: contatosExibidos.length,
                         itemBuilder: (context, index) {
@@ -2526,6 +2682,52 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
+                                          const SizedBox(width: 8),
+                                          // Chip redondo para criar cotação
+                                          InkWell(
+                                            onTap: () => _abrirCriarCotacaoComWhatsApp(c),
+                                            borderRadius: BorderRadius.circular(20),
+                                            child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.shade50,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.blue.shade300,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.request_quote,
+                                                size: 18,
+                                                color: Colors.blue.shade700,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          // Chip redondo para datas rápidas
+                                          InkWell(
+                                            onTap: () => _abrirDatasRapidas(c),
+                                            borderRadius: BorderRadius.circular(20),
+                                            child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: BoxDecoration(
+                                                color: Colors.green.shade50,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.green.shade300,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.calendar_today,
+                                                size: 18,
+                                                color: Colors.green.shade700,
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -2557,7 +2759,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                   ],
-                                  // Categoria de Contato
+                                  // Categoria de Contato (usando cores do kanban)
                                   if (c['contact_category']?['name'] != null)
                                     Expanded(
                                       flex: 1,
@@ -2565,16 +2767,16 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 4, vertical: 1),
                                         decoration: BoxDecoration(
-                                          color: Colors.green
+                                          color: _getCategoryColor(c['contact_category']['name'])
                                               .withValues(alpha: 0.1),
                                           borderRadius:
                                               BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           c['contact_category']['name'],
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 10,
-                                            color: Colors.green,
+                                            color: _getCategoryColor(c['contact_category']['name']),
                                             fontWeight: FontWeight.w500,
                                           ),
                                           overflow: TextOverflow.ellipsis,
@@ -3282,5 +3484,377 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     _saveSortPreferences();
 
     _fetchContacts();
+  }
+
+  // ============================================================================
+  // KANBAN VIEW - Visualização estilo Monday
+  // ============================================================================
+
+  Widget _buildKanbanView(List<Map<String, dynamic>> contacts) {
+    final categories = ref.watch(contactCategoriesProvider);
+    
+    return categories.when(
+      data: (categoriesList) {
+        if (categoriesList.isEmpty) {
+          return const Center(child: Text('Nenhuma categoria encontrada'));
+        }
+
+        // Criar colunas baseadas nas categorias de contato
+        final columns = categoriesList.map((category) {
+          return {
+            'id': category.id,
+            'name': category.name ?? 'Sem categoria',
+            'color': _getCategoryColor(category.name ?? 'Sem categoria'),
+            'order': _getCategoryOrder(category.name ?? 'Sem categoria'),
+          };
+        }).toList();
+        
+        // Ordenar colunas: Lead → Prospect → Negociado → Cliente → Leads Perdidos
+        columns.sort((a, b) => (a['order'] as int).compareTo(b['order'] as int));
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: columns.map((column) {
+            final categoryId = column['id'] as int;
+            final categoryName = column['name'] as String;
+            final color = column['color'] as Color;
+            
+            final columnContacts = contacts.where((contact) => 
+                contact['contact_category_id'] == categoryId).toList();
+
+            return Expanded(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                child: Column(
+                  children: [
+                    // Header da coluna
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.1),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(8),
+                        ),
+                        border: Border.all(color: color.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              categoryName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: color,
+                                fontSize: 13,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              columnContacts.length.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Cards da coluna com DragTarget
+                    Expanded(
+                      child: DragTarget<Map<String, dynamic>>(
+                        onWillAcceptWithDetails: (data) => true,
+                        onAcceptWithDetails: (details) {
+                          _moveContactToCategory(details.data, categoryId);
+                        },
+                        builder: (context, candidateData, rejectedData) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: candidateData.isNotEmpty 
+                                  ? color.withValues(alpha: 0.05)
+                                  : Theme.of(context).colorScheme.surfaceContainerLowest,
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8),
+                              ),
+                              border: Border.all(
+                                color: candidateData.isNotEmpty 
+                                    ? color.withValues(alpha: 0.5)
+                                    : color.withValues(alpha: 0.3),
+                                width: candidateData.isNotEmpty ? 2 : 1,
+                              ),
+                            ),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(8),
+                              itemCount: columnContacts.length,
+                              itemBuilder: (context, index) {
+                                return _buildDraggableContactCard(columnContacts[index], color);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(child: Text('Erro ao carregar categorias: $error')),
+    );
+  }
+
+  Widget _buildDraggableContactCard(Map<String, dynamic> contact, Color categoryColor) {
+    return Draggable<Map<String, dynamic>>(
+      data: contact,
+      feedback: Material(
+        elevation: 8,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 280,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: categoryColor, width: 2),
+          ),
+          child: _buildContactCardContent(contact, categoryColor),
+        ),
+      ),
+      childWhenDragging: Opacity(
+        opacity: 0.3,
+        child: _buildContactKanbanCard(contact, categoryColor),
+      ),
+      child: _buildContactKanbanCard(contact, categoryColor),
+    );
+  }
+
+  Widget _buildContactKanbanCard(Map<String, dynamic> contact, Color categoryColor) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: categoryColor.withValues(alpha: 0.3)),
+      ),
+      child: InkWell(
+        onTap: () => _abrirPerfilCompleto(contact),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: _buildContactCardContent(contact, categoryColor),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContactCardContent(Map<String, dynamic> contact, Color categoryColor) {
+    final name = contact['name'] as String? ?? 'Sem nome';
+    final email = contact['email'] as String? ?? '';
+    final phone = contact['phone'] as String? ?? '';
+    final sourceName = contact['source_name'] as String? ?? '';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: categoryColor.withValues(alpha: 0.2),
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                style: TextStyle(
+                  color: categoryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                name,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        if (email.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.email, size: 12, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  email,
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+        if (phone.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              // Flag do país (usando método existente)
+              if (_getCountryCodeFromPhone(phone) != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Image.network(
+                    FlagUtils.getFlagUrl(_getCountryCodeFromPhone(phone)!,
+                        width: 20, height: 15),
+                    width: 20,
+                    height: 15,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const SizedBox(width: 20, height: 15),
+                  ),
+                )
+              else
+                const SizedBox(width: 20, height: 15),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  PhoneUtils.formatPhone(phone),
+                  style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+        if (sourceName.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: _getSourceColor(sourceName).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: _getSourceColor(sourceName).withValues(alpha: 0.3),
+              ),
+            ),
+            child: Text(
+              sourceName,
+              style: TextStyle(
+                fontSize: 10,
+                color: _getSourceColor(sourceName),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  int _getCategoryOrder(String categoryName) {
+    final lowerName = categoryName.toLowerCase();
+    
+    // Ordem: Lead (1), Prospect (2), Negociado (3), Cliente (4), Leads Perdidos (5)
+    if (lowerName.contains('lead') && !lowerName.contains('perdido')) return 1;
+    if (lowerName.contains('prospect')) return 2;
+    if (lowerName.contains('negociad')) return 3;
+    if (lowerName.contains('client')) return 4;
+    if (lowerName.contains('perdido') || lowerName.contains('inativo')) return 5;
+    
+    return 99; // Outros no final
+  }
+
+  Color _getCategoryColor(String categoryName) {
+    final lowerName = categoryName.toLowerCase();
+    
+    // Ordem: Lead, Prospect, Negociado, Cliente, Leads Perdidos
+    if (lowerName.contains('perdido') || lowerName.contains('inativo')) {
+      return const Color(0xFFEC4899); // Rosa/Pink para leads perdidos
+    }
+    if (lowerName.contains('client')) {
+      return const Color(0xFF059669); // Verde mais forte para clientes
+    }
+    if (lowerName.contains('negociad')) {
+      return const Color(0xFF10B981); // Verde médio para negociados
+    }
+    if (lowerName.contains('prospect')) {
+      return const Color(0xFFF59E0B); // Laranja para prospects
+    }
+    if (lowerName.contains('lead')) {
+      return const Color(0xFF3B82F6); // Azul para leads
+    }
+    
+    return const Color(0xFF6366F1); // Default purple
+  }
+
+  Color _getSourceColor(String sourceName) {
+    return SourceColors.getSourceColor(sourceName);
+  }
+
+
+  Future<void> _moveContactToCategory(Map<String, dynamic> contact, int newCategoryId) async {
+    try {
+      await _client
+          .from('contact')
+          .update({'contact_category_id': newCategoryId})
+          .eq('id', contact['id']);
+
+      // Atualizar localmente
+      setState(() {
+        final index = _contacts.indexWhere((c) => c['id'] == contact['id']);
+        if (index != -1) {
+          _contacts[index]['contact_category_id'] = newCategoryId;
+        }
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Contato movido com sucesso!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao mover contato: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
