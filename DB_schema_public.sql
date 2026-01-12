@@ -814,7 +814,11 @@ CREATE TABLE public.leadstintim (
   body character varying,
   body_id integer,
   created_at timestamp with time zone NOT NULL DEFAULT now(),
-  phone text CHECK (phone IS NOT NULL AND phone <> ''::text),
+  outbound_status text CHECK (outbound_status = ANY (ARRAY['none'::text, 'pending'::text, 'queued'::text, 'sent'::text, 'delivered'::text, 'read'::text, 'failed'::text])),
+  outbound_sent_at timestamp with time zone,
+  outbound_error text,
+  n8n_execution_id text,
+  phone text CHECK (phone IS NULL OR phone <> ''::text),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   from_me text,
   whatsapp_normalizado text,
@@ -926,6 +930,15 @@ CREATE TABLE public.monday_category_backup (
   phone text,
   contact_category_id integer,
   backup_timestamp text
+);
+CREATE TABLE public.n8n_webhook_config (
+  name text NOT NULL UNIQUE,
+  webhook_url text NOT NULL,
+  description text,
+  id integer NOT NULL DEFAULT nextval('n8n_webhook_config_id_seq'::regclass),
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT n8n_webhook_config_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.operation (
   product_id integer,
@@ -1743,4 +1756,15 @@ CREATE TABLE public.wa_threads (
   CONSTRAINT wa_threads_pkey PRIMARY KEY (id),
   CONSTRAINT wa_threads_id_cliente_fkey FOREIGN KEY (id_cliente) REFERENCES public.leadstintim(id),
   CONSTRAINT wa_threads_id_driver_fkey FOREIGN KEY (id_driver) REFERENCES public.driver(id)
+);
+CREATE TABLE public.whatsapp_message_templates (
+  name text NOT NULL UNIQUE,
+  category text NOT NULL CHECK (category = ANY (ARRAY['boas_vindas'::text, 'lembrete'::text, 'confirmacao'::text, 'follow_up'::text, 'operacional'::text, 'marketing'::text])),
+  body text NOT NULL,
+  variables ARRAY,
+  id bigint NOT NULL DEFAULT nextval('whatsapp_message_templates_id_seq'::regclass),
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  usage_count integer DEFAULT 0,
+  CONSTRAINT whatsapp_message_templates_pkey PRIMARY KEY (id)
 );

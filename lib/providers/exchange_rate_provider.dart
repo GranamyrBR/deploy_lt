@@ -20,13 +20,14 @@ final tourismDollarRateProvider = Provider<double>((ref) {
       final askRate = data['ask'] as double;
       // Se o valor manual foi alterado, usar ele diretamente
       if (manualRate != 5.0) {
-        return manualRate;
+        return double.parse(manualRate.toStringAsFixed(2));
       }
-      // Senão, calcular com a margem
-      return askRate * (1 + margin / 100);
+      // Senão, calcular com a margem e arredondar para 2 casas decimais
+      final calculated = askRate * (1 + margin / 100);
+      return double.parse(calculated.toStringAsFixed(2));
     },
-    loading: () => manualRate, // Usar valor manual se disponível
-    error: (_, __) => manualRate, // Usar valor manual se disponível
+    loading: () => double.parse(manualRate.toStringAsFixed(2)),
+    error: (_, __) => double.parse(manualRate.toStringAsFixed(2)),
   );
 });
 

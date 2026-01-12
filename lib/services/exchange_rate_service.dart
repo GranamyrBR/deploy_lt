@@ -59,9 +59,12 @@ class ExchangeRateService {
                  final rate = double.tryParse(bcbData['valor'] ?? '0') ?? 0.0;
                  if (rate > 0 && _isRealisticRate(rate)) {
                    // Para BCB, usamos spread muito pequeno pois é a taxa oficial
+                   // Arredondar para 2 casas decimais
+                   final bidRate = double.parse((rate * 0.999).toStringAsFixed(2));
+                   final askRate = double.parse((rate * 1.001).toStringAsFixed(2));
                    final result = {
-                     'bid': rate * 0.999, // Spread mínimo para fonte oficial
-                     'ask': rate * 1.001,
+                     'bid': bidRate,
+                     'ask': askRate,
                      'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
                      'create_date': bcbData['data'] ?? DateTime.now().toUtc().toIso8601String(),
                      'source': '${endpoint['name']} (Oficial)',
@@ -82,8 +85,11 @@ class ExchangeRateService {
                          case 'awesomeapi':
                final usdBrl = data['USDBRL'];
                if (usdBrl != null) {
-                 final bid = double.tryParse(usdBrl['bid'] ?? '0') ?? 0.0;
-                 final ask = double.tryParse(usdBrl['ask'] ?? '0') ?? 0.0;
+                 final bidRaw = double.tryParse(usdBrl['bid'] ?? '0') ?? 0.0;
+                 final askRaw = double.tryParse(usdBrl['ask'] ?? '0') ?? 0.0;
+                 // Arredondar para 2 casas decimais
+                 final bid = double.parse(bidRaw.toStringAsFixed(2));
+                 final ask = double.parse(askRaw.toStringAsFixed(2));
                  if (bid > 0 && ask > 0) {
                    // Converter timestamp da AwesomeAPI (em segundos) para milissegundos
                    String normalizedTimestamp;
@@ -120,9 +126,12 @@ class ExchangeRateService {
               if (dataRates != null && dataRates['BRL'] != null) {
                 final rate = double.tryParse(dataRates['BRL']['value'].toString()) ?? 0.0;
                 if (rate > 0) {
+                  // Arredondar para 2 casas decimais
+                  final bidRate = double.parse((rate * 0.98).toStringAsFixed(2));
+                  final askRate = double.parse((rate * 1.02).toStringAsFixed(2));
                   final result = {
-                    'bid': rate * 0.98,
-                    'ask': rate * 1.02,
+                    'bid': bidRate,
+                    'ask': askRate,
                     'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
                     'create_date': DateTime.now().toUtc().toIso8601String(),
                     'source': endpoint['name'],
@@ -143,10 +152,13 @@ class ExchangeRateService {
     }
     
     // If all APIs fail, return fallback values
-    print('ExchangeRateService: ⚠️ Todas as APIs falharam, usando valores de fallback - Bid: $_fallbackBid, Ask: $_fallbackAsk');
+    // Arredondar fallback para 2 casas decimais
+    final fallbackBid = double.parse(_fallbackBid.toStringAsFixed(2));
+    final fallbackAsk = double.parse(_fallbackAsk.toStringAsFixed(2));
+    print('ExchangeRateService: ⚠️ Todas as APIs falharam, usando valores de fallback - Bid: $fallbackBid, Ask: $fallbackAsk');
     return {
-      'bid': _fallbackBid,
-      'ask': _fallbackAsk,
+      'bid': fallbackBid,
+      'ask': fallbackAsk,
       'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
       'create_date': DateTime.now().toUtc().toIso8601String(),
       'source': 'Fallback',

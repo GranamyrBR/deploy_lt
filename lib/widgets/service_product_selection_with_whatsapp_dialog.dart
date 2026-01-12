@@ -509,7 +509,7 @@ class _ServiceProductSelectionWithWhatsAppDialogState
                   ),
                 const SizedBox(height: 4),
                 Text(
-                  'R\$ ${service.price?.toStringAsFixed(2) ?? "0.00"}',
+                  'US\$ ${service.price?.toStringAsFixed(2) ?? "0.00"}',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -587,7 +587,7 @@ class _ServiceProductSelectionWithWhatsAppDialogState
                       ),
                     const SizedBox(height: 4),
                     Text(
-                      'R\$ ${product.price?.toStringAsFixed(2) ?? '0.00'}',
+                      'US\$ ${product.price?.toStringAsFixed(2) ?? '0.00'}',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,

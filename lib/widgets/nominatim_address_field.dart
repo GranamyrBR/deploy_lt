@@ -50,9 +50,10 @@ class _NominatimAddressFieldState extends State<NominatimAddressField> {
           'q': query,
           'format': 'json',
           'addressdetails': '1',
-          'limit': '50', // Aumentado para trazer mais resultados
+          'limit': '50',
           'accept-language': 'pt-BR',
-          'dedupe': '0', // Não remover duplicatas
+          'dedupe': '0',
+          'countrycodes': 'us', // 🇺🇸 Limita busca apenas aos Estados Unidos
         },
       );
 

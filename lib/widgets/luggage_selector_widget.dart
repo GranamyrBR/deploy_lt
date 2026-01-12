@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-/// Tipos de bagagem baseados nos padrões da indústria aérea
+/// Tipos de bagagem e itens especiais
 enum LuggageType {
+  // Bagagens padrão
   carryOn('Bagagem de Mão', 'Até 10kg', '55x40x20cm', Icons.work_outline),
   checked('Bagagem Despachada', '23kg', '158cm linear', Icons.luggage),
   largeChecked('Bagagem Grande', 'Até 32kg', '203cm linear', Icons.cases_outlined),
-  personal('Item Pessoal', 'Até 5kg', '40x30x15cm', Icons.backpack_outlined);
+  personal('Item Pessoal', 'Até 5kg', '40x30x15cm', Icons.backpack_outlined),
+  
+  // Itens especiais para transporte
+  babySeat('Cadeirinha de Bebê', 'Até 10kg', 'Assento infantil', Icons.child_care),
+  stroller('Carrinho de Bebê', 'Até 15kg', 'Carrinho dobrável', Icons.baby_changing_station),
+  wheelchair('Cadeira de Rodas', 'Até 50kg', 'Equipamento médico', Icons.accessible);
 
   final String label;
   final String weight;
@@ -14,6 +19,8 @@ enum LuggageType {
   final IconData icon;
 
   const LuggageType(this.label, this.weight, this.dimensions, this.icon);
+  
+  bool get isSpecialItem => this == babySeat || this == stroller || this == wheelchair;
 }
 
 /// Modelo de dados para bagagem
@@ -174,128 +181,166 @@ class _LuggageSelectorWidgetState extends State<LuggageSelectorWidget> {
               const SizedBox(height: 16),
             ],
 
-            // Luggage items
-            ...LuggageType.values.map((type) {
-              final item = _luggageItems.firstWhere((i) => i.type == type);
-              return _buildLuggageItem(context, item);
-            }),
+            // Bagagens padrão em 2 linhas usando Wrap
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: LuggageType.values.where((t) => !t.isSpecialItem).map((type) {
+                final item = _luggageItems.firstWhere((i) => i.type == type);
+                return _buildCompactLuggageItem(context, item);
+              }).toList(),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Divisor para itens especiais
+            Row(
+              children: [
+                const Expanded(child: Divider()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    'Itens Especiais',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+                const Expanded(child: Divider()),
+              ],
+            ),
+            
+            const SizedBox(height: 12),
+            
+            // Itens especiais em 1 linha usando Wrap
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: LuggageType.values.where((t) => t.isSpecialItem).map((type) {
+                final item = _luggageItems.firstWhere((i) => i.type == type);
+                return _buildCompactLuggageItem(context, item);
+              }).toList(),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLuggageItem(BuildContext context, LuggageItem item) {
-    final controller = TextEditingController(
-      text: item.quantity > 0 ? item.quantity.toString() : '',
-    );
-
+  Widget _buildCompactLuggageItem(BuildContext context, LuggageItem item) {
+    final isSelected = item.quantity > 0;
+    final isSpecial = item.type.isSpecialItem;
+    
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: item.quantity > 0 ? Colors.green.shade50 : Colors.grey.shade50,
+        color: isSelected 
+            ? (isSpecial ? Colors.purple.shade50 : Colors.blue.shade50)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: item.quantity > 0 ? Colors.green.shade300 : Colors.grey.shade300,
+          color: isSelected 
+              ? (isSpecial ? Colors.purple.shade300 : Colors.blue.shade300)
+              : Colors.grey.shade300,
+          width: isSelected ? 2 : 1,
         ),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Icon
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: item.quantity > 0 ? Colors.green.shade100 : Colors.white,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              item.type.icon,
-              color: item.quantity > 0 ? Colors.green.shade700 : Colors.grey.shade600,
-              size: 24,
-            ),
+          // Ícone
+          Icon(
+            item.type.icon,
+            color: isSelected 
+                ? (isSpecial ? Colors.purple.shade700 : Colors.blue.shade700)
+                : Colors.grey.shade600,
+            size: 20,
           ),
+          const SizedBox(width: 8),
           
+          // Label e peso/dimensões
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                item.type.label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  item.type.weight,
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green.shade800,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(width: 12),
           
-          // Label and info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.type.label,
+          // Controles horizontais
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Botão decrementar
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: item.quantity > 0
+                      ? () => _updateQuantity(item.type, item.quantity - 1)
+                      : null,
+                  icon: const Icon(Icons.remove_circle_outline, size: 18),
+                  color: Colors.red.shade400,
+                ),
+              ),
+              
+              // Quantidade
+              Container(
+                width: 35,
+                height: 28,
+                alignment: Alignment.center,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Text(
+                  item.quantity.toString(),
                   style: const TextStyle(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${item.type.weight} • ${item.type.dimensions}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          const SizedBox(width: 12),
-          
-          // Quantity controls
-          Row(
-            children: [
-              // Decrement button
-              IconButton(
-                onPressed: item.quantity > 0
-                    ? () => _updateQuantity(item.type, item.quantity - 1)
-                    : null,
-                icon: const Icon(Icons.remove_circle_outline),
-                iconSize: 28,
-                color: Colors.red.shade400,
-                tooltip: 'Remover',
               ),
               
-              // Quantity input
+              // Botão incrementar
               SizedBox(
-                width: 50,
-                child: TextField(
-                  controller: controller,
-                  textAlign: TextAlign.center,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(2),
-                  ],
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText: '0',
-                  ),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  onChanged: (value) {
-                    final quantity = int.tryParse(value) ?? 0;
-                    _updateQuantity(item.type, quantity);
-                  },
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: item.quantity < 99
+                      ? () => _updateQuantity(item.type, item.quantity + 1)
+                      : null,
+                  icon: const Icon(Icons.add_circle_outline, size: 18),
+                  color: Colors.green.shade400,
                 ),
-              ),
-              
-              // Increment button
-              IconButton(
-                onPressed: item.quantity < 99
-                    ? () => _updateQuantity(item.type, item.quantity + 1)
-                    : null,
-                icon: const Icon(Icons.add_circle_outline),
-                iconSize: 28,
-                color: Colors.green.shade400,
-                tooltip: 'Adicionar',
               ),
             ],
           ),
@@ -303,4 +348,5 @@ class _LuggageSelectorWidgetState extends State<LuggageSelectorWidget> {
       ),
     );
   }
+
 }

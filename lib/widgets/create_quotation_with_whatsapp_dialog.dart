@@ -10,6 +10,7 @@ import '../widgets/nominatim_address_field.dart';
 import '../widgets/quotation_management_dialog.dart';
 import '../widgets/service_product_selection_with_whatsapp_dialog.dart';
 import '../widgets/luggage_selector_widget.dart';
+import '../widgets/vehicle_selector_widget.dart';
 import '../services/quotation_service.dart';
 import '../providers/accessibility_provider.dart';
 
@@ -44,8 +45,6 @@ class _CreateQuotationWithWhatsAppDialogState
   final _travelDateController = TextEditingController();
   final _returnDateController = TextEditingController();
   final _hotelController = TextEditingController();
-  final _roomTypeController = TextEditingController();
-  final _vehicleController = TextEditingController();
   final _notesController = TextEditingController();
   final _specialRequestsController = TextEditingController();
   final _destinationController = TextEditingController();
@@ -61,6 +60,7 @@ class _CreateQuotationWithWhatsAppDialogState
   final List<db.Service> _selectedServices = [];
   final List<dbp.Product> _selectedProducts = [];
   List<LuggageItem> _luggageItems = [];
+  List<VehicleSelection> _vehicleSelections = [];
 
   // WhatsApp IA
   List<LeadTintim> _selectedMessages = [];
@@ -97,8 +97,6 @@ class _CreateQuotationWithWhatsAppDialogState
     _travelDateController.dispose();
     _returnDateController.dispose();
     _hotelController.dispose();
-    _roomTypeController.dispose();
-    _vehicleController.dispose();
     _notesController.dispose();
     _specialRequestsController.dispose();
     _destinationController.dispose();
@@ -311,6 +309,22 @@ class _CreateQuotationWithWhatsAppDialogState
             })
         .toList();
 
+    // Preparar veículos para envio
+    final vehiclesList = _vehicleSelections
+        .where((v) => v.quantity > 0)
+        .map((v) => {
+              'type': v.type.name,
+              'label': v.type.label,
+              'quantity': v.quantity,
+              'maxPassengers': v.type.maxPassengers,
+            })
+        .toList();
+    
+    // Criar string resumida de veículos para o campo 'vehicle'
+    final vehicleSummary = vehiclesList.isNotEmpty
+        ? vehiclesList.map((v) => '${v['quantity']}x ${v['label']}').join(', ')
+        : null;
+
     // Create quotation with all filled data INCLUDING ITEMS
     final quotation = Quotation(
       id: '0',
@@ -326,8 +340,8 @@ class _CreateQuotationWithWhatsAppDialogState
       origin: _originController.text.isNotEmpty ? _originController.text : null,
       destination: _destinationController.text.isNotEmpty ? _destinationController.text : null,
       hotel: _hotelController.text.isNotEmpty ? _hotelController.text : null,
-      roomType: _roomTypeController.text.isNotEmpty ? _roomTypeController.text : null,
-      vehicle: _vehicleController.text.isNotEmpty ? _vehicleController.text : null,
+      roomType: null, // Campo removido
+      vehicle: vehicleSummary, // Usa o resumo dos veículos selecionados
       quotationDate: DateTime.now(),
       expirationDate: DateTime.now().add(const Duration(days: 7)),
       subtotal: subtotal,
@@ -775,38 +789,26 @@ class _CreateQuotationWithWhatsAppDialogState
             NominatimAddressField(
               controller: _hotelController,
               labelText: 'Hotel',
-              hintText: 'Digite para buscar',
+              hintText: 'Digite para buscar hotéis nos EUA',
               prefixIcon: Icons.hotel,
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _roomTypeController,
-                    decoration: const InputDecoration(
-                      labelText: 'Tipo de Quarto',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.bed),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    controller: _vehicleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Veículo',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.directions_car),
-                    ),
-                  ),
-                ),
-              ],
+            const SizedBox(height: 24),
+
+            // Veículos
+            _buildSectionTitle('🚗 Transporte'),
+            VehicleSelectorWidget(
+              initialVehicles: _vehicleSelections.isEmpty ? null : _vehicleSelections,
+              passengerCount: int.tryParse(_passengerCountController.text),
+              onChanged: (vehicles) {
+                setState(() {
+                  _vehicleSelections = vehicles;
+                });
+              },
             ),
             const SizedBox(height: 24),
 
             // Bagagens
+            _buildSectionTitle('🧳 Bagagens e Itens Especiais'),
             LuggageSelectorWidget(
               initialLuggage: _luggageItems.isEmpty ? null : _luggageItems,
               onChanged: (luggage) {
@@ -944,22 +946,48 @@ class _CreateQuotationWithWhatsAppDialogState
 
             // Observações
             _buildSectionTitle('📝 Observações'),
+            
+            // Notas Internas (PRIVADO - apenas equipe)
             TextFormField(
               controller: _notesController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Notas Internas',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.note),
+                hintText: 'Visível apenas para atendentes e gestão',
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: Tooltip(
+                  message: 'Estas notas são PRIVADAS e não aparecerão no PDF da cotação',
+                  child: Icon(Icons.info_outline, size: 20, color: Colors.orange.shade600),
+                ),
+                helperText: '🔒 Privado - Não aparece no PDF',
+                helperStyle: TextStyle(
+                  color: Colors.orange.shade700,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                ),
               ),
               maxLines: 3,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
+            
+            // Solicitações Especiais (PÚBLICO - vai para PDF)
             TextFormField(
               controller: _specialRequestsController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Solicitações Especiais',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.star),
+                hintText: 'Ex: Cadeira de rodas, dieta especial, aniversário...',
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.star_outline),
+                suffixIcon: Tooltip(
+                  message: 'Estas solicitações APARECERÃO no PDF enviado ao cliente',
+                  child: Icon(Icons.picture_as_pdf, size: 20, color: Colors.blue.shade600),
+                ),
+                helperText: '📄 Aparece no PDF da cotação',
+                helperStyle: TextStyle(
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                ),
               ),
               maxLines: 3,
             ),

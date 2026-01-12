@@ -9,7 +9,7 @@
 
 -- Teste 1: Envio simples
 SELECT queue_whatsapp_message(
-  '+5511999999999',  -- ⚠️ SUBSTITUA PELO SEU TELEFONE DE TESTE
+  '+5561981328287',  -- ⚠️ SUBSTITUA PELO SEU TELEFONE DE TESTE
   'Teste Sistema',
   '🎉 Olá! Esta é uma mensagem de teste do sistema WhatsApp integrado. Se você recebeu isso, o sistema está funcionando!',
   'lead',

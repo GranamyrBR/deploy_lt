@@ -18,7 +18,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
     super.initState();
     // Inicializar o controller com o valor do provider
     final manualRate = ref.read(manualExchangeRateProvider);
-    _manualRateController.text = manualRate.toStringAsFixed(4);
+    _manualRateController.text = manualRate.toStringAsFixed(2);
   }
 
   @override
@@ -38,7 +38,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
     // Listener para atualizar o campo de texto quando o provider mudar (ex: pelo slider)
     ref.listen<double>(manualExchangeRateProvider, (previous, next) {
       if (double.tryParse(_manualRateController.text) != next) {
-        _manualRateController.text = next.toStringAsFixed(4);
+        _manualRateController.text = next.toStringAsFixed(2);
       }
     });
     
@@ -129,7 +129,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                         ),
                       ),
                       Text(
-                        'R\$ ${bid.toStringAsFixed(4)}',
+                        'R\$ ${bid.toStringAsFixed(2)}',
                         style: DesignTokens.bodySmall.copyWith(
                           fontWeight: FontWeight.w600,
                           color: textColor,
@@ -150,7 +150,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                         ),
                       ),
                       Text(
-                        'R\$ ${ask.toStringAsFixed(4)}',
+                        'R\$ ${ask.toStringAsFixed(2)}',
                         style: DesignTokens.bodySmall.copyWith(
                           fontWeight: FontWeight.w600,
                           color: textColor,
@@ -171,7 +171,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                         ),
                       ),
                       Text(
-                        'R\$ ${tourismRate.toStringAsFixed(4)}',
+                        'R\$ ${tourismRate.toStringAsFixed(2)}',
                         style: DesignTokens.bodySmall.copyWith(
                           fontWeight: FontWeight.bold,
                           color: DesignTokens.info,
@@ -202,7 +202,7 @@ class _ExchangeRateDisplayState extends ConsumerState<ExchangeRateDisplay> {
                               fontSize: 11,
                             ),
                             decoration: InputDecoration(
-                              hintText: '5.0000',
+                              hintText: '5.00',
                               hintStyle: TextStyle(
                                 color: textSecondaryColor.withValues(alpha: 0.5),
                                 fontSize: 11,
