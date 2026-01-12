@@ -66,7 +66,7 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.13.2
   path_provider: ^2.1.4
-  open_file: ^3.5.8
+  open_file: ^3.5.11
 
   # Email Sender
   flutter_email_sender: ^8.0.0
