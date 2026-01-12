@@ -649,61 +649,61 @@ class Quotation {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'quotationNumber': quotationNumber,
+      'quotation_number': quotationNumber, // snake_case para o banco
       'type': type.name,
       'status': status.name,
-      'clientName': clientName,
-      'clientEmail': clientEmail,
-      'clientPhone': clientPhone,
-      'clientDocument': clientDocument, // ✅ REATIVADO - será adicionado no banco via migration
-      'clientContact': clientContact?.id, // Apenas o ID, não o objeto completo
+      'client_name': clientName, // snake_case para o banco
+      'client_email': clientEmail, // snake_case para o banco
+      'client_phone': clientPhone, // snake_case para o banco
+      'client_document': clientDocument, // snake_case para o banco
+      'client_contact': clientContact?.id, // Apenas o ID, não o objeto completo
       'agency': agency?.toMap(),
-      'agencyCommissionRate': agencyCommissionRate,
-      'travelDate': travelDate.toIso8601String(),
-      'returnDate': returnDate?.toIso8601String(),
-      'passengerCount': passengerCount,
+      'agency_commission_rate': agencyCommissionRate, // snake_case para o banco
+      'travel_date': travelDate.toIso8601String(), // snake_case para o banco
+      'return_date': returnDate?.toIso8601String(), // snake_case para o banco
+      'passenger_count': passengerCount, // snake_case para o banco
       'origin': origin,
       'destination': destination,
       'hotel': hotel,
-      'roomType': roomType,
+      'room_type': roomType, // snake_case para o banco
       'nights': nights,
       'vehicle': vehicle,
       'driver': driver,
-      'quotationDate': quotationDate.toIso8601String(),
-      'expirationDate': expirationDate?.toIso8601String(),
-      'sentDate': sentDate?.toIso8601String(),
-      'viewedDate': viewedDate?.toIso8601String(),
-      'acceptedDate': acceptedDate?.toIso8601String(),
-      'rejectedDate': rejectedDate?.toIso8601String(),
+      'quotation_date': quotationDate.toIso8601String(), // snake_case para o banco
+      'expiration_date': expirationDate?.toIso8601String(), // snake_case para o banco
+      'sent_date': sentDate?.toIso8601String(), // snake_case para o banco
+      'viewed_date': viewedDate?.toIso8601String(), // snake_case para o banco
+      'accepted_date': acceptedDate?.toIso8601String(), // snake_case para o banco
+      'rejected_date': rejectedDate?.toIso8601String(), // snake_case para o banco
       'items': items.map((item) => {
         'id': item.id,
         'description': item.description,
         'date': item.date.toIso8601String(),
         'value': item.value,
         'category': item.category,
-        'serviceId': item.serviceId,
-        'productId': item.productId,
+        'service_id': item.serviceId, // snake_case para o banco
+        'product_id': item.productId, // snake_case para o banco
         'quantity': item.quantity,
         'discount': item.discount,
         'notes': item.notes,
-        'startTime': item.startTime?.toIso8601String(),
-        'endTime': item.endTime?.toIso8601String(),
+        'start_time': item.startTime?.toIso8601String(), // snake_case para o banco
+        'end_time': item.endTime?.toIso8601String(), // snake_case para o banco
         'location': item.location,
         'provider': item.provider,
       }).toList(),
       'subtotal': subtotal,
-      'discountAmount': discountAmount,
-      'taxRate': taxRate,
-      'taxAmount': taxAmount,
+      'discount_amount': discountAmount, // snake_case para o banco
+      'tax_rate': taxRate, // snake_case para o banco
+      'tax_amount': taxAmount, // snake_case para o banco
       'total': total,
       'currency': currency,
       'notes': notes,
-      'specialRequests': specialRequests,
-      'cancellationPolicy': cancellationPolicy,
-      'paymentTerms': paymentTerms,
-      'createdBy': createdBy,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt?.toIso8601String(),
+      'special_requests': specialRequests, // snake_case para o banco
+      'cancellation_policy': cancellationPolicy, // snake_case para o banco
+      'payment_terms': paymentTerms, // snake_case para o banco
+      'created_by': createdBy, // snake_case para o banco
+      'created_at': createdAt.toIso8601String(), // snake_case para o banco
+      'updated_at': updatedAt?.toIso8601String(), // snake_case para o banco
     };
   }
 }

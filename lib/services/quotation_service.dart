@@ -206,13 +206,28 @@ class QuotationService {
 
   /// Save a new quotation with all items
   /// Uses the enhanced save_quotation_v2 RPC for multi-currency support
-  Future<QuotationSaveResult> saveQuotation(Quotation q, {List<Map<String, dynamic>>? luggage}) async {
+  Future<QuotationSaveResult> saveQuotation(
+    Quotation q, {
+    List<Map<String, dynamic>>? luggage,
+    List<Map<String, dynamic>>? vehicles,
+  }) async {
     try {
       final payload = q.toMap();
+      
+      // DEBUG: Verificar se quotation_number está no payload
+      print('🔍 DEBUG PAYLOAD:');
+      print('   quotation_number: ${payload['quotation_number']}');
+      print('   client_name: ${payload['client_name']}');
+      print('   Keys no payload: ${payload.keys.take(10).join(', ')}');
       
       // Adicionar bagagens se fornecidas
       if (luggage != null && luggage.isNotEmpty) {
         payload['luggage'] = luggage;
+      }
+      
+      // Adicionar veículos se fornecidos
+      if (vehicles != null && vehicles.isNotEmpty) {
+        payload['vehicles'] = vehicles;
       }
       
       final result = await _client.rpc<dynamic>('save_quotation_v2', params: {'p_quotation': payload});

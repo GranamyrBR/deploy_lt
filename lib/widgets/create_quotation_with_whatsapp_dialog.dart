@@ -316,7 +316,7 @@ class _CreateQuotationWithWhatsAppDialogState
               'type': v.type.name,
               'label': v.type.label,
               'quantity': v.quantity,
-              'maxPassengers': v.type.maxPassengers,
+              'max_passengers': v.type.maxPassengers, // snake_case para o banco
             })
         .toList();
     
@@ -361,7 +361,11 @@ class _CreateQuotationWithWhatsAppDialogState
 
     try {
       final service = QuotationService();
-      await service.saveQuotation(quotation, luggage: luggageList);
+      await service.saveQuotation(
+        quotation, 
+        luggage: luggageList,
+        vehicles: vehiclesList,
+      );
 
       if (mounted) {
         // Close this dialog
