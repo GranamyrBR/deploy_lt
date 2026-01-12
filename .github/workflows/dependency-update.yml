@@ -33,7 +33,7 @@ jobs:
         flutter pub outdated >> $GITHUB_STEP_SUMMARY || true
 
     - name: 📤 Upload relatório
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       with:
         name: dependency-report
         path: outdated.json

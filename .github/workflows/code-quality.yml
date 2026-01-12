@@ -45,7 +45,7 @@ jobs:
       continue-on-error: true
 
     - name: 📤 Upload relatório
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       with:
         name: analysis-report
         path: analyze-report.txt
