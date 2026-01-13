@@ -210,6 +210,8 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
     try {
       List<dynamic> response;
+      List<dynamic> quotationsResponse = []; // Declarar fora do bloco
+      
       if (_filterUserType != null) {
         response = await Supabase.instance.client
             .rpc('get_contacts_by_user_type', params: {
@@ -224,6 +226,13 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
               account(name),
               contact_category(name)
             ''').order((_sortField == 'name' || _sortField == 'created_at' || _sortField == 'updated_at' || _sortField == 'account_id') ? _sortField : 'name', ascending: (_sortField == 'name' || _sortField == 'created_at' || _sortField == 'updated_at' || _sortField == 'account_id') ? _sortAscending : true);
+        
+        // Buscar cotações separadamente para adicionar datas aos contatos
+        quotationsResponse = await _client
+            .from('quotation')
+            .select('client_id, travel_date, return_date, status, quotation_date')
+            .not('travel_date', 'is', null)
+            .order('travel_date', ascending: false);
       }
 
       print('✅ Dados recebidos: ${response.length} contatos');
@@ -231,6 +240,29 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       if (mounted) {
         // Montar listas para checar compras e leads convertidos
         final contactsList = response;
+        
+        // Criar mapa de cotações por client_id (se houver cotações)
+        final quotationsByClientId = <int, Map<String, dynamic>>{};
+        for (final q in quotationsResponse) {
+          final clientId = q['client_id'] as int?;
+          if (clientId != null) {
+            // Guardar apenas a mais recente (já ordenado por travel_date DESC)
+            if (!quotationsByClientId.containsKey(clientId)) {
+              quotationsByClientId[clientId] = q;
+            }
+          }
+        }
+        
+        // Adicionar datas aos contatos
+        for (final c in contactsList) {
+          final contactId = c['id'] as int?;
+          if (contactId != null && quotationsByClientId.containsKey(contactId)) {
+            final quotation = quotationsByClientId[contactId]!;
+            c['travel_date'] = quotation['travel_date'];
+            c['return_date'] = quotation['return_date'];
+            c['quotation_status'] = quotation['status'];
+          }
+        }
         final ids = contactsList
             .map<int?>((c) => c['id'] as int?)
             .whereType<int>()
@@ -552,8 +584,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       
       final payload = {
         'quotation_number': quotationNumber,
-        'type': 'quick_dates', // Tipo especial para cotações rápidas
-        'status': 'lead_quente', // Status específico para leads com data
+        'type': 'service', // Tipo padrão
+        'status': 'draft', // Status draft para cotações com apenas datas
+        'client_id': contactData['id'], // FK para contact
         'client_name': contactData['name'],
         'client_phone': contactData['phone'],
         'client_email': contactData['email'],
@@ -561,7 +594,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         'return_date': dates['return_date'] != null 
             ? (dates['return_date'] as DateTime).toIso8601String() 
             : null,
-        'notes': dates['notes'] ?? '',
+        'notes': dates['notes'] ?? '', // Notas internas
         'subtotal': 0,
         'total': 0,
         'currency': 'USD',
@@ -608,6 +641,39 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   String _formatDate(DateTime? date) {
     if (date == null) return '';
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+  }
+
+  Widget _buildDaysUntilBadge(DateTime travelDate) {
+    final daysUntil = travelDate.difference(DateTime.now()).inDays;
+    
+    Color backgroundColor;
+    Color textColor;
+    if (daysUntil <= 7) {
+      backgroundColor = Colors.red.shade100;
+      textColor = Colors.red.shade700;
+    } else if (daysUntil <= 30) {
+      backgroundColor = Colors.orange.shade100;
+      textColor = Colors.orange.shade700;
+    } else {
+      backgroundColor = Colors.green.shade100;
+      textColor = Colors.green.shade700;
+    }
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        'em $daysUntil ${daysUntil == 1 ? "dia" : "dias"}',
+        style: TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+      ),
+    );
   }
 
   // Função para extrair o código ISO do país a partir do DDI do telefone
@@ -2733,6 +2799,35 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                   ],
+                                  
+                                  // Badge de datas de viagem (se existir)
+                                  if (c['travel_date'] != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4, bottom: 4),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.flight_takeoff, size: 11, color: Colors.blue.shade700),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            _formatDate(DateTime.parse(c['travel_date'])),
+                                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.blue.shade700),
+                                          ),
+                                          if (c['return_date'] != null) ...[
+                                            const SizedBox(width: 6),
+                                            Icon(Icons.flight_land, size: 11, color: Colors.green.shade700),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              _formatDate(DateTime.parse(c['return_date'])),
+                                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.green.shade700),
+                                            ),
+                                          ],
+                                          const SizedBox(width: 6),
+                                          _buildDaysUntilBadge(DateTime.parse(c['travel_date'])),
+                                        ],
+                                      ),
+                                    ),
+                                  
                                   // Tipo de Conta
                                   if (c['account']?['name'] != null) ...[
                                     Expanded(
