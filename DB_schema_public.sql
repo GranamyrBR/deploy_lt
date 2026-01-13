@@ -61,8 +61,8 @@ CREATE TABLE public.account_communication_preferences (
   updated_at timestamp with time zone DEFAULT now(),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   CONSTRAINT account_communication_preferences_pkey PRIMARY KEY (id),
-  CONSTRAINT account_communication_preferences_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id),
-  CONSTRAINT account_communication_preferences_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id)
+  CONSTRAINT account_communication_preferences_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
+  CONSTRAINT account_communication_preferences_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id)
 );
 CREATE TABLE public.account_document (
   account_id bigint NOT NULL,
@@ -81,9 +81,9 @@ CREATE TABLE public.account_document (
   updated_at timestamp with time zone DEFAULT now(),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   CONSTRAINT account_document_pkey PRIMARY KEY (id),
+  CONSTRAINT account_document_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id),
   CONSTRAINT account_document_user_id_fkey FOREIGN KEY (uploaded_by_user_id) REFERENCES public.user(id),
-  CONSTRAINT account_document_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
-  CONSTRAINT account_document_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id)
+  CONSTRAINT account_document_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id)
 );
 CREATE TABLE public.account_employee (
   account_id bigint NOT NULL,
@@ -143,9 +143,9 @@ CREATE TABLE public.account_opportunity (
   updated_at timestamp with time zone DEFAULT now(),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   CONSTRAINT account_opportunity_pkey PRIMARY KEY (id),
-  CONSTRAINT account_opportunity_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id),
+  CONSTRAINT account_opportunity_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.user(id),
   CONSTRAINT account_opportunity_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
-  CONSTRAINT account_opportunity_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.user(id)
+  CONSTRAINT account_opportunity_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id)
 );
 CREATE TABLE public.account_performance_metrics (
   account_id bigint NOT NULL,
@@ -184,9 +184,9 @@ CREATE TABLE public.account_task (
   updated_at timestamp with time zone DEFAULT now(),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   CONSTRAINT account_task_pkey PRIMARY KEY (id),
-  CONSTRAINT account_task_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id),
+  CONSTRAINT account_task_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.user(id),
   CONSTRAINT account_task_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
-  CONSTRAINT account_task_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.user(id)
+  CONSTRAINT account_task_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.account_employee(id)
 );
 CREATE TABLE public.activity_log (
   user_id text NOT NULL,
@@ -365,8 +365,8 @@ CREATE TABLE public.api_log (
   requested_at timestamp with time zone DEFAULT now(),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   CONSTRAINT api_log_pkey PRIMARY KEY (id),
-  CONSTRAINT api_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user(id),
   CONSTRAINT api_log_operation_id_fkey FOREIGN KEY (operation_id) REFERENCES public.operation(id),
+  CONSTRAINT api_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user(id),
   CONSTRAINT api_log_api_configuration_id_fkey FOREIGN KEY (api_configuration_id) REFERENCES public.api_configuration(id)
 );
 CREATE TABLE public.audit_log (
@@ -526,8 +526,8 @@ CREATE TABLE public.contact_preview (
   product_id integer,
   product_quantity integer DEFAULT 1,
   CONSTRAINT contact_preview_pkey PRIMARY KEY (contact_preview_id),
-  CONSTRAINT contact_preview_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id),
   CONSTRAINT contact_preview_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.contact(id),
+  CONSTRAINT contact_preview_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id),
   CONSTRAINT contact_preview_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id)
 );
 CREATE TABLE public.contact_preview_backup_add_product (
@@ -560,9 +560,29 @@ CREATE TABLE public.contact_service (
   updated_at timestamp with time zone DEFAULT now(),
   id integer NOT NULL DEFAULT nextval('customer_services_id_seq'::regclass),
   CONSTRAINT contact_service_pkey PRIMARY KEY (id),
+  CONSTRAINT customer_services_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.driver(id),
   CONSTRAINT customer_services_agency_id_fkey FOREIGN KEY (agency_id) REFERENCES public.account(id),
-  CONSTRAINT customer_services_car_id_fkey FOREIGN KEY (car_id) REFERENCES public.car(id),
-  CONSTRAINT customer_services_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.driver(id)
+  CONSTRAINT customer_services_car_id_fkey FOREIGN KEY (car_id) REFERENCES public.car(id)
+);
+CREATE TABLE public.contact_task (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  contact_id integer NOT NULL,
+  assigned_to_user_id uuid,
+  task_type character varying NOT NULL CHECK (task_type::text = ANY (ARRAY['follow_up'::character varying::text, 'call'::character varying::text, 'email'::character varying::text, 'whatsapp'::character varying::text, 'meeting'::character varying::text, 'visit'::character varying::text, 'other'::character varying::text])),
+  title character varying NOT NULL,
+  description text,
+  due_date timestamp with time zone,
+  completed_at timestamp with time zone,
+  completion_notes text,
+  created_by uuid,
+  priority character varying DEFAULT 'normal'::character varying CHECK (priority::text = ANY (ARRAY['low'::character varying::text, 'normal'::character varying::text, 'high'::character varying::text, 'urgent'::character varying::text])),
+  status character varying DEFAULT 'pending'::character varying CHECK (status::text = ANY (ARRAY['pending'::character varying::text, 'in_progress'::character varying::text, 'completed'::character varying::text, 'cancelled'::character varying::text])),
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT contact_task_pkey PRIMARY KEY (id),
+  CONSTRAINT contact_task_contact_id_fkey FOREIGN KEY (contact_id) REFERENCES public.contact(id),
+  CONSTRAINT contact_task_assigned_to_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.user(id),
+  CONSTRAINT contact_task_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.user(id)
 );
 CREATE TABLE public.contact_updated_at_backup (
   phone character varying,
@@ -620,8 +640,8 @@ CREATE TABLE public.cost_center_expense (
   status text NOT NULL DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])),
   created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
   CONSTRAINT cost_center_expense_pkey PRIMARY KEY (id),
-  CONSTRAINT cost_center_expense_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.cost_center_category(id),
-  CONSTRAINT cost_center_expense_cost_center_id_fkey FOREIGN KEY (cost_center_id) REFERENCES public.cost_center(id)
+  CONSTRAINT cost_center_expense_cost_center_id_fkey FOREIGN KEY (cost_center_id) REFERENCES public.cost_center(id),
+  CONSTRAINT cost_center_expense_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.cost_center_category(id)
 );
 CREATE TABLE public.currency (
   currency_code character varying NOT NULL UNIQUE,
@@ -704,10 +724,10 @@ CREATE TABLE public.driver_commission (
   updated_at timestamp with time zone DEFAULT now(),
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
   CONSTRAINT driver_commission_pkey PRIMARY KEY (id),
+  CONSTRAINT driver_commission_approved_by_user_id_fkey FOREIGN KEY (approved_by_user_id) REFERENCES public.user(id),
   CONSTRAINT driver_commission_paid_by_user_id_fkey FOREIGN KEY (paid_by_user_id) REFERENCES public.user(id),
-  CONSTRAINT driver_commission_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.driver(id),
   CONSTRAINT driver_commission_operation_id_fkey FOREIGN KEY (operation_id) REFERENCES public.operation(id),
-  CONSTRAINT driver_commission_approved_by_user_id_fkey FOREIGN KEY (approved_by_user_id) REFERENCES public.user(id)
+  CONSTRAINT driver_commission_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.driver(id)
 );
 CREATE TABLE public.driver_mock (
   name text NOT NULL,
@@ -795,8 +815,8 @@ CREATE TABLE public.invoice (
   created_by integer,
   updated_by integer,
   CONSTRAINT invoice_pkey PRIMARY KEY (id),
-  CONSTRAINT invoice_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES public.sale(id),
-  CONSTRAINT invoice_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.contact(id)
+  CONSTRAINT invoice_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.contact(id),
+  CONSTRAINT invoice_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES public.sale(id)
 );
 CREATE TABLE public.leadstintim (
   user_type USER-DEFINED DEFAULT 'normal'::user_type_enum,
@@ -898,8 +918,8 @@ CREATE TABLE public.monday (
   contact_category_id integer,
   contact_id bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,
   CONSTRAINT monday_pkey PRIMARY KEY (contact_id),
-  CONSTRAINT monday_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
   CONSTRAINT monday_contact_category_id_fkey FOREIGN KEY (contact_category_id) REFERENCES public.contact_category(id),
+  CONSTRAINT monday_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
   CONSTRAINT monday_source_id_fkey FOREIGN KEY (source_id) REFERENCES public.source(id)
 );
 CREATE TABLE public.monday_backup (
@@ -988,17 +1008,17 @@ CREATE TABLE public.operation (
   pickup_location_id uuid,
   dropoff_location_id uuid,
   CONSTRAINT operation_pkey PRIMARY KEY (id),
-  CONSTRAINT operation_assigned_by_user_id_fkey FOREIGN KEY (assigned_by_user_id) REFERENCES public.user(id),
-  CONSTRAINT operation_car_id_fkey FOREIGN KEY (car_id) REFERENCES public.car(id),
-  CONSTRAINT operation_created_by_user_id_fkey FOREIGN KEY (created_by_user_id) REFERENCES public.user(id),
-  CONSTRAINT operation_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.driver(id),
   CONSTRAINT operation_sale_id_fkey FOREIGN KEY (sale_id) REFERENCES public.sale(id),
-  CONSTRAINT operation_sale_item_id_fkey FOREIGN KEY (sale_item_id) REFERENCES public.sale_item(sales_item_id),
-  CONSTRAINT operation_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id),
   CONSTRAINT operation_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id),
   CONSTRAINT operation_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.contact(id),
+  CONSTRAINT operation_pickup_location_id_fkey FOREIGN KEY (pickup_location_id) REFERENCES public.locations(id),
   CONSTRAINT operation_dropoff_location_id_fkey FOREIGN KEY (dropoff_location_id) REFERENCES public.locations(id),
-  CONSTRAINT operation_pickup_location_id_fkey FOREIGN KEY (pickup_location_id) REFERENCES public.locations(id)
+  CONSTRAINT operation_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id),
+  CONSTRAINT operation_sale_item_id_fkey FOREIGN KEY (sale_item_id) REFERENCES public.sale_item(sales_item_id),
+  CONSTRAINT operation_driver_id_fkey FOREIGN KEY (driver_id) REFERENCES public.driver(id),
+  CONSTRAINT operation_created_by_user_id_fkey FOREIGN KEY (created_by_user_id) REFERENCES public.user(id),
+  CONSTRAINT operation_car_id_fkey FOREIGN KEY (car_id) REFERENCES public.car(id),
+  CONSTRAINT operation_assigned_by_user_id_fkey FOREIGN KEY (assigned_by_user_id) REFERENCES public.user(id)
 );
 CREATE TABLE public.operation_history (
   operation_id bigint NOT NULL,
@@ -1135,8 +1155,8 @@ CREATE TABLE public.provisional_invoice (
   id integer NOT NULL DEFAULT nextval('provisional_invoices_id_seq'::regclass),
   CONSTRAINT provisional_invoice_pkey PRIMARY KEY (id),
   CONSTRAINT provisional_invoices_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
-  CONSTRAINT provisional_invoices_budget_currency_id_fkey FOREIGN KEY (budget_currency_id) REFERENCES public.currency(currency_id),
-  CONSTRAINT provisional_invoices_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id)
+  CONSTRAINT provisional_invoices_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.account(id),
+  CONSTRAINT provisional_invoices_budget_currency_id_fkey FOREIGN KEY (budget_currency_id) REFERENCES public.currency(currency_id)
 );
 CREATE TABLE public.provisional_invoice_approval (
   provisional_invoice_id bigint NOT NULL,
@@ -1170,8 +1190,8 @@ CREATE TABLE public.provisional_invoice_item (
   updated_at timestamp with time zone DEFAULT now(),
   id integer NOT NULL DEFAULT nextval('provisional_invoice_items_id_seq'::regclass),
   CONSTRAINT provisional_invoice_item_pkey PRIMARY KEY (id),
-  CONSTRAINT provisional_invoice_items_provisional_invoice_id_fkey FOREIGN KEY (provisional_invoice_id) REFERENCES public.provisional_invoice(id),
-  CONSTRAINT provisional_invoice_items_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id)
+  CONSTRAINT provisional_invoice_items_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
+  CONSTRAINT provisional_invoice_items_provisional_invoice_id_fkey FOREIGN KEY (provisional_invoice_id) REFERENCES public.provisional_invoice(id)
 );
 CREATE TABLE public.provisional_invoice_metric (
   provisional_invoice_id bigint NOT NULL,
@@ -1268,9 +1288,9 @@ CREATE TABLE public.quotation (
   CONSTRAINT quotation_pkey PRIMARY KEY (id),
   CONSTRAINT quotation_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.contact(id),
   CONSTRAINT quotation_agency_id_fkey FOREIGN KEY (agency_id) REFERENCES public.account(id),
-  CONSTRAINT quotation_converted_to_sale_id_fkey FOREIGN KEY (converted_to_sale_id) REFERENCES public.sale(id),
+  CONSTRAINT quotation_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
   CONSTRAINT quotation_assigned_to_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.user(id),
-  CONSTRAINT quotation_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id)
+  CONSTRAINT quotation_converted_to_sale_id_fkey FOREIGN KEY (converted_to_sale_id) REFERENCES public.sale(id)
 );
 CREATE TABLE public.quotation_follow_up (
   quotation_id bigint NOT NULL,
@@ -1316,10 +1336,10 @@ CREATE TABLE public.quotation_item (
   total_in_brl numeric,
   total_in_usd numeric,
   CONSTRAINT quotation_item_pkey PRIMARY KEY (id),
-  CONSTRAINT quotation_item_quotation_id_fkey FOREIGN KEY (quotation_id) REFERENCES public.quotation(id),
   CONSTRAINT quotation_item_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
   CONSTRAINT quotation_item_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id),
-  CONSTRAINT quotation_item_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id)
+  CONSTRAINT quotation_item_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id),
+  CONSTRAINT quotation_item_quotation_id_fkey FOREIGN KEY (quotation_id) REFERENCES public.quotation(id)
 );
 CREATE TABLE public.quotation_luggage (
   id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
@@ -1463,10 +1483,10 @@ CREATE TABLE public.sale (
   updated_by integer,
   payment_status character varying DEFAULT 'pending'::character varying CHECK (payment_status::text = ANY (ARRAY['pending'::character varying, 'partial'::character varying, 'paid'::character varying, 'overdue'::character varying, 'refunded'::character varying]::text[])),
   CONSTRAINT sale_pkey PRIMARY KEY (id),
+  CONSTRAINT sale_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
   CONSTRAINT sales_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.user(id),
   CONSTRAINT sale_created_by_user_id_fkey FOREIGN KEY (created_by_user_id) REFERENCES public.user(id),
   CONSTRAINT sale_updated_by_user_id_fkey FOREIGN KEY (updated_by_user_id) REFERENCES public.user(id),
-  CONSTRAINT sale_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
   CONSTRAINT sale_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.contact(id)
 );
 CREATE TABLE public.sale_cancellation_item (
@@ -1594,10 +1614,10 @@ CREATE TABLE public.sale_item (
   updated_by integer,
   created_by integer,
   CONSTRAINT sale_item_pkey PRIMARY KEY (sales_item_id),
-  CONSTRAINT sale_item_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id),
-  CONSTRAINT sales_items_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id),
   CONSTRAINT sales_items_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(product_id),
-  CONSTRAINT sale_item_sales_id_fkey FOREIGN KEY (sales_id) REFERENCES public.sale(id)
+  CONSTRAINT sale_item_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.service(id),
+  CONSTRAINT sale_item_sales_id_fkey FOREIGN KEY (sales_id) REFERENCES public.sale(id),
+  CONSTRAINT sales_items_currency_id_fkey FOREIGN KEY (currency_id) REFERENCES public.currency(currency_id)
 );
 CREATE TABLE public.sale_payment (
   sales_id integer NOT NULL,

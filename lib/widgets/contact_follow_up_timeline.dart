@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/contact_task.dart';
 import '../services/contact_task_service.dart';
+import 'contact_task_dialog.dart';
 
 /// Timeline compacta de follow-ups para área expandida do card de contato
 class ContactFollowUpTimeline extends StatefulWidget {
@@ -370,16 +371,23 @@ class _ContactFollowUpTimelineState extends State<ContactFollowUpTimeline> {
   }
 
   void _editTask(ContactTask task) {
-    // TODO: Implementar modal de edição
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('🚧 Modal de edição em desenvolvimento')),
+    showDialog(
+      context: context,
+      builder: (context) => ContactTaskDialog(
+        contactId: widget.contactId,
+        task: task,
+        onSaved: _loadTasks,
+      ),
     );
   }
 
   void _showCreateTaskDialog() {
-    // TODO: Implementar modal de criação
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('🚧 Modal de criação em desenvolvimento')),
+    showDialog(
+      context: context,
+      builder: (context) => ContactTaskDialog(
+        contactId: widget.contactId,
+        onSaved: _loadTasks,
+      ),
     );
   }
 
