@@ -18,6 +18,7 @@ import '../utils/flag_utils.dart';
 import '../widgets/whatsapp_messages_modal.dart';
 import '../services/contacts_service.dart';
 import '../widgets/enhanced_quotation_dialog.dart';
+import '../widgets/contact_follow_up_timeline.dart';
 import '../widgets/quotation_management_dialog.dart';
 import '../widgets/create_quotation_with_whatsapp_dialog.dart';
 import '../widgets/quick_dates_dialog.dart';
@@ -3033,23 +3034,22 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
+                                  child: ContactFollowUpTimeline(
+                                    contactId: c['id'] as int,
+                                    maxItems: 5,
+                                  ),
+                                ),
+                                
+                                // Mantém botões de ação no final (oculto por enquanto)
+                                Padding(
+                                  padding: const EdgeInsets.all(0),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // Apenas 2 linhas de informações essenciais
-                                      if (c['created_at'] != null)
-                                        _buildDetailRow(
-                                            'Data de Criação', 
-                                            _formatDate(DateTime.parse(c['created_at'])), 
-                                            Icons.calendar_today),
-                                      if (c['city'] != null)
-                                        _buildDetailRow('Cidade', c['city'],
-                                            Icons.location_city),
+                                      const SizedBox(height: 0),
 
-                                      const SizedBox(height: 16),
-
-                                      // Botões de ação
+                                      // Botões de ação (comentado - agora só follow-ups)
                                       Column(
                                         children: [
                                           // Primeira linha de botões
