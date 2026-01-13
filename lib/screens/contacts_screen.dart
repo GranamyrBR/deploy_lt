@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../models/contact.dart';
 import '../widgets/base_screen_layout.dart';
 import '../widgets/standard_search_bar.dart';
@@ -2842,10 +2843,15 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                             color: const Color(0xFF25D366),
                                             shape: BoxShape.circle,
                                           ),
-                                          child: const Icon(
-                                            Icons.chat,
-                                            size: 18,
-                                            color: Colors.white,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(6),
+                                            child: SvgPicture.asset(
+                                              'assets/icons/whatsapp.svg',
+                                              colorFilter: const ColorFilter.mode(
+                                                Colors.white,
+                                                BlendMode.srcIn,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
