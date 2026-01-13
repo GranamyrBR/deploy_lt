@@ -2710,10 +2710,23 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                       flex: 3,
                                       child: Row(
                                         children: [
-                                          const Icon(
-                                            Icons.phone,
-                                            size: 14,
-                                            color: Colors.orange,
+                                          Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFF25D366),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(3),
+                                              child: SvgPicture.asset(
+                                                'assets/icons/whatsapp.svg',
+                                                colorFilter: const ColorFilter.mode(
+                                                  Colors.white,
+                                                  BlendMode.srcIn,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                           const SizedBox(width: 4),
                                           // Bandeira do país
@@ -2824,36 +2837,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                             ),
                                           ),
                                         ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                  ],
-                                  
-                                  // Ícone de WhatsApp
-                                  if (c['phone'] != null && c['phone'].toString().isNotEmpty) ...[
-                                    Tooltip(
-                                      message: 'Abrir WhatsApp',
-                                      child: InkWell(
-                                        onTap: () => _abrirWhatsApp(c),
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF25D366),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(6),
-                                            child: SvgPicture.asset(
-                                              'assets/icons/whatsapp.svg',
-                                              colorFilter: const ColorFilter.mode(
-                                                Colors.white,
-                                                BlendMode.srcIn,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
                                       ),
                                     ),
                                     const SizedBox(width: 8),
