@@ -2800,6 +2800,34 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                     const SizedBox(width: 8),
                                   ],
                                   
+                                  // Data de criação
+                                  if (c['created_at'] != null) ...[
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.grey.shade300, width: 1),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.calendar_today, size: 12, color: Colors.grey.shade600),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            _formatDate(DateTime.parse(c['created_at'])),
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: Colors.grey.shade700,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                  
                                   // Badge de datas de viagem (se existir)
                                   if (c['travel_date'] != null)
                                     Padding(
