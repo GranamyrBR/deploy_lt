@@ -2989,10 +2989,11 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       // Apenas 2 linhas de informações essenciais
-                                      if (c['email'] != null &&
-                                          c['phone'] != null)
+                                      if (c['created_at'] != null)
                                         _buildDetailRow(
-                                            'Email', c['email'], Icons.email),
+                                            'Data de Criação', 
+                                            _formatDate(DateTime.parse(c['created_at'])), 
+                                            Icons.calendar_today),
                                       if (c['city'] != null)
                                         _buildDetailRow('Cidade', c['city'],
                                             Icons.location_city),
