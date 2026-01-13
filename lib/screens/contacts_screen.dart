@@ -2710,20 +2710,27 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                       flex: 3,
                                       child: Row(
                                         children: [
-                                          Container(
-                                            width: 20,
-                                            height: 20,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF25D366),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(3),
-                                              child: SvgPicture.asset(
-                                                'assets/icons/whatsapp.svg',
-                                                colorFilter: const ColorFilter.mode(
-                                                  Colors.white,
-                                                  BlendMode.srcIn,
+                                          Tooltip(
+                                            message: 'Ver mensagens WhatsApp',
+                                            child: InkWell(
+                                              onTap: () => _abrirWhatsApp(c),
+                                              borderRadius: BorderRadius.circular(10),
+                                              child: Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF25D366),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(3),
+                                                  child: SvgPicture.asset(
+                                                    'assets/icons/whatsapp.svg',
+                                                    colorFilter: const ColorFilter.mode(
+                                                      Colors.white,
+                                                      BlendMode.srcIn,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),
