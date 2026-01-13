@@ -788,57 +788,110 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
   }
 
   Widget _buildDateRangeButton(bool isDark) {
-    return OutlinedButton.icon(
-      onPressed: () async {
-        final range = await showDateRangePicker(
-          context: context,
-          firstDate: DateTime(2020),
-          lastDate: DateTime.now().add(const Duration(days: 365)),
-          initialDateRange: _dateRange,
-          builder: (context, child) {
-            return Theme(
-              data: Theme.of(context).copyWith(
-                colorScheme: ColorScheme.light(
-                  primary: Colors.blue.shade600,
-                ),
-              ),
-              child: child!,
-            );
-          },
-        );
-        if (range != null) {
-          setState(() {
-            _dateRange = range;
-            _applyFilters();
-          });
-        }
+    return PopupMenuButton<String>(
+      onSelected: (value) {
+        setState(() {
+          final now = DateTime.now();
+          switch (value) {
+            case 'today':
+              _dateRange = DateTimeRange(
+                start: DateTime(now.year, now.month, now.day),
+                end: DateTime(now.year, now.month, now.day, 23, 59, 59),
+              );
+              break;
+            case 'this_week':
+              final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+              _dateRange = DateTimeRange(
+                start: DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day),
+                end: DateTime(now.year, now.month, now.day, 23, 59, 59),
+              );
+              break;
+            case 'this_month':
+              _dateRange = DateTimeRange(
+                start: DateTime(now.year, now.month, 1),
+                end: DateTime(now.year, now.month + 1, 0, 23, 59, 59),
+              );
+              break;
+            case 'next_30_days':
+              _dateRange = DateTimeRange(
+                start: now,
+                end: now.add(const Duration(days: 30)),
+              );
+              break;
+            case 'custom':
+              _showCustomDateRangePicker();
+              return;
+            case 'clear':
+              _dateRange = null;
+              break;
+          }
+          _applyFilters();
+        });
       },
-      icon: Icon(
-        Icons.calendar_today,
-        size: 16,
-        color: _dateRange != null ? Colors.blue : (isDark ? Colors.white70 : Colors.black54),
-      ),
-      label: Text(
-        _dateRange != null
-            ? '${DateFormat('dd/MM').format(_dateRange!.start)} - ${DateFormat('dd/MM').format(_dateRange!.end)}'
-            : 'Período',
-        style: TextStyle(
-          color: isDark ? Colors.white70 : Colors.black87,
+      itemBuilder: (context) => [
+        const PopupMenuItem(value: 'today', child: Text('📅 Hoje')),
+        const PopupMenuItem(value: 'this_week', child: Text('📆 Esta semana')),
+        const PopupMenuItem(value: 'this_month', child: Text('🗓️ Este mês')),
+        const PopupMenuItem(value: 'next_30_days', child: Text('⏰ Próximos 30 dias')),
+        const PopupMenuDivider(),
+        const PopupMenuItem(value: 'custom', child: Text('🔧 Personalizado...')),
+        if (_dateRange != null) const PopupMenuDivider(),
+        if (_dateRange != null) const PopupMenuItem(value: 'clear', child: Text('❌ Limpar')),
+      ],
+      child: OutlinedButton.icon(
+        onPressed: null,
+        icon: Icon(
+          Icons.calendar_today,
+          size: 16,
+          color: _dateRange != null ? Colors.blue : (isDark ? Colors.white70 : Colors.black54),
         ),
-      ),
-      style: OutlinedButton.styleFrom(
-        backgroundColor: _dateRange != null 
-            ? Colors.blue.withValues(alpha: 0.1) 
-            : (isDark ? Colors.grey[800] : Colors.grey[100]),
-        side: BorderSide(
-          color: _dateRange != null ? Colors.blue : Colors.transparent,
-          width: 2,
+        label: Text(
+          _dateRange != null
+              ? '${DateFormat('dd/MM').format(_dateRange!.start)} - ${DateFormat('dd/MM').format(_dateRange!.end)}'
+              : 'Período',
+          style: TextStyle(
+            color: isDark ? Colors.white70 : Colors.black87,
+          ),
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        style: OutlinedButton.styleFrom(
+          backgroundColor: _dateRange != null 
+              ? Colors.blue.withValues(alpha: 0.1) 
+              : (isDark ? Colors.grey[800] : Colors.grey[100]),
+          side: BorderSide(
+            color: _dateRange != null ? Colors.blue : Colors.transparent,
+            width: 2,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _showCustomDateRangePicker() async {
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDateRange: _dateRange,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.blue.shade600,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (range != null) {
+      setState(() {
+        _dateRange = range;
+        _applyFilters();
+      });
+    }
   }
 
   Widget _buildCardsView(bool isDark) {
@@ -1089,6 +1142,12 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
                         return const SizedBox.shrink();
                       },
                     ),
+                    
+                    // 📞 CHIP DE FOLLOW-UP
+                    if (quotation['follow_up_date'] != null) ...[
+                      const SizedBox(height: 8),
+                      _buildFollowUpChip(quotation, isDark),
+                    ],
                     
                     const Spacer(),
                     
@@ -1617,6 +1676,68 @@ class _QuotationsScreenPremiumState extends ConsumerState<QuotationsScreenPremiu
       ),
       backgroundColor: Colors.blue.shade600,
       elevation: 8,
+    );
+  }
+
+  /// Widget de Follow-up clicável que abre o modal de follow-up
+  Widget _buildFollowUpChip(Map<String, dynamic> quotation, bool isDark) {
+    final followUpDateStr = quotation['follow_up_date'];
+    if (followUpDateStr == null) return const SizedBox.shrink();
+    
+    final followUpDate = DateTime.parse(followUpDateStr);
+    final now = DateTime.now();
+    final isOverdue = followUpDate.isBefore(now);
+    final isToday = followUpDate.year == now.year && 
+                    followUpDate.month == now.month && 
+                    followUpDate.day == now.day;
+    
+    Color chipColor;
+    IconData chipIcon;
+    String chipLabel;
+    
+    if (isOverdue) {
+      chipColor = Colors.red;
+      chipIcon = Icons.notification_important;
+      chipLabel = 'ATRASADO!';
+    } else if (isToday) {
+      chipColor = Colors.orange;
+      chipIcon = Icons.today;
+      chipLabel = 'HOJE ${DateFormat('HH:mm').format(followUpDate)}';
+    } else {
+      chipColor = Colors.blue;
+      chipIcon = Icons.schedule;
+      chipLabel = DateFormat('dd/MM HH:mm').format(followUpDate);
+    }
+    
+    return InkWell(
+      onTap: () => _openQuotationDetails(quotation), // Abre o modal completo que já tem follow-up
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: chipColor.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: chipColor.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(chipIcon, size: 16, color: chipColor),
+            const SizedBox(width: 6),
+            Text(
+              chipLabel,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: chipColor,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

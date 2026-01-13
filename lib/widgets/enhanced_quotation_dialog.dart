@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/enhanced_quotation_model.dart';
 import '../models/contact.dart';
 import '../models/agency_model.dart';
@@ -84,6 +85,85 @@ class _EnhancedQuotationDialogState
     _notesController.dispose();
     _specialRequestsController.dispose();
     super.dispose();
+  }
+
+  /// Atualiza a categoria do contato após criar uma cotação
+  /// Lead → Prospect (ao criar cotação)
+  /// IMPORTANTE: Só atualiza contatos que VIERAM DO LEADSTINTIM (contatos novos)
+  Future<void> _atualizarCategoriaAposCotacao(int contactId, String? currentCategoryName) async {
+    try {
+      print('🔄 [DIALOG] Tentando atualizar categoria...');
+      print('   Contato ID: $contactId');
+      print('   Categoria atual: $currentCategoryName');
+      
+      if (currentCategoryName == null) {
+        print('⚠️ [DIALOG] Categoria atual é null, não atualizando');
+        return;
+      }
+      
+      final client = Supabase.instance.client;
+      
+      // ✅ VERIFICAR SE É CONTATO NOVO (do leadstintim) ou LEGADO (do monday)
+      final contato = await client
+          .from('contact')
+          .select('phone')
+          .eq('id', contactId)
+          .maybeSingle();
+      
+      if (contato == null || contato['phone'] == null) {
+        print('⚠️ [DIALOG] Contato não encontrado ou sem telefone');
+        return;
+      }
+      
+      final contactPhone = contato['phone'].toString().replaceAll(RegExp(r'[^\d+]'), '');
+      
+      // Verificar se telefone existe no leadstintim
+      final leadExists = await client
+          .from('leadstintim')
+          .select('phone')
+          .eq('phone', contactPhone)
+          .maybeSingle();
+      
+      if (leadExists == null) {
+        print('❌ [DIALOG][LEGADO] Contato $contactId é do Monday (não tem no leadstintim), NÃO atualizando categoria');
+        return;
+      }
+      
+      print('   ✅ [DIALOG] Contato é NOVO (existe no leadstintim)');
+      
+      final lowerCategory = currentCategoryName.toLowerCase();
+      print('   Categoria lowercase: $lowerCategory');
+      
+      // Verificar se é Lead (deve virar Prospect)
+      if (lowerCategory.contains('lead') && !lowerCategory.contains('perdido')) {
+        print('   ✓ [DIALOG] É Lead (não perdido), buscando categoria Prospect...');
+        
+        // Buscar o ID da categoria Prospect
+        final prospectCategory = await client
+            .from('contact_category')
+            .select('id, name')
+            .ilike('name', '%prospect%')
+            .maybeSingle();
+        
+        print('   Prospect encontrado: ${prospectCategory != null ? prospectCategory['name'] : "NÃO ENCONTRADO"}');
+        
+        if (prospectCategory != null) {
+          await client
+              .from('contact')
+              .update({'contact_category_id': prospectCategory['id']})
+              .eq('id', contactId);
+          
+          print('✅ [DIALOG][NOVO] Categoria atualizada: Lead → Prospect (ID: ${prospectCategory['id']})');
+        } else {
+          print('⚠️ [DIALOG] Categoria Prospect não encontrada no banco!');
+        }
+      } else {
+        print('   ✗ [DIALOG] Não é Lead ou é Lead Perdido, não atualizando');
+      }
+    } catch (e) {
+      print('⚠️ [DIALOG] Erro ao atualizar categoria após cotação: $e');
+      // Não bloquear o fluxo se houver erro na atualização de categoria
+    }
   }
 
   @override
@@ -936,6 +1016,19 @@ class _EnhancedQuotationDialogState
         } catch (e) {
           print('Erro ao atribuir tags: $e');
           // Não bloqueia a criação da cotação se falhar
+        }
+      }
+      
+      // REGRA DE NEGÓCIO: Atualizar categoria do contato após criar cotação
+      if (_selectedClient != null && result.success) {
+        try {
+          await _atualizarCategoriaAposCotacao(
+            _selectedClient!.id,
+            _selectedClient!.contactCategory,
+          );
+        } catch (e) {
+          print('Erro ao atualizar categoria: $e');
+          // Não bloqueia o fluxo
         }
       }
       
