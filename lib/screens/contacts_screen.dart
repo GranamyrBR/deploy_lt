@@ -2828,32 +2828,25 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                     const SizedBox(width: 8),
                                   ],
                                   
-                                  // Chip de WhatsApp
+                                  // Ícone de WhatsApp
                                   if (c['phone'] != null && c['phone'].toString().isNotEmpty) ...[
-                                    InkWell(
-                                      onTap: () => _abrirWhatsApp(c),
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF25D366).withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(12),
-                                          border: Border.all(color: const Color(0xFF25D366), width: 1),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(Icons.chat_bubble, size: 12, color: Color(0xFF25D366)),
-                                            const SizedBox(width: 4),
-                                            const Text(
-                                              'WhatsApp',
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: Color(0xFF25D366),
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                          ],
+                                    Tooltip(
+                                      message: 'Abrir WhatsApp',
+                                      child: InkWell(
+                                        onTap: () => _abrirWhatsApp(c),
+                                        borderRadius: BorderRadius.circular(20),
+                                        child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF25D366),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.chat,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
