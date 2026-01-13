@@ -10,7 +10,7 @@ class ContactTaskService {
     int? limit,
   }) async {
     try {
-      var query = _supabase
+      var queryBuilder = _supabase
           .from('contact_task')
           .select('''
             *,
@@ -18,18 +18,19 @@ class ContactTaskService {
               name
             )
           ''')
-          .eq('contact_id', contactId)
-          .order('due_date', ascending: true);
+          .eq('contact_id', contactId);
 
       if (status != null) {
-        query = query.eq('status', status);
+        queryBuilder = queryBuilder.eq('status', status);
       }
+
+      queryBuilder = queryBuilder.order('due_date', ascending: true);
 
       if (limit != null) {
-        query = query.limit(limit);
+        queryBuilder = queryBuilder.limit(limit);
       }
 
-      final response = await query;
+      final response = await queryBuilder;
       
       return (response as List).map((json) {
         // Adicionar nome do usuário ao JSON
