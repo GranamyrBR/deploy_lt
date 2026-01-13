@@ -59,30 +59,17 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   final Map<String, UserType> _contactUserTypes = {};
   final Set<int> _contactsWithPurchase = {};
   final Set<int> _contactsWithLeadConverted = {};
-  final Set<int> _contactsWithLancarVendaTag = {}; // 🆕 Rastrear tag "lançar venda"
-  final Map<int, String> _contactOrigem = {}; // 🆕 Rastrear origem do contato (monday, leadstintim)
-  final Set<int> _contactsRecorrentes = {}; // 🆕 Clientes legados que voltaram a comprar
-  
   String _normalizePhone(dynamic phone) {
     final s = phone?.toString() ?? '';
     return s.replaceAll(RegExp(r'[^0-9+]'), '');
   }
 
   UserType? _filterUserType;
-  
-  // 🆕 Filtro de datas de viagem
-  String? _travelDateFilter; // 'today', 'this_week', 'next_15_days', 'next_30_days', 'this_month', 'custom_range'
-  DateTimeRange? _customDateRange; // Para range personalizado
 
   @override
   void initState() {
     super.initState();
     _loadSortPreferences();
-    
-    // 🆕 Verificar e atualizar categorias de contatos com cotações (após carregar)
-    Future.delayed(const Duration(seconds: 3), () {
-      _verificarEAtualizarCategoriasComCotacao();
-    });
   }
 
   // Carregar configurações de ordenação salvas
@@ -309,137 +296,30 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           }
         }
 
-        // Buscar leads com status "comprou" = mostrar tag "lançar venda"
-        // IMPORTANTE: Só aplicar para contatos que VIERAM DO LEADSTINTIM (contatos novos)
-        // NÃO aplicar para contatos legados do Monday
+        // Buscar leads com status convertido/compra
         _contactsWithLeadConverted.clear();
-        _contactsWithLancarVendaTag.clear();
         if (phoneToId.isNotEmpty) {
           try {
             final leadRows = await Supabase.instance.client
                 .from('leadstintim')
                 .select('phone, status')
                 .not('phone', 'is', null);
-            
-            print('📊 Total de leads no leadstintim: ${leadRows.length}');
-            int contatosNovosComprou = 0;
-            int contatosNovosConvertidos = 0;
-            
             for (final row in leadRows) {
               final phone = _normalizePhone(row['phone']);
               final status = (row['status'] as String?)?.toLowerCase() ?? '';
-              
-              // ✅ REGRA: Só processar se o contato existe
               if (phoneToId.containsKey(phone)) {
-                final contactId = phoneToId[phone]!;
-                
-                // Verificar origem do contato (será preenchido depois)
-                // Por enquanto, processar normalmente
-                
-                // Status "comprou" = visual verde + tag "lançar venda" (APENAS contatos NOVOS ou RECORRENTES)
-                final isComprou = status == 'comprou';
-                
-                // Status "converted" ou contém "compra" = só visual verde
-                final isConverted = status == 'converted' || status.contains('compra');
-                
-                if (isComprou) {
-                  _contactsWithLeadConverted.add(contactId);
-                  // Tag "LANÇAR VENDA" será adicionada depois, baseado na origem
-                  contatosNovosComprou++;
-                  
-                  print('🏷️ Status "comprou" - Contato ID: $contactId (Phone: $phone)');
-                } else if (isConverted) {
-                  _contactsWithLeadConverted.add(contactId); // Só visual verde
-                  contatosNovosConvertidos++;
+                final isConverted = status == 'converted' ||
+                    status == 'comprou' ||
+                    status.contains('compra');
+                if (isConverted) {
+                  _contactsWithLeadConverted.add(phoneToId[phone]!);
                 }
               }
             }
-            
-            print('📊 Contatos novos com "comprou": $contatosNovosComprou');
-            print('📊 Contatos novos convertidos: $contatosNovosConvertidos');
           } catch (e) {
             print('Erro ao buscar leads convertidos: $e');
           }
         }
-
-        print('📊 Resumo após carregar leads:');
-        print('   Contatos com compra: ${_contactsWithPurchase.length}');
-        print('   Contatos convertidos: ${_contactsWithLeadConverted.length}');
-        print('   Contatos com tag "lançar venda": ${_contactsWithLancarVendaTag.length}');
-        if (_contactsWithLancarVendaTag.isNotEmpty) {
-          print('   IDs com tag "lançar venda": ${_contactsWithLancarVendaTag.toList()}');
-        }
-
-        // 🆕 Identificar origem dos contatos (monday x leadstintim)
-        _contactOrigem.clear();
-        _contactsRecorrentes.clear();
-        
-        // Buscar todos os contact_ids da tabela monday (legados)
-        final mondayContacts = await _client
-            .from('monday')
-            .select('contact_id')
-            .not('contact_id', 'is', null);
-        
-        final mondayIds = mondayContacts.map((row) => row['contact_id'] as int).toSet();
-        
-        print('📊 Total de contatos legados (Monday): ${mondayIds.length}');
-        
-        // Buscar todos os telefones do leadstintim
-        final leadsPhones = await _client
-            .from('leadstintim')
-            .select('phone')
-            .not('phone', 'is', null);
-        
-        final phonesLeadstintim = leadsPhones
-            .map((row) => _normalizePhone(row['phone']))
-            .toSet();
-        
-        print('📊 Total de telefones no leadstintim: ${phonesLeadstintim.length}');
-        
-        // Classificar cada contato
-        for (final contact in contactsList) {
-          final contactId = contact['id'] as int?;
-          final contactPhone = _normalizePhone(contact['phone']);
-          
-          if (contactId == null) continue;
-          
-          final isMonday = mondayIds.contains(contactId);
-          final isLeadstintim = phonesLeadstintim.contains(contactPhone);
-          
-          if (isMonday) {
-            _contactOrigem[contactId] = 'monday';
-            
-            // Verificar se é RECORRENTE (legado que aparece no leadstintim)
-            if (isLeadstintim) {
-              _contactsRecorrentes.add(contactId);
-              print('🔄 [RECORRENTE] Contato $contactId (${contact['name']}) - Legado que voltou!');
-            }
-          } else if (isLeadstintim) {
-            _contactOrigem[contactId] = 'leadstintim';
-          } else {
-            _contactOrigem[contactId] = 'unknown';
-          }
-        }
-        
-        print('📊 Clientes RECORRENTES: ${_contactsRecorrentes.length}');
-        
-        // 🆕 Aplicar tag "LANÇAR VENDA" apenas para contatos NOVOS e RECORRENTES
-        _contactsWithLancarVendaTag.clear();
-        for (final contactId in _contactsWithLeadConverted) {
-          final origem = _contactOrigem[contactId];
-          
-          // Só mostrar tag "LANÇAR VENDA" se for:
-          // - Contato NOVO (leadstintim) OU
-          // - Contato RECORRENTE (legado que voltou)
-          if (origem == 'leadstintim' || _contactsRecorrentes.contains(contactId)) {
-            _contactsWithLancarVendaTag.add(contactId);
-            
-            // Atualizar categoria para "Negociado" (apenas novos e recorrentes)
-            _atualizarParaNegociadoSeNecessario(contactId);
-          }
-        }
-        
-        print('📊 Tags "LANÇAR VENDA" aplicadas: ${_contactsWithLancarVendaTag.length}');
 
         setState(() {
           _contacts = List<Map<String, dynamic>>.from(contactsList);
@@ -702,16 +582,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       // Criar cotação simplificada
       final quotationNumber = 'QT-${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(9999).toString().padLeft(4, '0')}';
       
-      print('🔍 DEBUG COTAÇÃO RÁPIDA:');
-      print('   Contact ID: ${contactData['id']}');
-      print('   Contact Name: ${contactData['name']}');
-      print('   Quotation Number: $quotationNumber');
-      print('   Travel Date: ${(dates['departure_date'] as DateTime).toIso8601String()}');
-      print('   Return Date: ${dates['return_date'] != null ? (dates['return_date'] as DateTime).toIso8601String() : 'null'}');
-      
       final payload = {
         'quotation_number': quotationNumber,
-        'type': 'tourism', // Tipo padrão (deve ser: tourism, corporate, event, transfer, other)
+        'type': 'service', // Tipo padrão
         'status': 'draft', // Status draft para cotações com apenas datas
         'client_id': contactData['id'], // FK para contact
         'client_name': contactData['name'],
@@ -729,20 +602,11 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         'created_by': 'system',
       };
 
-      print('📤 Enviando payload para banco...');
-      print('   Keys: ${payload.keys.join(', ')}');
-
       final response = await _client
           .from('quotation')
           .insert(payload)
           .select()
           .single();
-      
-      print('✅ Cotação rápida salva com sucesso!');
-      print('   ID retornado: ${response['id']}');
-
-      // REGRA DE NEGÓCIO: Mudar categoria de Lead para Prospect automaticamente
-      await _atualizarCategoriaAposCotacao(contactData['id'], contactData['contact_category']?['name']);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -762,24 +626,12 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         // Recarregar contatos para atualizar badges
         _fetchContacts();
       }
-    } catch (e, stackTrace) {
-      print('❌ ERRO AO SALVAR COTAÇÃO RÁPIDA:');
-      print('   Erro: $e');
-      print('   Tipo: ${e.runtimeType}');
-      if (e is PostgrestException) {
-        print('   Code: ${e.code}');
-        print('   Message: ${e.message}');
-        print('   Details: ${e.details}');
-        print('   Hint: ${e.hint}');
-      }
-      print('   Stack: $stackTrace');
-      
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Erro ao salvar datas: $e'),
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -2493,95 +2345,22 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('🔍 DEBUG FILTRO:');
-    print('   _travelDateFilter: $_travelDateFilter');
-    print('   Total contatos: ${_contacts.length}');
-    
     final List<Map<String, dynamic>> contactsFiltrados = _contacts.where((c) {
-      // Filtro de busca
-      if (_searchTerm.isNotEmpty) {
-        final termo = _searchTerm.toLowerCase();
-        final nome = (c['name'] ?? '').toString().toLowerCase();
-        final telefone =
-            (c['phone'] ?? '').toString().replaceAll(RegExp(r'\D'), '');
-        final email = (c['email'] ?? '').toString().toLowerCase();
-        final cidade = (c['city'] ?? '').toString().toLowerCase();
-        
-        if (!(nome.contains(termo) ||
-            telefone.contains(termo) ||
-            email.contains(termo) ||
-            cidade.contains(termo))) {
-          return false;
-        }
-      }
-      
-      // 🆕 Filtro por data de viagem
-      if (_travelDateFilter != null && _travelDateFilter != 'all') {
-        // Se filtro ativo mas contato não tem data de viagem, excluir
-        if (c['travel_date'] == null) {
-          return false;
-        }
-        
-        try {
-          final travelDate = DateTime.parse(c['travel_date']);
-          final now = DateTime.now();
-          final today = DateTime(now.year, now.month, now.day);
-          final travelDay = DateTime(travelDate.year, travelDate.month, travelDate.day);
-          
-          switch (_travelDateFilter) {
-            case 'today':
-              if (!travelDay.isAtSameMomentAs(today)) {
-                return false;
-              }
-              break;
-            case 'this_week':
-              final startOfWeek = today.subtract(Duration(days: now.weekday - 1));
-              final endOfWeek = startOfWeek.add(const Duration(days: 6, hours: 23, minutes: 59));
-              if (travelDate.isBefore(startOfWeek) || travelDate.isAfter(endOfWeek)) {
-                return false;
-              }
-              break;
-            case 'next_15_days':
-              final futureLimit = today.add(const Duration(days: 15));
-              if (travelDate.isBefore(today) || travelDate.isAfter(futureLimit)) {
-                return false;
-              }
-              break;
-            case 'next_30_days':
-              final futureLimit = today.add(const Duration(days: 30));
-              if (travelDate.isBefore(today) || travelDate.isAfter(futureLimit)) {
-                return false;
-              }
-              break;
-            case 'this_month':
-              if (travelDate.year != now.year || travelDate.month != now.month) {
-                return false;
-              }
-              break;
-            case 'custom_range':
-              if (_customDateRange != null) {
-                if (travelDate.isBefore(_customDateRange!.start) || 
-                    travelDate.isAfter(_customDateRange!.end)) {
-                  return false;
-                }
-              }
-              break;
-          }
-        } catch (e) {
-          // Erro ao fazer parse, excluir do filtro
-          return false;
-        }
-      }
-      // Se _travelDateFilter == null ou 'all', não filtrar nada (mostrar todos)
-      
-      return true;
+      if (_searchTerm.isEmpty) return true;
+      final termo = _searchTerm.toLowerCase();
+      final nome = (c['name'] ?? '').toString().toLowerCase();
+      final telefone =
+          (c['phone'] ?? '').toString().replaceAll(RegExp(r'\D'), '');
+      final email = (c['email'] ?? '').toString().toLowerCase();
+      final cidade = (c['city'] ?? '').toString().toLowerCase();
+      return nome.contains(termo) ||
+          telefone.contains(termo) ||
+          email.contains(termo) ||
+          cidade.contains(termo);
     }).toList();
 
     final List<Map<String, dynamic>> contatosExibidos =
         List<Map<String, dynamic>>.from(contactsFiltrados);
-    
-    print('   Contatos filtrados: ${contactsFiltrados.length}');
-    print('   Contatos exibidos: ${contatosExibidos.length}');
 
     return BaseScreenLayout(
       title: 'Contatos',
@@ -2636,142 +2415,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           onPressed: _refreshContacts,
           tooltip: 'Atualizar lista',
         ),
-        // 🆕 Botão para verificar e atualizar categorias
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          tooltip: 'Atualizar categorias de contatos com cotações',
-          onPressed: () async {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('🔄 Verificando categorias...'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-            await _verificarEAtualizarCategoriasComCotacao();
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('✅ Categorias atualizadas!'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            }
-          },
-        ),
-        
-        // 🆕 Filtro de Datas de Viagem
-        PopupMenuButton<String?>(
-          icon: Icon(
-            Icons.calendar_today,
-            color: _travelDateFilter != null ? Colors.blue : null,
-          ),
-          tooltip: 'Filtrar por data de viagem',
-          onSelected: (val) async {
-            if (val == 'custom_range') {
-              // Abrir seletor de range de datas em dialog compacto
-              final range = await showDialog<DateTimeRange>(
-                context: context,
-                builder: (BuildContext context) {
-                  return Dialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Container(
-                      constraints: const BoxConstraints(maxWidth: 600, maxHeight: 550),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Escolher Período',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => Navigator.of(context).pop(),
-                              ),
-                            ],
-                          ),
-                          const Divider(),
-                          Flexible(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
-                                  primary: Colors.blue.shade600,
-                                ),
-                              ),
-                              child: CalendarDatePicker(
-                                initialDate: _customDateRange?.start ?? DateTime.now(),
-                                firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                                lastDate: DateTime.now().add(const Duration(days: 365)),
-                                onDateChanged: (date) {
-                                  // Mostrar segundo calendário após escolher primeira data
-                                  Navigator.of(context).pop(DateTimeRange(
-                                    start: date,
-                                    end: date.add(const Duration(days: 7)),
-                                  ));
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-              
-              if (range != null) {
-                setState(() {
-                  _customDateRange = range;
-                  _travelDateFilter = 'custom_range';
-                });
-              }
-            } else {
-              setState(() {
-                _travelDateFilter = val;
-                if (val == null) {
-                  _customDateRange = null; // Limpar range ao voltar para "todos"
-                }
-                print('✅ Filtro alterado para: ${val ?? "TODOS OS CONTATOS (null)"}');
-              });
-            }
-          },
-          itemBuilder: (context) => [
-            PopupMenuItem<String?>(
-              value: null,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.clear_all,
-                    size: 18,
-                    color: _travelDateFilter == null ? Colors.blue : Colors.grey,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Todos os contatos',
-                    style: TextStyle(
-                      fontWeight: _travelDateFilter == null ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const PopupMenuDivider(),
-            const PopupMenuItem<String?>(value: 'today', child: Text('📅 Viajam hoje')),
-            const PopupMenuItem<String?>(value: 'this_week', child: Text('📆 Esta semana (7 dias)')),
-            const PopupMenuItem<String?>(value: 'next_15_days', child: Text('🗓️ Próximos 15 dias')),
-            const PopupMenuItem<String?>(value: 'next_30_days', child: Text('⏰ Próximos 30 dias')),
-            const PopupMenuItem<String?>(value: 'this_month', child: Text('📆 Este mês')),
-            const PopupMenuDivider(),
-            const PopupMenuItem<String?>(value: 'custom_range', child: Text('📋 Escolher período...')),
-          ],
-        ),
         PopupMenuButton<UserType?>(
           icon: const Icon(Icons.filter_alt),
           tooltip: 'Filtrar por tipo',
@@ -2824,73 +2467,27 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                           final hasLeadConverted =
                               _contactsWithLeadConverted.contains(id) &&
                                   !hasPurchase;
-                          
-                          // 🆕 Calcular cor do card baseado na urgência da viagem
-                          Color? cardColor;
-                          Color? borderColor;
-                          double borderWidth = 0;
-                          
-                          if (c['travel_date'] != null) {
-                            try {
-                              final travelDate = DateTime.parse(c['travel_date']);
-                              final daysUntil = travelDate.difference(DateTime.now()).inDays;
-                              final isDark = Theme.of(context).brightness == Brightness.dark;
-                              
-                              // Cores baseadas na urgência (igual tela de cotações)
-                              if (daysUntil < 0) {
-                                // Atrasado - Vermelho
-                                cardColor = isDark ? const Color(0xFF4C1D1D) : const Color(0xFFFFE6E6);
-                                borderColor = Colors.red;
-                                borderWidth = 2;
-                              } else if (daysUntil <= 3) {
-                                // Urgente (0-3 dias) - Laranja escuro
-                                cardColor = isDark ? const Color(0xFF4C2D1D) : const Color(0xFFFFEDE6);
-                                borderColor = Colors.deepOrange;
-                                borderWidth = 2;
-                              } else if (daysUntil <= 7) {
-                                // Próximo (4-7 dias) - Laranja
-                                cardColor = isDark ? const Color(0xFF4C3D1D) : const Color(0xFFFFF4E6);
-                                borderColor = Colors.orange;
-                                borderWidth = 1;
-                              } else if (daysUntil <= 15) {
-                                // Breve (8-15 dias) - Amarelo
-                                cardColor = isDark ? const Color(0xFF3D3D1D) : const Color(0xFFFFFBE6);
-                              } else if (daysUntil <= 30) {
-                                // Normal (16-30 dias) - Verde claro
-                                cardColor = isDark ? const Color(0xFF1D3D1D) : const Color(0xFFE6FFE6);
-                              }
-                            } catch (e) {
-                              // Ignore parse errors
-                            }
-                          }
-                          
-                          // Se não tem urgência de viagem, usar cor padrão ou de status
-                          if (cardColor == null) {
-                            if (hasPurchase) {
-                              cardColor = Theme.of(context).brightness == Brightness.dark
-                                  ? const Color(0xFF1B3A2E)
-                                  : const Color(0xFFE8F5E8);
-                            } else if (hasLeadConverted) {
-                              cardColor = Theme.of(context).brightness == Brightness.dark
-                                  ? const Color(0xFF1E4620)
-                                  : const Color(0xFFE9F7EF);
-                            } else {
-                              cardColor = Theme.of(context).brightness == Brightness.dark
-                                  ? const Color(0xFF2A2D3E)
-                                  : const Color(0xFFE8F2FF);
-                            }
-                          }
-                          
                           return Card(
                             margin: const EdgeInsets.only(bottom: 12.0),
-                            elevation: borderWidth > 0 ? 4 : 2,
-                            color: cardColor,
+                            elevation: 2,
+                            color: hasPurchase
+                                ? (Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color(
+                                        0xFF1B3A2E) // Verde escuro vendido
+                                    : const Color(0xFFE8F5E8))
+                                : hasLeadConverted
+                                    ? (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? const Color(
+                                            0xFF1E4620) // Verde médio para lançar venda
+                                        : const Color(0xFFE9F7EF))
+                                    : (Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? const Color(0xFF2A2D3E)
+                                        : const Color(0xFFE8F2FF)),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                side: borderWidth > 0
-                                    ? BorderSide(color: borderColor!, width: borderWidth)
-                                    : BorderSide.none,
-                            ),
+                                borderRadius: BorderRadius.circular(12)),
                             child: ExpansionTile(
                               key: PageStorageKey(c['id']),
                               leading: InkWell(
@@ -2987,234 +2584,400 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                   ),
                                 ),
                               ),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              title: Row(
                                 children: [
-                                  // 📍 LINHA 1: Nome + Telefone + Tags de Status (Agência, Colaborador, Vendido)
-                                  Row(
-                                    children: [
-                                      // Nome do contato
-                                      Flexible(
-                                        child: Text(
-                                          c['name'] ?? 'Nome não informado',
-                                          style: (Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium ??
-                                                  const TextStyle())
-                                              .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Inter',
-                                            fontSize: 16,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
-                                      ),
-                                      
-                                      // Telefone próximo ao nome
-                                      if (c['phone'] != null) ...[
-                                        const SizedBox(width: 8),
-                                        const Icon(
-                                          Icons.phone,
-                                          size: 13,
-                                          color: Colors.orange,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        // Bandeira do país
-                                        if (_resolveIsoFromPhoneAndCountry(
-                                                c['phone'], c['country']) !=
-                                            null)
-                                          Padding(
-                                            padding: const EdgeInsets.only(right: 4),
-                                            child: Image.network(
-                                              FlagUtils.getFlagUrl(
-                                                  _resolveIsoFromPhoneAndCountry(
-                                                      c['phone'],
-                                                      c['country'])!,
-                                                  width: 16,
-                                                  height: 12),
-                                              width: 16,
-                                              height: 12,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  const SizedBox(
-                                                      width: 16, height: 12),
-                                            ),
-                                          ),
-                                        Text(
-                                          _formatPhone(c['phone']),
-                                          style: const TextStyle(
-                                            fontFamily: 'Inter',
-                                            fontSize: 13,
-                                            color: Colors.orange,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                      
-                                      const SizedBox(width: 8),
-                                      
-                                      // Indicador de tipo de usuário (Agência/Colaborador/Motorista)
-                                      if ((_contactUserTypes[
-                                                  c['id'].toString()] ??
-                                              UserType.normal) !=
-                                          UserType.normal)
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: _getUserTypeColor(
-                                                _contactUserTypes[
-                                                        c['id'].toString()] ??
-                                                    UserType.normal),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
+                                  // Nome
+                                  Expanded(
+                                    flex: 4,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
                                           child: Text(
-                                            _getUserTypeLabel(
-                                                _contactUserTypes[
-                                                        c['id'].toString()] ??
-                                                    UserType.normal),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
+                                            c['name'] ?? 'Nome não informado',
+                                            style: (Theme.of(context)
+                                                        .textTheme
+                                                        .titleMedium ??
+                                                    const TextStyle())
+                                                .copyWith(
                                               fontWeight: FontWeight.bold,
+                                              fontFamily: 'Inter',
+                                              fontSize: 16,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
                                             ),
+                                            softWrap: true,
+                                            maxLines: 2,
                                           ),
                                         ),
-                                      
-                                      // Tag "Vendido"
-                                      if (_contactsWithPurchase
-                                          .contains(c['id'] as int)) ...[
-                                        const SizedBox(width: 4),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context)
-                                                        .brightness ==
-                                                    Brightness.dark
-                                                ? const Color(0xFF2E7D32)
-                                                : const Color(0xFF4CAF50),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: const Text(
-                                            'Vendido',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
+                                        // Indicador de tipo de usuário
+                                        if ((_contactUserTypes[
+                                                    c['id'].toString()] ??
+                                                UserType.normal) !=
+                                            UserType.normal) ...[
+                                          const SizedBox(width: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: _getUserTypeColor(
+                                                  _contactUserTypes[
+                                                          c['id'].toString()] ??
+                                                      UserType.normal),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
-                                          ),
-                                        ),
-                                      ],
-                                      
-                                      const Spacer(),
-                                      
-                                      // Menu de ações no canto direito
-                                      PopupMenuButton<String>(
-                                        icon: const Icon(
-                                          Icons.more_vert,
-                                          size: 20,
-                                          color: Colors.grey,
-                                        ),
-                                        onSelected: (value) {
-                                          switch (value) {
-                                            case 'view':
-                                              _visualizarContato(c);
-                                              break;
-                                            case 'profile':
-                                              _abrirPerfilCompleto(c);
-                                              break;
-                                            case 'profile_page':
-                                              _abrirPerfilNaPagina(c);
-                                              break;
-                                            case 'edit':
-                                              _editarContato(c);
-                                              break;
-                                            case 'delete':
-                                              _excluirContato(c);
-                                              break;
-                                            case 'sale':
-                                              _criarVendaParaCliente(c);
-                                              break;
-                                          }
-                                        },
-                                        itemBuilder: (context) => [
-                                          const PopupMenuItem(
-                                            value: 'view',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.visibility, size: 16),
-                                                SizedBox(width: 8),
-                                                Text('Visualizar'),
-                                              ],
-                                            ),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'profile',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.analytics,
-                                                    size: 16, color: Colors.purple),
-                                                SizedBox(width: 8),
-                                                Text('Perfil Completo',
-                                                    style: TextStyle(
-                                                        color: Colors.purple)),
-                                              ],
-                                            ),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'profile_page',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.open_in_new,
-                                                    size: 16, color: Colors.blue),
-                                                SizedBox(width: 8),
-                                                Text('Abrir na Página',
-                                                    style: TextStyle(
-                                                        color: Colors.blue)),
-                                              ],
-                                            ),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'edit',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.edit, size: 16),
-                                                SizedBox(width: 8),
-                                                Text('Editar'),
-                                              ],
-                                            ),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'sale',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.shopping_cart, size: 16),
-                                                SizedBox(width: 8),
-                                                Text('Nova Venda'),
-                                              ],
-                                            ),
-                                          ),
-                                          const PopupMenuItem(
-                                            value: 'delete',
-                                            child: Row(
-                                              children: [
-                                                Icon(Icons.delete,
-                                                    size: 16, color: Colors.red),
-                                                SizedBox(width: 8),
-                                                Text('Excluir',
-                                                    style: TextStyle(
-                                                        color: Colors.red)),
-                                              ],
+                                            child: Text(
+                                              _getUserTypeLabel(
+                                                  _contactUserTypes[
+                                                          c['id'].toString()] ??
+                                                      UserType.normal),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                           ),
                                         ],
+                                        const SizedBox(width: 6),
+                                        if (_contactsWithLeadConverted
+                                                .contains(c['id'] as int) &&
+                                            !_contactsWithPurchase
+                                                .contains(c['id'] as int))
+                                          InkWell(
+                                            onTap: () =>
+                                                _criarVendaParaCliente(c),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? const Color(0xFF33663B)
+                                                    : const Color(0xFFA5D6A7),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: const Text(
+                                                'Lançar venda',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        if (_contactsWithPurchase
+                                            .contains(c['id'] as int))
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(left: 6),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? const Color(0xFF2E7D32)
+                                                  : const Color(0xFF4CAF50),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Text(
+                                              'Vendido',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  // Telefone
+                                  if (c['phone'] != null) ...[
+                                    Expanded(
+                                      flex: 3,
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.phone,
+                                            size: 14,
+                                            color: Colors.orange,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          // Bandeira do país
+                                          if (_resolveIsoFromPhoneAndCountry(
+                                                  c['phone'], c['country']) !=
+                                              null)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 4),
+                                              child: Image.network(
+                                                FlagUtils.getFlagUrl(
+                                                    _resolveIsoFromPhoneAndCountry(
+                                                        c['phone'],
+                                                        c['country'])!,
+                                                    width: 16,
+                                                    height: 12),
+                                                width: 16,
+                                                height: 12,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    const SizedBox(
+                                                        width: 16, height: 12),
+                                              ),
+                                            ),
+                                          Expanded(
+                                            child: Text(
+                                              _formatPhone(c['phone']),
+                                              style: const TextStyle(
+                                                fontFamily: 'Inter',
+                                                fontSize: 14,
+                                                color: Colors.orange,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          // Chip redondo para criar cotação
+                                          InkWell(
+                                            onTap: () => _abrirCriarCotacaoComWhatsApp(c),
+                                            borderRadius: BorderRadius.circular(20),
+                                            child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.shade50,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.blue.shade300,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.request_quote,
+                                                size: 18,
+                                                color: Colors.blue.shade700,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          // Chip redondo para datas rápidas
+                                          InkWell(
+                                            onTap: () => _abrirDatasRapidas(c),
+                                            borderRadius: BorderRadius.circular(20),
+                                            child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: BoxDecoration(
+                                                color: Colors.green.shade50,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.green.shade300,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.calendar_today,
+                                                size: 18,
+                                                color: Colors.green.shade700,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                  
+                                  // Badge de datas de viagem (se existir)
+                                  if (c['travel_date'] != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4, bottom: 4),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(Icons.flight_takeoff, size: 11, color: Colors.blue.shade700),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            _formatDate(DateTime.parse(c['travel_date'])),
+                                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.blue.shade700),
+                                          ),
+                                          if (c['return_date'] != null) ...[
+                                            const SizedBox(width: 6),
+                                            Icon(Icons.flight_land, size: 11, color: Colors.green.shade700),
+                                            const SizedBox(width: 3),
+                                            Text(
+                                              _formatDate(DateTime.parse(c['return_date'])),
+                                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.green.shade700),
+                                            ),
+                                          ],
+                                          const SizedBox(width: 6),
+                                          _buildDaysUntilBadge(DateTime.parse(c['travel_date'])),
+                                        ],
+                                      ),
+                                    ),
+                                  
+                                  // Tipo de Conta
+                                  if (c['account']?['name'] != null) ...[
+                                    Expanded(
+                                      flex: 1,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4, vertical: 1),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue
+                                              .withValues(alpha: 0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          c['account']['name'],
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.blue,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                  ],
+                                  // Categoria de Contato (usando cores do kanban)
+                                  if (c['contact_category']?['name'] != null)
+                                    Expanded(
+                                      flex: 1,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4, vertical: 1),
+                                        decoration: BoxDecoration(
+                                          color: _getCategoryColor(c['contact_category']['name'])
+                                              .withValues(alpha: 0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          c['contact_category']['name'],
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: _getCategoryColor(c['contact_category']['name']),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                  const SizedBox(width: 8),
+                                  PopupMenuButton<String>(
+                                    icon: const Icon(
+                                      Icons.more_vert,
+                                      size: 20,
+                                      color: Colors.grey,
+                                    ),
+                                    onSelected: (value) {
+                                      switch (value) {
+                                        case 'view':
+                                          _visualizarContato(c);
+                                          break;
+                                        case 'profile':
+                                          _abrirPerfilCompleto(c);
+                                          break;
+                                        case 'profile_page':
+                                          _abrirPerfilNaPagina(c);
+                                          break;
+                                        case 'edit':
+                                          _editarContato(c);
+                                          break;
+                                        case 'delete':
+                                          _excluirContato(c);
+                                          break;
+                                        case 'sale':
+                                          _criarVendaParaCliente(c);
+                                          break;
+                                      }
+                                    },
+                                    itemBuilder: (context) => [
+                                      const PopupMenuItem(
+                                        value: 'view',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.visibility, size: 16),
+                                            SizedBox(width: 8),
+                                            Text('Visualizar'),
+                                          ],
+                                        ),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'profile',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.analytics,
+                                                size: 16, color: Colors.purple),
+                                            SizedBox(width: 8),
+                                            Text('Perfil Completo',
+                                                style: TextStyle(
+                                                    color: Colors.purple)),
+                                          ],
+                                        ),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'profile_page',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.open_in_new,
+                                                size: 16, color: Colors.blue),
+                                            SizedBox(width: 8),
+                                            Text('Abrir na Página',
+                                                style: TextStyle(
+                                                    color: Colors.blue)),
+                                          ],
+                                        ),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'edit',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.edit, size: 16),
+                                            SizedBox(width: 8),
+                                            Text('Editar'),
+                                          ],
+                                        ),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'sale',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.shopping_cart, size: 16),
+                                            SizedBox(width: 8),
+                                            Text('Nova Venda'),
+                                          ],
+                                        ),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'delete',
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.delete,
+                                                size: 16, color: Colors.red),
+                                            SizedBox(width: 8),
+                                            Text('Excluir',
+                                                style: TextStyle(
+                                                    color: Colors.red)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -3976,7 +3739,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         ),
       ),
       childWhenDragging: Opacity(
-        opacity: 0.5,
+        opacity: 0.3,
         child: _buildContactKanbanCard(contact, categoryColor),
       ),
       child: _buildContactKanbanCard(contact, categoryColor),
@@ -4124,212 +3887,6 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     if (lowerName.contains('perdido') || lowerName.contains('inativo')) return 5;
     
     return 99; // Outros no final
-  }
-
-  /// Verifica todos os contatos que têm cotações e atualiza Lead → Prospect
-  /// IMPORTANTE: Só atualiza contatos que VIERAM DO LEADSTINTIM (contatos novos)
-  Future<void> _verificarEAtualizarCategoriasComCotacao() async {
-    try {
-      print('🔄 Verificando contatos com cotações...');
-      
-      // 1. Buscar todos os telefones do leadstintim (contatos novos)
-      final leadsPhones = await _client
-          .from('leadstintim')
-          .select('phone')
-          .not('phone', 'is', null);
-      
-      final phonesLeadstintim = leadsPhones
-          .map((row) => _normalizePhone(row['phone']))
-          .toSet();
-      
-      print('📊 Total de telefones no leadstintim: ${phonesLeadstintim.length}');
-      
-      // 2. Buscar todos os contatos que são Lead e têm cotação
-      final contatosComCotacao = await _client
-          .from('contact')
-          .select('id, phone, contact_category_id, contact_category(name)')
-          .not('id', 'is', null);
-      
-      int atualizados = 0;
-      int ignoradosLegado = 0;
-      
-      for (final contato in contatosComCotacao) {
-        final contactId = contato['id'] as int;
-        final contactPhone = _normalizePhone(contato['phone']);
-        final categoryName = contato['contact_category']?['name'] as String?;
-        
-        if (categoryName == null) continue;
-        
-        final lowerCategory = categoryName.toLowerCase();
-        
-        // ✅ REGRA: Só processar se for Lead E se o telefone existe no leadstintim (é contato novo)
-        if (lowerCategory.contains('lead') && !lowerCategory.contains('perdido')) {
-          
-          // Verificar se é contato novo (do leadstintim) ou legado (do monday)
-          final isContatoNovo = phonesLeadstintim.contains(contactPhone);
-          
-          if (!isContatoNovo) {
-            ignoradosLegado++;
-            continue; // ❌ Ignorar contatos legados do Monday
-          }
-          
-          // ✅ É contato novo, verificar se tem cotação
-          final cotacoes = await _client
-              .from('quotation')
-              .select('id')
-              .eq('client_id', contactId)
-              .limit(1);
-          
-          if (cotacoes.isNotEmpty) {
-            // Tem cotação! Mudar para Prospect
-            final prospectCategory = await _client
-                .from('contact_category')
-                .select('id, name')
-                .ilike('name', '%prospect%')
-                .maybeSingle();
-            
-            if (prospectCategory != null) {
-              await _client
-                  .from('contact')
-                  .update({'contact_category_id': prospectCategory['id']})
-                  .eq('id', contactId);
-              
-              atualizados++;
-              print('   ✅ [NOVO] Contato $contactId: Lead → Prospect');
-            }
-          }
-        }
-      }
-      
-      print('✅ Verificação concluída!');
-      print('   $atualizados contatos NOVOS atualizados');
-      print('   $ignoradosLegado contatos LEGADOS ignorados');
-      
-      // Recarregar contatos para mostrar mudanças
-      if (atualizados > 0) {
-        await _fetchContacts();
-      }
-    } catch (e) {
-      print('⚠️ Erro ao verificar categorias com cotação: $e');
-    }
-  }
-
-  /// Atualiza contato para categoria "Negociado" se ainda não estiver
-  Future<void> _atualizarParaNegociadoSeNecessario(int contactId) async {
-    try {
-      // Buscar categoria atual do contato
-      final contactData = await _client
-          .from('contact')
-          .select('contact_category_id, contact_category(name)')
-          .eq('id', contactId)
-          .maybeSingle();
-      
-      if (contactData == null) return;
-      
-      final currentCategoryName = contactData['contact_category']?['name'] as String?;
-      if (currentCategoryName == null) return;
-      
-      // Se já está em "Negociado" ou "Cliente", não fazer nada
-      final lowerCategory = currentCategoryName.toLowerCase();
-      if (lowerCategory.contains('negociad') || lowerCategory.contains('client')) {
-        return;
-      }
-      
-      // Buscar ID da categoria "Negociado"
-      final negociadoCategory = await _client
-          .from('contact_category')
-          .select('id, name')
-          .ilike('name', '%negociad%')
-          .maybeSingle();
-      
-      if (negociadoCategory != null) {
-        await _client
-            .from('contact')
-            .update({'contact_category_id': negociadoCategory['id']})
-            .eq('id', contactId);
-        
-        print('✅ Categoria atualizada automaticamente: $currentCategoryName → Negociado (Tag: lançar venda)');
-      }
-    } catch (e) {
-      print('⚠️ Erro ao atualizar para Negociado: $e');
-    }
-  }
-
-  /// Atualiza a categoria do contato após criar uma cotação
-  /// Lead → Prospect (ao criar cotação)
-  /// IMPORTANTE: Só atualiza contatos que VIERAM DO LEADSTINTIM (contatos novos)
-  Future<void> _atualizarCategoriaAposCotacao(int contactId, String? currentCategoryName) async {
-    try {
-      print('🔄 Tentando atualizar categoria...');
-      print('   Contato ID: $contactId');
-      print('   Categoria atual: $currentCategoryName');
-      
-      if (currentCategoryName == null) {
-        print('⚠️ Categoria atual é null, não atualizando');
-        return;
-      }
-      
-      // ✅ VERIFICAR SE É CONTATO NOVO (do leadstintim) ou LEGADO (do monday)
-      final contato = await _client
-          .from('contact')
-          .select('phone')
-          .eq('id', contactId)
-          .maybeSingle();
-      
-      if (contato == null || contato['phone'] == null) {
-        print('⚠️ Contato não encontrado ou sem telefone');
-        return;
-      }
-      
-      final contactPhone = _normalizePhone(contato['phone']);
-      
-      // Verificar se telefone existe no leadstintim
-      final leadExists = await _client
-          .from('leadstintim')
-          .select('phone')
-          .eq('phone', contactPhone)
-          .maybeSingle();
-      
-      if (leadExists == null) {
-        print('❌ [LEGADO] Contato $contactId é do Monday (não tem no leadstintim), NÃO atualizando categoria');
-        return;
-      }
-      
-      print('   ✅ Contato é NOVO (existe no leadstintim)');
-      
-      final lowerCategory = currentCategoryName.toLowerCase();
-      print('   Categoria lowercase: $lowerCategory');
-      
-      // Verificar se é Lead (deve virar Prospect)
-      if (lowerCategory.contains('lead') && !lowerCategory.contains('perdido')) {
-        print('   ✓ É Lead (não perdido), buscando categoria Prospect...');
-        
-        // Buscar o ID da categoria Prospect
-        final prospectCategory = await _client
-            .from('contact_category')
-            .select('id, name')
-            .ilike('name', '%prospect%')
-            .maybeSingle();
-        
-        print('   Prospect encontrado: ${prospectCategory != null ? prospectCategory['name'] : "NÃO ENCONTRADO"}');
-        
-        if (prospectCategory != null) {
-          await _client
-              .from('contact')
-              .update({'contact_category_id': prospectCategory['id']})
-              .eq('id', contactId);
-          
-          print('✅ [NOVO] Categoria atualizada: Lead → Prospect (ID: ${prospectCategory['id']})');
-        } else {
-          print('⚠️ Categoria Prospect não encontrada no banco!');
-        }
-      } else {
-        print('   ✗ Não é Lead ou é Lead Perdido, não atualizando');
-      }
-    } catch (e) {
-      print('⚠️ Erro ao atualizar categoria após cotação: $e');
-      // Não bloquear o fluxo se houver erro na atualização de categoria
-    }
   }
 
   Color _getCategoryColor(String categoryName) {
