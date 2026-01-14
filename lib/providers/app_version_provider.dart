@@ -64,8 +64,8 @@ final versionCheckProvider = StreamProvider<bool>((ref) async* {
   final initialVersion = await ref.read(appVersionProvider.future);
   
   while (true) {
-    // Aguarda 5 minutos antes de verificar novamente
-    await Future.delayed(const Duration(minutes: 5));
+    // Aguarda 30 minutos antes de verificar novamente
+    await Future.delayed(const Duration(minutes: 30));
     
     try {
       final response = await http.get(
