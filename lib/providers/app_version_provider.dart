@@ -28,6 +28,23 @@ class AppVersion {
     );
   }
 
+  /// Compara versões semanticamente (v1.0.0 vs v1.1.0)
+  /// Retorna true se outra versão é maior que esta
+  bool isNewerThan(AppVersion other) {
+    final thisParts = version.split('.');
+    final otherParts = other.version.split('.');
+    
+    for (int i = 0; i < 3; i++) {
+      final thisNum = int.tryParse(thisParts.length > i ? thisParts[i] : '0') ?? 0;
+      final otherNum = int.tryParse(otherParts.length > i ? otherParts[i] : '0') ?? 0;
+      
+      if (thisNum > otherNum) return true;
+      if (thisNum < otherNum) return false;
+    }
+    
+    return false; // Versões são iguais
+  }
+
   @override
   String toString() => 'v$version ($buildHash)';
 }
@@ -78,14 +95,14 @@ final versionCheckProvider = StreamProvider<bool>((ref) async* {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         final serverVersion = AppVersion.fromJson(json);
         
-        // Nova versão disponível?
-        final hasUpdate = serverVersion.buildTime > initialVersion.buildTime;
+        // Nova versão disponível? Compara VERSÃO SEMÂNTICA, não buildTime
+        final hasUpdate = serverVersion.isNewerThan(initialVersion);
         
         // Só notifica se o estado mudou (evita spam do banner)
         if (hasUpdate && !lastCheckHadUpdate) {
           print('🎉 Nova versão detectada!');
-          print('   Atual: ${initialVersion.fullVersion}');
-          print('   Nova: ${serverVersion.fullVersion}');
+          print('   Versão atual: ${initialVersion.version}');
+          print('   Nova versão: ${serverVersion.version}');
           lastCheckHadUpdate = true;
           yield hasUpdate;
         } else if (!hasUpdate && lastCheckHadUpdate) {
@@ -93,7 +110,7 @@ final versionCheckProvider = StreamProvider<bool>((ref) async* {
           lastCheckHadUpdate = false;
           yield hasUpdate;
         }
-        // Se nada mudou, não emite nada (não atualiza o banner)
+        // Se versões são iguais, não emite nada (não mostra banner)
       }
     } catch (e) {
       print('⚠️ Erro ao verificar atualização: $e');
