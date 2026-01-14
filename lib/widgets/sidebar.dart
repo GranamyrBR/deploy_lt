@@ -824,6 +824,65 @@ class _SidebarState extends ConsumerState<Sidebar> {
                       );
                     },
                   ),
+
+                  const SizedBox(height: 12),
+
+                  // Botão de Logout
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            // Confirmar logout
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Sair do Sistema'),
+                                content: const Text('Tem certeza que deseja sair?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('Cancelar'),
+                                  ),
+                                  ElevatedButton.icon(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    icon: const Icon(Icons.logout),
+                                    label: const Text('Sair'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              await ref.read(authProvider.notifier).logout();
+                              if (context.mounted) {
+                                Navigator.of(context).pushReplacementNamed('/login');
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.logout, size: 16),
+                          label: const Text(
+                            'Sair',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red,
+                            side: const BorderSide(color: Colors.red),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
