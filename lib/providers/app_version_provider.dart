@@ -76,13 +76,19 @@ final appVersionProvider = FutureProvider<AppVersion>((ref) async {
 });
 
 /// Provider que verifica periodicamente se há nova versão
+/// DESABILITADO - Deploy manual, não precisa de verificação automática
 final versionCheckProvider = StreamProvider<bool>((ref) async* {
-  // Versão inicial (carregada no boot)
+  // Provider desabilitado - sempre retorna false (sem atualização)
+  yield false;
+  
+  // Não faz mais verificações periódicas
+  // Para reabilitar, descomente o código abaixo:
+  
+  /*
   final initialVersion = await ref.read(appVersionProvider.future);
   bool lastCheckHadUpdate = false;
   
   while (true) {
-    // Aguarda 30 minutos antes de verificar novamente
     await Future.delayed(const Duration(minutes: 30));
     
     try {
@@ -95,10 +101,8 @@ final versionCheckProvider = StreamProvider<bool>((ref) async* {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         final serverVersion = AppVersion.fromJson(json);
         
-        // Nova versão disponível? Compara VERSÃO SEMÂNTICA, não buildTime
         final hasUpdate = serverVersion.isNewerThan(initialVersion);
         
-        // Só notifica se o estado mudou (evita spam do banner)
         if (hasUpdate && !lastCheckHadUpdate) {
           print('🎉 Nova versão detectada!');
           print('   Versão atual: ${initialVersion.version}');
@@ -106,17 +110,15 @@ final versionCheckProvider = StreamProvider<bool>((ref) async* {
           lastCheckHadUpdate = true;
           yield hasUpdate;
         } else if (!hasUpdate && lastCheckHadUpdate) {
-          // Versão foi atualizada, reseta flag
           lastCheckHadUpdate = false;
           yield hasUpdate;
         }
-        // Se versões são iguais, não emite nada (não mostra banner)
       }
     } catch (e) {
       print('⚠️ Erro ao verificar atualização: $e');
-      // Não emite nada em caso de erro (mantém estado anterior)
     }
   }
+  */
 });
 
 /// Provider para forçar reload da página (atualizar para nova versão)
