@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/app_version_provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/responsive_utils.dart';
 import 'package:flutter/foundation.dart'; // Added for kDebugMode
@@ -758,6 +759,70 @@ class _SidebarState extends ConsumerState<Sidebar> {
                         ),
                       ),
                     ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Versão do App
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final versionAsync = ref.watch(appVersionProvider);
+                      
+                      return versionAsync.when(
+                        data: (version) => Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 14,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Versão do Sistema',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'v${version.version}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                version.buildTime.toString().split(' ')[0], // Mostra data do build
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                      );
+                    },
                   ),
                 ],
               ),
