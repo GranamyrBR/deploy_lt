@@ -15,7 +15,8 @@ class ContactTaskService {
           .select('''
             *,
             user:assigned_to_user_id (
-              name
+              first_name,
+              last_name
             )
           ''')
           .eq('contact_id', contactId);
@@ -33,9 +34,11 @@ class ContactTaskService {
       final response = await orderedQuery;
       
       return (response as List).map((json) {
-        // Adicionar nome do usuário ao JSON
-        if (json['user'] != null && json['user']['name'] != null) {
-          json['assigned_to_user_name'] = json['user']['name'];
+        // Adicionar nome completo do usuário ao JSON
+        if (json['user'] != null) {
+          final firstName = json['user']['first_name'] ?? '';
+          final lastName = json['user']['last_name'] ?? '';
+          json['assigned_to_user_name'] = '$firstName $lastName'.trim();
         }
         return ContactTask.fromJson(json);
       }).toList();
@@ -61,7 +64,8 @@ class ContactTaskService {
           .select('''
             *,
             user:assigned_to_user_id (
-              name
+              first_name,
+              last_name
             )
           ''')
           .eq('contact_id', contactId)
@@ -71,8 +75,10 @@ class ContactTaskService {
           .order('due_date', ascending: true);
 
       return (response as List).map((json) {
-        if (json['user'] != null && json['user']['name'] != null) {
-          json['assigned_to_user_name'] = json['user']['name'];
+        if (json['user'] != null) {
+          final firstName = json['user']['first_name'] ?? '';
+          final lastName = json['user']['last_name'] ?? '';
+          json['assigned_to_user_name'] = '$firstName $lastName'.trim();
         }
         return ContactTask.fromJson(json);
       }).toList();
@@ -92,7 +98,8 @@ class ContactTaskService {
           .select('''
             *,
             user:assigned_to_user_id (
-              name
+              first_name,
+              last_name
             )
           ''')
           .eq('contact_id', contactId)
@@ -101,8 +108,10 @@ class ContactTaskService {
           .order('due_date', ascending: true);
 
       return (response as List).map((json) {
-        if (json['user'] != null && json['user']['name'] != null) {
-          json['assigned_to_user_name'] = json['user']['name'];
+        if (json['user'] != null) {
+          final firstName = json['user']['first_name'] ?? '';
+          final lastName = json['user']['last_name'] ?? '';
+          json['assigned_to_user_name'] = '$firstName $lastName'.trim();
         }
         return ContactTask.fromJson(json);
       }).toList();
@@ -141,13 +150,16 @@ class ContactTaskService {
           .select('''
             *,
             user:assigned_to_user_id (
-              name
+              first_name,
+              last_name
             )
           ''')
           .single();
 
-      if (response['user'] != null && response['user']['name'] != null) {
-        response['assigned_to_user_name'] = response['user']['name'];
+      if (response['user'] != null) {
+        final firstName = response['user']['first_name'] ?? '';
+        final lastName = response['user']['last_name'] ?? '';
+        response['assigned_to_user_name'] = '$firstName $lastName'.trim();
       }
 
       return ContactTask.fromJson(response);
