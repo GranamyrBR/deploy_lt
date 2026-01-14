@@ -90,7 +90,8 @@
       document.body.append(scriptTag);
     }
 
-    if ('serviceWorker' in navigator) {
+    // SERVICE WORKER DESABILITADO - Deploy manual, não precisa de cache PWA
+    if (false && 'serviceWorker' in navigator) {
       // Service workers are supported. Use them.
       window.addEventListener('load', function () {
         // Wait for registration to finish before dropping the <script> tag.
