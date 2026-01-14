@@ -75,42 +75,71 @@ class _ContactTaskDialogState extends State<ContactTaskDialog> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.task != null;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      backgroundColor: Colors.transparent,
       child: Container(
         width: 600,
         constraints: const BoxConstraints(maxHeight: 700),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey[900] : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header
+            // Header Premium com Gradiente (igual ao das cotações)
             Container(
-              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                gradient: LinearGradient(
+                  colors: isDark
+                      ? [Colors.blue.shade900, Colors.purple.shade900]
+                      : [Colors.blue.shade600, Colors.purple.shade600],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
               ),
+              padding: const EdgeInsets.all(24),
               child: Row(
                 children: [
-                  Icon(
-                    isEditing ? Icons.edit : Icons.add_task,
-                    color: Theme.of(context).primaryColor,
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isEditing ? Icons.edit : Icons.alarm_add,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Text(
                     isEditing ? 'Editar Follow-up' : 'Novo Follow-up',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Spacer(),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    tooltip: 'Fechar',
                   ),
                 ],
               ),
@@ -286,36 +315,54 @@ class _ContactTaskDialogState extends State<ContactTaskDialog> {
               ),
             ),
 
-            // Footer
+            // Footer Premium
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: isDark ? Colors.grey[850] : Colors.grey[100],
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(16),
-                  bottomRight: Radius.circular(16),
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
+                  OutlinedButton(
                     onPressed: _loading ? null : () => Navigator.of(context).pop(),
-                    child: const Text('Cancelar'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Cancelar', style: TextStyle(fontSize: 15)),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton.icon(
                     onPressed: _loading ? null : _save,
                     icon: _loading
                         ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
                           )
-                        : Icon(isEditing ? Icons.save : Icons.add),
-                    label: Text(isEditing ? 'Salvar' : 'Criar'),
+                        : Icon(isEditing ? Icons.save : Icons.alarm_add, size: 20),
+                    label: Text(
+                      isEditing ? 'Salvar Alterações' : 'Criar Follow-up',
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      backgroundColor: Colors.orange[600],
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
                     ),
                   ),
                 ],
