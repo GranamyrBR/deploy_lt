@@ -120,6 +120,23 @@ fi
 print_success "Build completo!"
 echo ""
 
+# 1.5. Atualizar version.json com a nova versão
+print_info "1️⃣.5 Atualizando version.json..."
+BUILD_TIME=$(date +%s)
+cat > build/web/version.json << EOF
+{
+  "app_name": "lecotour_dashboard",
+  "version": "${MAJOR}.${MINOR}.${PATCH}",
+  "fullVersion": "${NEW_VERSION}",
+  "buildTime": ${BUILD_TIME},
+  "timestamp": "$(date -Iseconds)",
+  "buildHash": "$(git rev-parse --short HEAD)",
+  "package_name": "lecotour_dashboard"
+}
+EOF
+print_success "version.json atualizado para ${NEW_VERSION}!"
+echo ""
+
 # 2. Commitar build
 print_info "2️⃣ Commitando build..."
 git add -f build/web
