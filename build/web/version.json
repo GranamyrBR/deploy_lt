@@ -1,9 +1,9 @@
 {
   "app_name": "lecotour_dashboard",
-  "version": "1.1.6",
-  "fullVersion": "v1.1.6",
-  "buildTime": 1768398512,
-  "timestamp": "2026-01-14T10:48:32-03:00",
-  "buildHash": "cf4ac32",
+  "version": "1.2.0",
+  "fullVersion": "v1.2.0",
+  "buildTime": 1768398748,
+  "timestamp": "2026-01-14T10:52:28-03:00",
+  "buildHash": "e1b01bd",
   "package_name": "lecotour_dashboard"
 }
