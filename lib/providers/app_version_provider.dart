@@ -62,6 +62,7 @@ final appVersionProvider = FutureProvider<AppVersion>((ref) async {
 final versionCheckProvider = StreamProvider<bool>((ref) async* {
   // Versão inicial (carregada no boot)
   final initialVersion = await ref.read(appVersionProvider.future);
+  bool lastCheckHadUpdate = false;
   
   while (true) {
     // Aguarda 30 minutos antes de verificar novamente
@@ -80,13 +81,19 @@ final versionCheckProvider = StreamProvider<bool>((ref) async* {
         // Nova versão disponível?
         final hasUpdate = serverVersion.buildTime > initialVersion.buildTime;
         
-        if (hasUpdate) {
+        // Só notifica se o estado mudou (evita spam do banner)
+        if (hasUpdate && !lastCheckHadUpdate) {
           print('🎉 Nova versão detectada!');
           print('   Atual: ${initialVersion.fullVersion}');
           print('   Nova: ${serverVersion.fullVersion}');
+          lastCheckHadUpdate = true;
+          yield hasUpdate;
+        } else if (!hasUpdate && lastCheckHadUpdate) {
+          // Versão foi atualizada, reseta flag
+          lastCheckHadUpdate = false;
+          yield hasUpdate;
         }
-        
-        yield hasUpdate;
+        // Se nada mudou, não emite nada (não atualiza o banner)
       }
     } catch (e) {
       print('⚠️ Erro ao verificar atualização: $e');
