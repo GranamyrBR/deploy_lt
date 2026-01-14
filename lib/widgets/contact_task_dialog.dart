@@ -149,6 +149,7 @@ class _ContactTaskDialogState extends State<ContactTaskDialog> {
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
+                controller: ScrollController(keepScrollOffset: false), // Desabilita restore de scroll
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -295,7 +296,7 @@ class _ContactTaskDialogState extends State<ContactTaskDialog> {
                           return ChoiceChip(
                             label: Text(priority['label'] as String),
                             selected: isSelected,
-                            selectedColor: (priority['color'] as Color).withValues(alpha: 0.3),
+                            selectedColor: (priority['color'] as Color).withOpacity(0.3),
                             side: BorderSide(
                               color: isSelected 
                                   ? priority['color'] as Color

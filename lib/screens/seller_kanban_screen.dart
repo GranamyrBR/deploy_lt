@@ -9,11 +9,55 @@ import '../widgets/sales_timeline_widget.dart';
 import '../widgets/enhanced_quotation_dialog.dart';
 import '../widgets/quotation_management_dialog.dart';
 
-class SellerKanbanScreen extends ConsumerWidget {
+class SellerKanbanScreen extends ConsumerStatefulWidget {
   const SellerKanbanScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SellerKanbanScreen> createState() => _SellerKanbanScreenState();
+}
+
+class _SellerKanbanScreenState extends ConsumerState<SellerKanbanScreen> {
+  // Filtros do Kanban de vendas
+  double? _filtroValorMinimo;
+  double? _filtroValorMaximo;
+  String? _filtroOrigem;
+
+  // Filtros do Todo
+  String? _filtroTodoPrioridade;
+
+  bool _aplicarFiltrosKanban(BoardItem item) {
+    // Filtro por valor
+    if (_filtroValorMinimo != null && item.value < _filtroValorMinimo!) {
+      return false;
+    }
+    if (_filtroValorMaximo != null && item.value > _filtroValorMaximo!) {
+      return false;
+    }
+
+    // Filtro por origem
+    if (_filtroOrigem != null && !item.subtitle.contains(_filtroOrigem!)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void _limparFiltrosKanban() {
+    setState(() {
+      _filtroValorMinimo = null;
+      _filtroValorMaximo = null;
+      _filtroOrigem = null;
+    });
+  }
+
+  void _limparFiltrosTodo() {
+    setState(() {
+      _filtroTodoPrioridade = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final board = ref.watch(sellerBoardProvider);
     final theme = Theme.of(context);
     
@@ -26,7 +70,18 @@ class SellerKanbanScreen extends ConsumerWidget {
           children: [
             const _HeaderSection(),
             const SizedBox(height: 32),
-            _KanbanSection(board: board, ref: ref),
+            _KanbanSection(
+              board: board, 
+              ref: ref,
+              filtroValorMinimo: _filtroValorMinimo,
+              filtroValorMaximo: _filtroValorMaximo,
+              filtroOrigem: _filtroOrigem,
+              aplicarFiltros: _aplicarFiltrosKanban,
+              onValorMinimoChanged: (valor) => setState(() => _filtroValorMinimo = valor),
+              onValorMaximoChanged: (valor) => setState(() => _filtroValorMaximo = valor),
+              onOrigemChanged: (origem) => setState(() => _filtroOrigem = origem),
+              onClearFilters: _limparFiltrosKanban,
+            ),
             const SizedBox(height: 32),
             _TodoSection(board: board, ref: ref),
           ],
@@ -132,7 +187,27 @@ class _HeaderSection extends StatelessWidget {
 class _KanbanSection extends StatelessWidget {
   final SellerBoardState board;
   final WidgetRef ref;
-  const _KanbanSection({required this.board, required this.ref});
+  final double? filtroValorMinimo;
+  final double? filtroValorMaximo;
+  final String? filtroOrigem;
+  final bool Function(BoardItem) aplicarFiltros;
+  final Function(double?) onValorMinimoChanged;
+  final Function(double?) onValorMaximoChanged;
+  final Function(String?) onOrigemChanged;
+  final VoidCallback onClearFilters;
+
+  const _KanbanSection({
+    required this.board,
+    required this.ref,
+    required this.filtroValorMinimo,
+    required this.filtroValorMaximo,
+    required this.filtroOrigem,
+    required this.aplicarFiltros,
+    required this.onValorMinimoChanged,
+    required this.onValorMaximoChanged,
+    required this.onOrigemChanged,
+    required this.onClearFilters,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -169,16 +244,66 @@ class _KanbanSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
+        
+        // Filtros compactos em chips
+        if (filtroValorMinimo != null || filtroValorMaximo != null || filtroOrigem != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  if (filtroValorMinimo != null || filtroValorMaximo != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Chip(
+                        avatar: const Icon(Icons.attach_money, size: 16, color: Colors.white),
+                        label: Text(_getValorLabel(filtroValorMinimo, filtroValorMaximo)),
+                        deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                        onDeleted: () {
+                          onValorMinimoChanged(null);
+                          onValorMaximoChanged(null);
+                        },
+                        backgroundColor: Colors.green,
+                        labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ),
+                  if (filtroOrigem != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Chip(
+                        avatar: Icon(_getOrigemIcon(filtroOrigem!), size: 16, color: Colors.white),
+                        label: Text(filtroOrigem!),
+                        deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                        onDeleted: () => onOrigemChanged(null),
+                        backgroundColor: Colors.blue,
+                        labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ),
+                  TextButton.icon(
+                    onPressed: onClearFilters,
+                    icon: const Icon(Icons.clear_all, size: 16),
+                    label: const Text('Limpar', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        
+        const SizedBox(height: 12),
         SizedBox(
           height: 320,
           child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: board.kanbanColumns.map((col) {
+                // Aplicar filtros nos itens
+                final filteredItems = col.items.where(aplicarFiltros).toList();
+                
                 return Expanded(
                   child: _BoardColumnWidget(
                     title: col.name,
-                    items: col.items,
+                    items: filteredItems,
                     columnColor: _getColumnColor(col.key),
                     onAccept: (itemId, toIndex) {
                       ref.read(sellerBoardProvider.notifier).moveKanbanItem(
@@ -240,6 +365,26 @@ class _KanbanSection extends StatelessWidget {
       if (c.items.any((i) => i.id == itemId)) return c.key;
     }
     return cols.first.key;
+  }
+  
+  static String _getValorLabel(double? min, double? max) {
+    if (min != null && max == null) return 'Acima de R\$ ${min.toInt()}';
+    if (min != null && max != null) return 'R\$ ${min.toInt()} - R\$ ${max.toInt()}';
+    if (max != null) return 'Até R\$ ${max.toInt()}';
+    return 'Valor';
+  }
+  
+  static IconData _getOrigemIcon(String origem) {
+    switch (origem) {
+      case 'WhatsApp':
+        return Icons.chat;
+      case 'Email':
+        return Icons.email;
+      case 'Telefone':
+        return Icons.phone;
+      default:
+        return Icons.source;
+    }
   }
 }
 

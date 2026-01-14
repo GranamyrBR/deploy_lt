@@ -22,7 +22,6 @@ import '../widgets/contact_follow_up_timeline.dart';
 import '../widgets/quotation_management_dialog.dart';
 import '../widgets/create_quotation_with_whatsapp_dialog.dart';
 import '../widgets/quick_dates_dialog.dart';
-import '../providers/lead_tintim_provider.dart';
 import '../models/lead_tintim.dart';
 import 'dart:math';
 
@@ -41,6 +40,347 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   bool _isLoading = false;
   bool _visualizarComoCartao = false;
   bool _visualizarComoKanban = false;
+  
+  // Filtros avançados (cards/lista)
+  String? _filtroDataIda; // 'proximos_7', 'proximos_15', 'proximos_30', 'range', 'sem_data'
+  DateTime? _filtroDataIdaInicio;
+  DateTime? _filtroDataIdaFim;
+  String? _filtroOrigem;
+  String? _filtroCategoria;
+  String? _filtroAgencia;
+  bool? _filtroPossuiCotacao;
+  bool? _filtroPossuiVenda;
+  
+  // Filtros específicos do Kanban
+  String? _filtroKanbanDataIda;
+  DateTime? _filtroKanbanDataIdaInicio;
+  DateTime? _filtroKanbanDataIdaFim;
+  bool? _filtroKanbanPossuiCotacao;
+  bool? _filtroKanbanPossuiVenda;
+  
+  /// Aplica filtros avançados na lista de contatos
+  bool _aplicarFiltrosAvancados(Map<String, dynamic> contact) {
+    // Filtro por data de ida
+    if (_filtroDataIda != null) {
+      final travelDate = contact['travel_date'] as String?;
+      
+      if (_filtroDataIda == 'sem_data') {
+        if (travelDate != null && travelDate.isNotEmpty) return false;
+      } else if (travelDate == null || travelDate.isEmpty) {
+        return false;
+      } else {
+        try {
+          final dateTime = DateTime.parse(travelDate);
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          final travelDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+          
+          if (_filtroDataIda == 'proximos_7') {
+            final limite = today.add(const Duration(days: 7));
+            if (travelDay.isBefore(today) || travelDay.isAfter(limite)) return false;
+          } else if (_filtroDataIda == 'proximos_15') {
+            final limite = today.add(const Duration(days: 15));
+            if (travelDay.isBefore(today) || travelDay.isAfter(limite)) return false;
+          } else if (_filtroDataIda == 'proximos_30') {
+            final limite = today.add(const Duration(days: 30));
+            if (travelDay.isBefore(today) || travelDay.isAfter(limite)) return false;
+          } else if (_filtroDataIda == 'range' && _filtroDataIdaInicio != null && _filtroDataIdaFim != null) {
+            final inicio = DateTime(_filtroDataIdaInicio!.year, _filtroDataIdaInicio!.month, _filtroDataIdaInicio!.day);
+            final fim = DateTime(_filtroDataIdaFim!.year, _filtroDataIdaFim!.month, _filtroDataIdaFim!.day);
+            if (travelDay.isBefore(inicio) || travelDay.isAfter(fim)) return false;
+          }
+        } catch (e) {
+          // Se não conseguir parsear a data, considera como sem data
+          if (_filtroDataIda != 'sem_data') return false;
+        }
+      }
+    }
+    
+    // Filtro por possui cotação
+    if (_filtroPossuiCotacao != null) {
+      final hasQuotation = _contactsWithQuotation.contains(contact['id'] as int? ?? -1);
+      if (_filtroPossuiCotacao! && !hasQuotation) return false;
+      if (!_filtroPossuiCotacao! && hasQuotation) return false;
+    }
+    
+    // Filtro por possui venda
+    if (_filtroPossuiVenda != null) {
+      final hasPurchase = _contactsWithPurchase.contains(contact['id'] as int? ?? -1);
+      if (_filtroPossuiVenda! && !hasPurchase) return false;
+      if (!_filtroPossuiVenda! && hasPurchase) return false;
+    }
+    
+    return true;
+  }
+  
+  /// Limpa todos os filtros avançados (cards/lista)
+  void _limparFiltrosAvancados() {
+    setState(() {
+      _filtroDataIda = null;
+      _filtroDataIdaInicio = null;
+      _filtroDataIdaFim = null;
+      _filtroOrigem = null;
+      _filtroCategoria = null;
+      _filtroAgencia = null;
+      _filtroPossuiCotacao = null;
+      _filtroPossuiVenda = null;
+    });
+  }
+  
+  /// Aplica filtros avançados no Kanban
+  bool _aplicarFiltrosKanban(Map<String, dynamic> contact) {
+    // Filtro por data de ida
+    if (_filtroKanbanDataIda != null) {
+      final travelDate = contact['travel_date'] as String?;
+      
+      if (_filtroKanbanDataIda == 'sem_data') {
+        if (travelDate != null && travelDate.isNotEmpty) return false;
+      } else if (travelDate == null || travelDate.isEmpty) {
+        return false;
+      } else {
+        try {
+          final dateTime = DateTime.parse(travelDate);
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          final travelDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+          
+          if (_filtroKanbanDataIda == 'proximos_7') {
+            final limite = today.add(const Duration(days: 7));
+            if (travelDay.isBefore(today) || travelDay.isAfter(limite)) return false;
+          } else if (_filtroKanbanDataIda == 'proximos_15') {
+            final limite = today.add(const Duration(days: 15));
+            if (travelDay.isBefore(today) || travelDay.isAfter(limite)) return false;
+          } else if (_filtroKanbanDataIda == 'proximos_30') {
+            final limite = today.add(const Duration(days: 30));
+            if (travelDay.isBefore(today) || travelDay.isAfter(limite)) return false;
+          } else if (_filtroKanbanDataIda == 'range' && _filtroKanbanDataIdaInicio != null && _filtroKanbanDataIdaFim != null) {
+            final inicio = DateTime(_filtroKanbanDataIdaInicio!.year, _filtroKanbanDataIdaInicio!.month, _filtroKanbanDataIdaInicio!.day);
+            final fim = DateTime(_filtroKanbanDataIdaFim!.year, _filtroKanbanDataIdaFim!.month, _filtroKanbanDataIdaFim!.day);
+            if (travelDay.isBefore(inicio) || travelDay.isAfter(fim)) return false;
+          }
+        } catch (e) {
+          if (_filtroKanbanDataIda != 'sem_data') return false;
+        }
+      }
+    }
+    
+    // Filtro por possui cotação
+    if (_filtroKanbanPossuiCotacao != null) {
+      final hasQuotation = _contactsWithQuotation.contains(contact['id'] as int? ?? -1);
+      if (_filtroKanbanPossuiCotacao! && !hasQuotation) return false;
+      if (!_filtroKanbanPossuiCotacao! && hasQuotation) return false;
+    }
+    
+    // Filtro por possui venda
+    if (_filtroKanbanPossuiVenda != null) {
+      final hasPurchase = _contactsWithPurchase.contains(contact['id'] as int? ?? -1);
+      if (_filtroKanbanPossuiVenda! && !hasPurchase) return false;
+      if (!_filtroKanbanPossuiVenda! && hasPurchase) return false;
+    }
+    
+    return true;
+  }
+  
+  /// Limpa filtros do Kanban
+  void _limparFiltrosKanban() {
+    setState(() {
+      _filtroKanbanDataIda = null;
+      _filtroKanbanDataIdaInicio = null;
+      _filtroKanbanDataIdaFim = null;
+      _filtroKanbanPossuiCotacao = null;
+      _filtroKanbanPossuiVenda = null;
+    });
+  }
+  
+  /// Conta quantos filtros avançados estão ativos (cards/lista)
+  int _contarFiltrosAtivos() {
+    int count = 0;
+    if (_filtroDataIda != null) count++;
+    if (_filtroPossuiCotacao != null) count++;
+    if (_filtroPossuiVenda != null) count++;
+    return count;
+  }
+  
+  /// Conta quantos filtros do Kanban estão ativos
+  int _contarFiltrosKanbanAtivos() {
+    int count = 0;
+    if (_filtroKanbanDataIda != null) count++;
+    if (_filtroKanbanPossuiCotacao != null) count++;
+    if (_filtroKanbanPossuiVenda != null) count++;
+    return count;
+  }
+  
+  /// Retorna o label do filtro de data
+  String _getLabelFiltroData(String filtro) {
+    switch (filtro) {
+      case 'proximos_7':
+        return 'Próximos 7 dias';
+      case 'proximos_15':
+        return 'Próximos 15 dias';
+      case 'proximos_30':
+        return 'Próximos 30 dias';
+      case 'range':
+        if (_filtroDataIdaInicio != null && _filtroDataIdaFim != null) {
+          return '${_formatDate(_filtroDataIdaInicio!)} - ${_formatDate(_filtroDataIdaFim!)}';
+        }
+        return 'Range personalizado';
+      case 'sem_data':
+        return 'Sem data';
+      default:
+        return filtro;
+    }
+  }
+  
+  /// Mostra modal com filtros avançados
+  void _mostrarFiltrosAvancados() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.filter_alt, color: Colors.blue, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text('Filtros Avançados'),
+          ],
+        ),
+        content: SizedBox(
+          width: 600,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Data de Viagem
+                Row(
+                  children: [
+                    Icon(Icons.flight_takeoff, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Data de Viagem',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildFilterChipDialog('Próximos 7 dias', Icons.today, Colors.orange, _filtroDataIda == 'proximos_7', () {
+                      setState(() => _filtroDataIda = _filtroDataIda == 'proximos_7' ? null : 'proximos_7');
+                    }, isDark),
+                    _buildFilterChipDialog('Próximos 15 dias', Icons.date_range, Colors.blue, _filtroDataIda == 'proximos_15', () {
+                      setState(() => _filtroDataIda = _filtroDataIda == 'proximos_15' ? null : 'proximos_15');
+                    }, isDark),
+                    _buildFilterChipDialog('Próximos 30 dias', Icons.calendar_month, Colors.purple, _filtroDataIda == 'proximos_30', () {
+                      setState(() => _filtroDataIda = _filtroDataIda == 'proximos_30' ? null : 'proximos_30');
+                    }, isDark),
+                    _buildFilterChipDialog('Sem data', Icons.event_busy, Colors.grey, _filtroDataIda == 'sem_data', () {
+                      setState(() => _filtroDataIda = _filtroDataIda == 'sem_data' ? null : 'sem_data');
+                    }, isDark),
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                const Divider(),
+                const SizedBox(height: 16),
+                
+                // Status
+                Row(
+                  children: [
+                    Icon(Icons.analytics, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Status',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildFilterChipDialog('Com cotação', Icons.description, Colors.blue, _filtroPossuiCotacao == true, () {
+                      setState(() => _filtroPossuiCotacao = _filtroPossuiCotacao == true ? null : true);
+                    }, isDark),
+                    _buildFilterChipDialog('Sem cotação', Icons.description_outlined, Colors.orange, _filtroPossuiCotacao == false, () {
+                      setState(() => _filtroPossuiCotacao = _filtroPossuiCotacao == false ? null : false);
+                    }, isDark),
+                    _buildFilterChipDialog('Com venda', Icons.shopping_cart, Colors.green, _filtroPossuiVenda == true, () {
+                      setState(() => _filtroPossuiVenda = _filtroPossuiVenda == true ? null : true);
+                    }, isDark),
+                    _buildFilterChipDialog('Sem venda', Icons.shopping_cart_outlined, Colors.red, _filtroPossuiVenda == false, () {
+                      setState(() => _filtroPossuiVenda = _filtroPossuiVenda == false ? null : false);
+                    }, isDark),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          if (_contarFiltrosAtivos() > 0)
+            TextButton.icon(
+              onPressed: () {
+                _limparFiltrosAvancados();
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.clear_all),
+              label: const Text('Limpar'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildFilterChipDialog(String label, IconData icon, Color color, bool isSelected, VoidCallback onTap, bool isDark) {
+    return FilterChip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: isSelected ? Colors.white : color),
+          const SizedBox(width: 6),
+          Text(label),
+        ],
+      ),
+      selected: isSelected,
+      onSelected: (_) => onTap(),
+      selectedColor: color,
+      backgroundColor: isDark ? Colors.grey[800] : Colors.grey[100],
+      checkmarkColor: Colors.white,
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      side: BorderSide(
+        color: isSelected ? color : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
+        width: isSelected ? 2 : 1,
+      ),
+    );
+  }
+  
   String _searchTerm = '';
 
   // Adicionado para scroll sincronizado
@@ -61,6 +401,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   final Map<String, UserType> _contactUserTypes = {};
   final Set<int> _contactsWithPurchase = {};
   final Set<int> _contactsWithLeadConverted = {};
+  final Set<int> _contactsWithQuotation = {};
   String _normalizePhone(dynamic phone) {
     final s = phone?.toString() ?? '';
     return s.replaceAll(RegExp(r'[^0-9+]'), '');
@@ -320,6 +661,39 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             }
           } catch (e) {
             print('Erro ao buscar leads convertidos: $e');
+          }
+        }
+
+        // Buscar cotações (quotations) para os contatos exibidos
+        // NOTA: client_id não é preenchido nas cotações, então usamos client_phone
+        _contactsWithQuotation.clear();
+        if (phoneToId.isNotEmpty) {
+          try {
+            print('🔍 Buscando cotações ativas (não canceladas) por telefone...');
+            
+            // Buscar cotações ativas (não canceladas) com telefone
+            final quotationsByPhone = await Supabase.instance.client
+                .from('quotation')
+                .select('client_phone, status, quotation_number')
+                .not('client_phone', 'is', null)
+                .neq('status', 'cancelled'); // Ignorar canceladas
+            
+            print('📊 Total de cotações ativas com telefone: ${quotationsByPhone.length}');
+            
+            int matchCount = 0;
+            for (final q in quotationsByPhone) {
+              final quotationPhone = _normalizePhone(q['client_phone']);
+              if (phoneToId.containsKey(quotationPhone)) {
+                final contactId = phoneToId[quotationPhone]!;
+                _contactsWithQuotation.add(contactId);
+                matchCount++;
+                print('  ✅ ${q['quotation_number']} - Telefone: ${q['client_phone']} → Contato ID: $contactId');
+              }
+            }
+            
+            print('📋 Total de contatos com cotação ativa: ${_contactsWithQuotation.length} (matches: $matchCount)');
+          } catch (e) {
+            print('❌ Erro ao buscar cotações: $e');
           }
         }
 
@@ -586,7 +960,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       
       final payload = {
         'quotation_number': quotationNumber,
-        'type': 'service', // Tipo padrão
+        'type': 'tourism', // Tipo padrão - corrigido de 'service' para 'tourism'
         'status': 'draft', // Status draft para cotações com apenas datas
         'client_id': contactData['id'], // FK para contact
         'client_name': contactData['name'],
@@ -2347,6 +2721,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Aplicar busca por texto
     final List<Map<String, dynamic>> contactsFiltrados = _contacts.where((c) {
       if (_searchTerm.isEmpty) return true;
       final termo = _searchTerm.toLowerCase();
@@ -2361,8 +2736,9 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           cidade.contains(termo);
     }).toList();
 
+    // Aplicar filtros avançados
     final List<Map<String, dynamic>> contatosExibidos =
-        List<Map<String, dynamic>>.from(contactsFiltrados);
+        contactsFiltrados.where((c) => _aplicarFiltrosAvancados(c)).toList();
 
     return BaseScreenLayout(
       title: 'Contatos',
@@ -2380,22 +2756,62 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             });
           },
         ),
-        IconButton(
-          icon: Icon(
-            _visualizarComoKanban ? Icons.view_list : Icons.view_kanban,
-            color: _visualizarComoKanban ? Colors.blue : null,
-          ),
-          tooltip: _visualizarComoKanban
-              ? 'Visualizar como lista'
-              : 'Visualizar como Kanban',
-          onPressed: () {
-            setState(() {
-              _visualizarComoKanban = !_visualizarComoKanban;
-              if (_visualizarComoKanban) {
-                _visualizarComoCartao = false; // Desativa cartão quando ativa kanban
-              }
-            });
-          },
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _visualizarComoKanban ? Icons.view_list : Icons.view_kanban,
+                    color: _visualizarComoKanban ? Colors.blue : null,
+                  ),
+                  tooltip: _visualizarComoKanban
+                      ? 'Visualizar como lista'
+                      : 'Visualizar como Kanban',
+                  onPressed: () {
+                    setState(() {
+                      _visualizarComoKanban = !_visualizarComoKanban;
+                      if (_visualizarComoKanban) {
+                        _visualizarComoCartao = false; // Desativa cartão quando ativa kanban
+                      }
+                    });
+                  },
+                ),
+            if (_visualizarComoKanban && _contarFiltrosKanbanAtivos() > 0)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    '${_contarFiltrosKanbanAtivos()}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              ],
+            ),
+            if (_visualizarComoKanban)
+              IconButton(
+                icon: const Icon(Icons.filter_alt),
+                onPressed: _mostrarFiltrosKanban,
+                tooltip: 'Filtros do Kanban',
+              ),
+          ],
         ),
         IconButton(
           icon: const Icon(Icons.table_rows),
@@ -2417,8 +2833,43 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
           onPressed: _refreshContacts,
           tooltip: 'Atualizar lista',
         ),
+        if (!_visualizarComoKanban)
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.filter_alt),
+                onPressed: _mostrarFiltrosAvancados,
+                tooltip: 'Filtros avançados',
+              ),
+              if (_contarFiltrosAtivos() > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '${_contarFiltrosAtivos()}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         PopupMenuButton<UserType?>(
-          icon: const Icon(Icons.filter_alt),
+          icon: const Icon(Icons.people),
           tooltip: 'Filtrar por tipo',
           onSelected: (val) async {
             setState(() {
@@ -2448,6 +2899,64 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
       ),
       child: Column(
         children: [
+          // Filtros compactos em chips horizontais (somente na visualização de cards/lista)
+          if (!_visualizarComoKanban && (_filtroDataIda != null || _filtroPossuiCotacao != null || _filtroPossuiVenda != null))
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (_filtroDataIda != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Chip(
+                          avatar: const Icon(Icons.calendar_today, size: 16, color: Colors.white),
+                          label: Text(_getLabelFiltroData(_filtroDataIda!)),
+                          deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                          onDeleted: () => setState(() {
+                            _filtroDataIda = null;
+                            _filtroDataIdaInicio = null;
+                            _filtroDataIdaFim = null;
+                          }),
+                          backgroundColor: Colors.blue,
+                          labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    if (_filtroPossuiCotacao != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Chip(
+                          avatar: const Icon(Icons.description, size: 16, color: Colors.white),
+                          label: Text(_filtroPossuiCotacao! ? 'Com cotação' : 'Sem cotação'),
+                          deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                          onDeleted: () => setState(() => _filtroPossuiCotacao = null),
+                          backgroundColor: Colors.orange,
+                          labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    if (_filtroPossuiVenda != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Chip(
+                          avatar: const Icon(Icons.shopping_cart, size: 16, color: Colors.white),
+                          label: Text(_filtroPossuiVenda! ? 'Com venda' : 'Sem venda'),
+                          deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                          onDeleted: () => setState(() => _filtroPossuiVenda = null),
+                          backgroundColor: Colors.green,
+                          labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    TextButton.icon(
+                      onPressed: _limparFiltrosAvancados,
+                      icon: const Icon(Icons.clear_all, size: 16),
+                      label: const Text('Limpar', style: TextStyle(fontSize: 12)),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -2491,7 +3000,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
                             child: ExpansionTile(
-                              key: PageStorageKey(c['id']),
+                              key: ValueKey('contact_${c['id']}'),
                               leading: InkWell(
                                 onTap: () async {
                                   final contactId = c['id'].toString();
@@ -2673,6 +3182,31 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                                                   fontWeight: FontWeight.w600,
                                                   color: Colors.white,
                                                 ),
+                                              ),
+                                            ),
+                                          ),
+                                        if (_contactsWithQuotation
+                                            .contains(c['id'] as int))
+                                          Container(
+                                            margin:
+                                                const EdgeInsets.only(left: 6),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? const Color(0xFF1976D2)
+                                                  : const Color(0xFF2196F3),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Text(
+                                              'Cotação',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
                                               ),
                                             ),
                                           ),
@@ -3478,6 +4012,128 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   // KANBAN VIEW - Visualização estilo Monday
   // ============================================================================
 
+  /// Mostra modal de filtros do Kanban
+  void _mostrarFiltrosKanban() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.purple.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.view_kanban, color: Colors.purple, size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Text('Filtros do Kanban'),
+          ],
+        ),
+        content: SizedBox(
+          width: 600,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.flight_takeoff, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Data de Viagem',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildFilterChipDialog('Próximos 7 dias', Icons.today, Colors.orange, _filtroKanbanDataIda == 'proximos_7', () {
+                      setState(() => _filtroKanbanDataIda = _filtroKanbanDataIda == 'proximos_7' ? null : 'proximos_7');
+                    }, isDark),
+                    _buildFilterChipDialog('Próximos 15 dias', Icons.date_range, Colors.blue, _filtroKanbanDataIda == 'proximos_15', () {
+                      setState(() => _filtroKanbanDataIda = _filtroKanbanDataIda == 'proximos_15' ? null : 'proximos_15');
+                    }, isDark),
+                    _buildFilterChipDialog('Próximos 30 dias', Icons.calendar_month, Colors.purple, _filtroKanbanDataIda == 'proximos_30', () {
+                      setState(() => _filtroKanbanDataIda = _filtroKanbanDataIda == 'proximos_30' ? null : 'proximos_30');
+                    }, isDark),
+                    _buildFilterChipDialog('Sem data', Icons.event_busy, Colors.grey, _filtroKanbanDataIda == 'sem_data', () {
+                      setState(() => _filtroKanbanDataIda = _filtroKanbanDataIda == 'sem_data' ? null : 'sem_data');
+                    }, isDark),
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                const Divider(),
+                const SizedBox(height: 16),
+                
+                Row(
+                  children: [
+                    Icon(Icons.analytics, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Status',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildFilterChipDialog('Com cotação', Icons.description, Colors.blue, _filtroKanbanPossuiCotacao == true, () {
+                      setState(() => _filtroKanbanPossuiCotacao = _filtroKanbanPossuiCotacao == true ? null : true);
+                    }, isDark),
+                    _buildFilterChipDialog('Sem cotação', Icons.description_outlined, Colors.orange, _filtroKanbanPossuiCotacao == false, () {
+                      setState(() => _filtroKanbanPossuiCotacao = _filtroKanbanPossuiCotacao == false ? null : false);
+                    }, isDark),
+                    _buildFilterChipDialog('Com venda', Icons.shopping_cart, Colors.green, _filtroKanbanPossuiVenda == true, () {
+                      setState(() => _filtroKanbanPossuiVenda = _filtroKanbanPossuiVenda == true ? null : true);
+                    }, isDark),
+                    _buildFilterChipDialog('Sem venda', Icons.shopping_cart_outlined, Colors.red, _filtroKanbanPossuiVenda == false, () {
+                      setState(() => _filtroKanbanPossuiVenda = _filtroKanbanPossuiVenda == false ? null : false);
+                    }, isDark),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          if (_contarFiltrosKanbanAtivos() > 0)
+            TextButton.icon(
+              onPressed: () {
+                _limparFiltrosKanban();
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.clear_all),
+              label: const Text('Limpar'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Fechar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildKanbanView(List<Map<String, dynamic>> contacts) {
     final categories = ref.watch(contactCategoriesProvider);
     
@@ -3500,113 +4156,176 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
         // Ordenar colunas: Lead → Prospect → Negociado → Cliente → Leads Perdidos
         columns.sort((a, b) => (a['order'] as int).compareTo(b['order'] as int));
 
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: columns.map((column) {
-            final categoryId = column['id'] as int;
-            final categoryName = column['name'] as String;
-            final color = column['color'] as Color;
-            
-            final columnContacts = contacts.where((contact) => 
-                contact['contact_category_id'] == categoryId).toList();
-
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                child: Column(
-                  children: [
-                    // Header da coluna
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.1),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(8),
-                          topRight: Radius.circular(8),
+        return Column(
+          children: [
+            // Filtros compactos do Kanban
+            if (_filtroKanbanDataIda != null || _filtroKanbanPossuiCotacao != null || _filtroKanbanPossuiVenda != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      if (_filtroKanbanDataIda != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Chip(
+                            avatar: const Icon(Icons.calendar_today, size: 16, color: Colors.white),
+                            label: Text(_getLabelFiltroData(_filtroKanbanDataIda!)),
+                            deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                            onDeleted: () => setState(() {
+                              _filtroKanbanDataIda = null;
+                              _filtroKanbanDataIdaInicio = null;
+                              _filtroKanbanDataIdaFim = null;
+                            }),
+                            backgroundColor: Colors.blue,
+                            labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                          ),
                         ),
-                        border: Border.all(color: color.withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
+                      if (_filtroKanbanPossuiCotacao != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Chip(
+                            avatar: const Icon(Icons.description, size: 16, color: Colors.white),
+                            label: Text(_filtroKanbanPossuiCotacao! ? 'Com cotação' : 'Sem cotação'),
+                            deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                            onDeleted: () => setState(() => _filtroKanbanPossuiCotacao = null),
+                            backgroundColor: Colors.orange,
+                            labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                      if (_filtroKanbanPossuiVenda != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Chip(
+                            avatar: const Icon(Icons.shopping_cart, size: 16, color: Colors.white),
+                            label: Text(_filtroKanbanPossuiVenda! ? 'Com venda' : 'Sem venda'),
+                            deleteIcon: const Icon(Icons.close, size: 16, color: Colors.white),
+                            onDeleted: () => setState(() => _filtroKanbanPossuiVenda = null),
+                            backgroundColor: Colors.green,
+                            labelStyle: const TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            
+            // Kanban Board
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: columns.map((column) {
+                  final categoryId = column['id'] as int;
+                  final categoryName = column['name'] as String;
+                  final color = column['color'] as Color;
+                  
+                  // Aplicar filtros do Kanban
+                  final columnContacts = contacts
+                      .where((contact) => contact['contact_category_id'] == categoryId)
+                      .where((contact) => _aplicarFiltrosKanban(contact))
+                      .toList();
+
+                  return Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
                         children: [
+                          // Header da coluna
                           Container(
-                            width: 10,
-                            height: 10,
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
+                              color: color.withValues(alpha: 0.1),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                              border: Border.all(color: color.withValues(alpha: 0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    categoryName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: color,
+                                      fontSize: 13,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    columnContacts.length.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 6),
+                          
+                          // Cards da coluna com DragTarget
                           Expanded(
-                            child: Text(
-                              categoryName,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: color,
-                                fontSize: 13,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: color,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              columnContacts.length.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            child: DragTarget<Map<String, dynamic>>(
+                              onWillAcceptWithDetails: (data) => true,
+                              onAcceptWithDetails: (details) {
+                                _moveContactToCategory(details.data, categoryId);
+                              },
+                              builder: (context, candidateData, rejectedData) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: candidateData.isNotEmpty 
+                                        ? color.withValues(alpha: 0.05)
+                                        : Theme.of(context).colorScheme.surfaceContainerLowest,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(8),
+                                      bottomRight: Radius.circular(8),
+                                    ),
+                                    border: Border.all(
+                                      color: candidateData.isNotEmpty 
+                                          ? color.withValues(alpha: 0.5)
+                                          : color.withValues(alpha: 0.3),
+                                      width: candidateData.isNotEmpty ? 2 : 1,
+                                    ),
+                                  ),
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.all(8),
+                                    itemCount: columnContacts.length,
+                                    itemBuilder: (context, index) {
+                                      return _buildDraggableContactCard(columnContacts[index], color);
+                                    },
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ],
                       ),
                     ),
-                    
-                    // Cards da coluna com DragTarget
-                    Expanded(
-                      child: DragTarget<Map<String, dynamic>>(
-                        onWillAcceptWithDetails: (data) => true,
-                        onAcceptWithDetails: (details) {
-                          _moveContactToCategory(details.data, categoryId);
-                        },
-                        builder: (context, candidateData, rejectedData) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: candidateData.isNotEmpty 
-                                  ? color.withValues(alpha: 0.05)
-                                  : Theme.of(context).colorScheme.surfaceContainerLowest,
-                              borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(8),
-                                bottomRight: Radius.circular(8),
-                              ),
-                              border: Border.all(
-                                color: candidateData.isNotEmpty 
-                                    ? color.withValues(alpha: 0.5)
-                                    : color.withValues(alpha: 0.3),
-                                width: candidateData.isNotEmpty ? 2 : 1,
-                              ),
-                            ),
-                            child: ListView.builder(
-                              padding: const EdgeInsets.all(8),
-                              itemCount: columnContacts.length,
-                              itemBuilder: (context, index) {
-                                return _buildDraggableContactCard(columnContacts[index], color);
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList(),
+            ),
+          ],
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
